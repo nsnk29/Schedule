@@ -1,11 +1,20 @@
 package com.example.schedule
 
+import android.app.Notification
+import android.app.Notification.EXTRA_NOTIFICATION_ID
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import com.example.schedule.model.MyJSONFile
 import com.example.schedule.model.PairClass
 import com.example.schedule.model.VersionClass
@@ -13,21 +22,21 @@ import com.google.gson.GsonBuilder
 import io.realm.Realm
 import io.realm.kotlin.createObject
 import okhttp3.*
+import okhttp3.internal.notify
 import java.io.IOException
 import java.net.URL
-import android.content.Context.MODE_PRIVATE
-import android.content.SharedPreferences
-import android.graphics.Color
-import androidx.preference.PreferenceManager
+import kotlin.random.Random
 
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var realm: Realm
+    private val CHANNEL_ID = "com.example.schedule"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        createNotificationChannel()
         Realm.init(this)
 
         realm = Realm.getDefaultInstance()
@@ -36,10 +45,31 @@ class MainActivity : AppCompatActivity() {
 }
 
 fun check(view: View){
-    val prefs = PreferenceManager.getDefaultSharedPreferences(this)
-    val imgSett = prefs.getBoolean("sync", false)
-    if (imgSett) println("MY TAG WOOOOOOOOOOW") else println("MY TAG WHAAAAAAAAAT?")
 
+//    val builder = NotificationCompat.Builder(this, CHANNEL_ID)
+//        .setSmallIcon(R.mipmap.ic_launcher)
+//        .setContentTitle("Title")
+//        .setContentText("Notification text")
+//
+//    val notificationId = Random.nextInt(0, 100)
+//    with(NotificationManagerCompat.from(this)) {
+//        notify(notificationId, builder.build())
+//    }
+
+    val notification = NotificationCompat.Builder(this, CHANNEL_ID)
+        .setSmallIcon(R.drawable.notification_icon_background)
+        .setContentTitle("Расписание на завтра")
+        .setContentText("Завтра 4 пары до 14:40")
+//        .setLargeIcon(R.drawable.ic_launcher_background)
+        .setStyle(NotificationCompat.BigTextStyle()
+            .bigText("1. 301б Сети\n" +
+                    "2.100с R\n" +
+                    "3.Ф-ра\n" +
+                    "4.Миков 129"))
+        .build()
+    with(NotificationManagerCompat.from(this)) {
+        notify(1, notification)
+    }
 }
 
 private fun getJSON() {
@@ -122,6 +152,29 @@ private fun getJSON() {
         startActivity(intent)
     }
 
+    private fun createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name = getString(R.string.channel_name)
+            val descriptionText = getString(R.string.channel_description)
+            val importance = NotificationManager.IMPORTANCE_HIGH
+            val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
+                description = descriptionText
+            }
+            channel.enableLights(true)
+            channel.enableVibration(true)
+            channel.lightColor = Color.GREEN
+            channel.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+            // Register the channel with the system
+            val notificationManager: NotificationManager =
+                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+
+
+
+        }
+    }
 
     override fun onDestroy() {
         super.onDestroy()
