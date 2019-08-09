@@ -1,10 +1,6 @@
 package com.example.schedule
 
-import android.app.Notification
-import android.app.Notification.EXTRA_NOTIFICATION_ID
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
+import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
@@ -13,64 +9,58 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
+import androidx.preference.PreferenceManager
 import com.example.schedule.model.MyJSONFile
 import com.example.schedule.model.PairClass
 import com.example.schedule.model.VersionClass
 import com.google.gson.GsonBuilder
 import io.realm.Realm
+import io.realm.RealmConfiguration
 import io.realm.kotlin.createObject
 import okhttp3.*
-import okhttp3.internal.notify
 import java.io.IOException
 import java.net.URL
-import kotlin.random.Random
+import java.util.*
+import android.content.SharedPreferences
+import android.widget.TimePicker
 
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var realm: Realm
-    private val CHANNEL_ID = "com.example.schedule"
+
+    companion object {
+        const val CHANNEL_ID = "com.example.schedule"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        PreferenceManager.setDefaultValues(this, R.xml.root_preferences, false);
+
+
+
         createNotificationChannel()
         Realm.init(this)
 
         realm = Realm.getDefaultInstance()
         getJSON()
 
+
 }
 
 fun check(view: View){
 
-//    val builder = NotificationCompat.Builder(this, CHANNEL_ID)
-//        .setSmallIcon(R.mipmap.ic_launcher)
-//        .setContentTitle("Title")
-//        .setContentText("Notification text")
-//
-//    val notificationId = Random.nextInt(0, 100)
-//    with(NotificationManagerCompat.from(this)) {
-//        notify(notificationId, builder.build())
-//    }
+    val c = Calendar.getInstance()
+    c.set(Calendar.HOUR_OF_DAY, 18)
+    c.set(Calendar.MINUTE, 0)
+    c.set(Calendar.SECOND, 0)
 
-    val notification = NotificationCompat.Builder(this, CHANNEL_ID)
-        .setSmallIcon(R.drawable.notification_icon_background)
-        .setContentTitle("Расписание на завтра")
-        .setContentText("Завтра 4 пары до 14:40")
-//        .setLargeIcon(R.drawable.ic_launcher_background)
-        .setStyle(NotificationCompat.BigTextStyle()
-            .bigText("1. 301б Сети\n" +
-                    "2.100с R\n" +
-                    "3.Ф-ра\n" +
-                    "4.Миков 129"))
-        .build()
-    with(NotificationManagerCompat.from(this)) {
-        notify(1, notification)
-    }
+//    startAlarm(c)
 }
+
+
+
 
 private fun getJSON() {
     val client = OkHttpClient()
@@ -175,6 +165,7 @@ private fun getJSON() {
 
         }
     }
+
 
     override fun onDestroy() {
         super.onDestroy()
