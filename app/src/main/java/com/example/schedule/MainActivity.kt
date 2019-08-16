@@ -23,12 +23,18 @@ import java.net.URL
 import java.util.*
 import android.content.SharedPreferences
 import android.widget.TimePicker
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.OrientationHelper
+import kotlinx.android.synthetic.main.activity_main.*
+import androidx.recyclerview.widget.DividerItemDecoration
+
+
 
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var realm: Realm
-
+    private lateinit var mAdapter: MainAdapter
     companion object {
         const val CHANNEL_ID = "com.example.schedule"
     }
@@ -38,9 +44,17 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         PreferenceManager.setDefaultValues(this, R.xml.root_preferences, false);
 
-
-
         createNotificationChannel()
+
+        recycleView.layoutManager = LinearLayoutManager(
+            this,
+            OrientationHelper.HORIZONTAL,
+            false
+        )
+        mAdapter = MainAdapter()
+        recycleView.adapter = mAdapter
+        recycleView.addItemDecoration(MarginItemDecoration(20))
+
         Realm.init(this)
 
         realm = Realm.getDefaultInstance()
@@ -48,17 +62,6 @@ class MainActivity : AppCompatActivity() {
 
 
 }
-
-fun check(view: View){
-
-    val c = Calendar.getInstance()
-    c.set(Calendar.HOUR_OF_DAY, 18)
-    c.set(Calendar.MINUTE, 0)
-    c.set(Calendar.SECOND, 0)
-
-//    startAlarm(c)
-}
-
 
 
 

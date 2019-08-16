@@ -6,23 +6,16 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".MainActivity" android:id="@+id/wrapper">
-
-
-    <Button
-            android:text="settings"
-            android:layout_width="wrap_content"
+    <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/settingsButton" app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:onClick="startSettings"/>
-    <Button
-            android:text="Button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/button2" android:layout_marginTop="8dp"
-            app:layout_constraintTop_toBottomOf="@+id/settingsButton" android:onClick="check"
+            android:id="@+id/recycleView"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp" app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:background="#FDFD"
+
     />
 </androidx.constraintlayout.widget.ConstraintLayout>
