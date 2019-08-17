@@ -13,17 +13,17 @@
                 android:layout_height="wrap_content" android:id="@+id/pair_time" android:layout_margin="4dp"
                 android:padding="4dp" app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintTop_toTopOf="parent"/>
-        <androidx.appcompat.widget.AppCompatTextView
-                android:text="Конструирование алгоритмов и структур данных"
-                android:layout_width="wrap_content"
+        <TextView
+                android:text="Конструирование алгоритмов и структур данных и ещё каких то структур данных два"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:id="@+id/subject_name" app:layout_constraintStart_toEndOf="@+id/pair_time"
                 app:layout_constraintTop_toTopOf="parent" android:layout_marginStart="4dp"
                 android:layout_marginTop="8dp" android:singleLine="false" android:layout_margin="4dp"
                 android:textStyle="bold" android:textSize="14sp" android:scrollHorizontally="false"
-                android:breakStrategy="balanced"
+                app:layout_constraintEnd_toEndOf="parent"/>
+                <!--android:paddingRight="50dp"-->
 
-        />
 
         <TextView
                 android:text="Практика"
@@ -32,7 +32,7 @@
                 android:id="@+id/type_of_subject" app:layout_constraintStart_toEndOf="@+id/pair_time"
                 app:layout_constraintTop_toBottomOf="@+id/subject_name" android:layout_marginStart="4dp"
                 android:layout_marginTop="4dp" android:padding="2dp" android:background="#D81B60"
-                android:textColor="#FFFFFF" android:textAllCaps="true" android:textSize="12dp"/>
+                android:textColor="#FFFFFF" android:textAllCaps="true" android:textSize="14sp"/>
         <TextView
                 android:text="Генералов П.Д"
                 android:layout_width="wrap_content"

@@ -2,13 +2,14 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
               android:layout_width="50dp"
-              android:layout_height="70dp">
+              android:layout_height="70dp" android:id="@+id/wrapper">
 
     <TextView
             android:text="29"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/date"
+
             android:gravity="center"/>
     <TextView
             android:text="ПН"

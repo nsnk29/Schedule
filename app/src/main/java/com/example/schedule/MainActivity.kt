@@ -25,6 +25,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.schedule.adapters.BottomRecycleAdapter
 import com.example.schedule.adapters.MainRecycleAdapter
 import kotlinx.android.synthetic.main.activity_main.*
+import android.R.attr.y
+import android.R.attr.x
+import android.graphics.Point
+import android.view.Display
+
+
 
 
 class MainActivity : AppCompatActivity() {
@@ -70,6 +76,11 @@ class MainActivity : AppCompatActivity() {
 
         realm = Realm.getDefaultInstance()
         getJSON()
+        val display = windowManager.defaultDisplay
+        val size = Point()
+        display.getSize(size)
+        val width = size.x
+        val height = size.y
 
 }
 
@@ -78,6 +89,10 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
+
+    fun checkFirstStart(){
+
+    }
 
 private fun getJSON() {
     val client = OkHttpClient()
