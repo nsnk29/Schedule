@@ -45,21 +45,20 @@ class MainActivity : AppCompatActivity() {
         PreferenceManager.setDefaultValues(this, R.xml.root_preferences, false);
 
         createNotificationChannel()
-
         recycleView.layoutManager = LinearLayoutManager(
             this,
             OrientationHelper.HORIZONTAL,
             false
         )
-        mAdapter = MainAdapter()
+        mAdapter = MainAdapter(initAllWeekDates())
         recycleView.adapter = mAdapter
         recycleView.addItemDecoration(MarginItemDecoration(20))
+        recycleView.setHasFixedSize(true)
 
         Realm.init(this)
 
         realm = Realm.getDefaultInstance()
         getJSON()
-
 
 }
 
@@ -169,6 +168,28 @@ private fun getJSON() {
         }
     }
 
+    private fun initAllWeekDates(): ArrayList<Int>{
+        val allWeekDates: ArrayList<Int> = ArrayList(14)
+        val cal = Calendar.getInstance()
+        cal.firstDayOfWeek = GregorianCalendar.MONDAY
+        cal.set(Calendar.HOUR_OF_DAY, 0)
+        cal.clear(Calendar.MINUTE)
+        cal.clear(Calendar.SECOND)
+        cal.clear(Calendar.MILLISECOND)
+        cal.set(Calendar.DAY_OF_WEEK, cal.firstDayOfWeek)
+        allWeekDates.add(cal.get(Calendar.DAY_OF_MONTH))
+        for (i in 1..13) {
+            cal.add(Calendar.DATE, 1)
+            allWeekDates.add(cal.get(Calendar.DAY_OF_MONTH))
+        }
+        return (allWeekDates)
+    }
+
+
+    fun updateCurrentWeek(v: View){
+        mAdapter.changeCurrentWeekDate()
+        mAdapter.notifyDataSetChanged()
+    }
 
     override fun onDestroy() {
         super.onDestroy()
