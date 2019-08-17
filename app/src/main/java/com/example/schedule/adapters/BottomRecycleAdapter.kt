@@ -1,4 +1,4 @@
-package com.example.schedule
+package com.example.schedule.adapters
 
 import android.view.LayoutInflater
 import android.view.View
@@ -6,11 +6,12 @@ import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
+import com.example.schedule.R
 import java.util.*
 
 
-class MainAdapter(private val allWeekDates: ArrayList<Int>) :
-    RecyclerView.Adapter<MainAdapter.CustomViewHolder>() {
+class BottomRecycleAdapter(private val allWeekDates: ArrayList<Int>) :
+    RecyclerView.Adapter<BottomRecycleAdapter.CustomViewHolder>() {
 
     var nextWeek = false
     val nameOfWeekdays = arrayOf("ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ")

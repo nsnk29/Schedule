@@ -15,26 +15,23 @@ import com.example.schedule.model.PairClass
 import com.example.schedule.model.VersionClass
 import com.google.gson.GsonBuilder
 import io.realm.Realm
-import io.realm.RealmConfiguration
 import io.realm.kotlin.createObject
 import okhttp3.*
 import java.io.IOException
 import java.net.URL
 import java.util.*
-import android.content.SharedPreferences
-import android.widget.TimePicker
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.OrientationHelper
+import androidx.recyclerview.widget.RecyclerView
+import com.example.schedule.adapters.BottomRecycleAdapter
+import com.example.schedule.adapters.MainRecycleAdapter
 import kotlinx.android.synthetic.main.activity_main.*
-import androidx.recyclerview.widget.DividerItemDecoration
-
-
 
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var realm: Realm
-    private lateinit var mAdapter: MainAdapter
+    private lateinit var bottomRecycleAdapter: BottomRecycleAdapter
+    private lateinit var mainRecycleAdapter: MainRecycleAdapter
     companion object {
         const val CHANNEL_ID = "com.example.schedule"
     }
@@ -45,15 +42,29 @@ class MainActivity : AppCompatActivity() {
         PreferenceManager.setDefaultValues(this, R.xml.root_preferences, false);
 
         createNotificationChannel()
-        recycleView.layoutManager = LinearLayoutManager(
+
+
+        recycleViewBottom.layoutManager = LinearLayoutManager(
             this,
-            OrientationHelper.HORIZONTAL,
+            RecyclerView.HORIZONTAL,
             false
         )
-        mAdapter = MainAdapter(initAllWeekDates())
-        recycleView.adapter = mAdapter
-        recycleView.addItemDecoration(MarginItemDecoration(20))
-        recycleView.setHasFixedSize(true)
+        bottomRecycleAdapter = BottomRecycleAdapter(initAllWeekDates())
+        recycleViewBottom.adapter = bottomRecycleAdapter
+        recycleViewBottom.addItemDecoration(MarginItemDecoration(10))
+        recycleViewBottom.setHasFixedSize(true)
+
+
+        recycleViewMain.layoutManager = LinearLayoutManager(
+            this,
+            RecyclerView.VERTICAL,
+            false
+        )
+        mainRecycleAdapter = MainRecycleAdapter()
+        recycleViewMain.adapter = mainRecycleAdapter
+
+
+
 
         Realm.init(this)
 
@@ -62,6 +73,10 @@ class MainActivity : AppCompatActivity() {
 
 }
 
+    fun check(v:View){
+        val intent = Intent(this, SettingsActivity::class.java)
+        startActivity(intent)
+    }
 
 
 private fun getJSON() {
@@ -187,8 +202,8 @@ private fun getJSON() {
 
 
     fun updateCurrentWeek(v: View){
-        mAdapter.changeCurrentWeekDate()
-        mAdapter.notifyDataSetChanged()
+        bottomRecycleAdapter.changeCurrentWeekDate()
+        bottomRecycleAdapter.notifyDataSetChanged()
     }
 
     override fun onDestroy() {

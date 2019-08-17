@@ -14,7 +14,7 @@ android {
     defaultConfig {
         kapt
         applicationId "com.example.schedule"
-        minSdkVersion 21
+        minSdkVersion 23
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
