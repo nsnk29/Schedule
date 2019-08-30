@@ -6,16 +6,18 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".MainActivity" android:id="@+id/wrapper">
+
     <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycleViewBottom"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/recycleViewBottom"
-            app:layout_constraintStart_toStartOf="parent"
+            android:background="@color/whity"
+            android:elevation="10dp"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginStart="4dp"
-            android:layout_marginEnd="4dp" app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
-            android:layout_marginBottom="4dp"/>
     <Button
             android:text="Button"
             android:layout_width="wrap_content"
@@ -33,11 +35,17 @@
             app:layout_constraintTop_toTopOf="parent"
             android:onClick="updateCurrentWeek"
             android:layout_marginStart="24dp"/>
+
     <androidx.recyclerview.widget.RecyclerView
+
+            android:id="@+id/recycleViewMain"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:layout_constraintTop_toBottomOf="@+id/button"
+            android:layout_marginStart="4dp"
+            android:padding="2dp"
+            app:layout_constraintBottom_toTopOf="@+id/recycleViewBottom"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" android:layout_width="match_parent"
-            android:layout_marginStart="4dp" android:layout_marginEnd="4dp" android:id="@+id/recycleViewMain"
-            app:layout_constraintBottom_toTopOf="@+id/recycleViewBottom" android:padding="4dp"/>
+            app:layout_constraintTop_toBottomOf="@+id/button" />
 </androidx.constraintlayout.widget.ConstraintLayout>

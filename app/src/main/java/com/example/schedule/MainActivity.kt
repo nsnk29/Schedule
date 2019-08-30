@@ -64,11 +64,11 @@ class MainActivity : AppCompatActivity() {
             RecyclerView.HORIZONTAL,
             false
         )
-        bottomRecycleAdapter = BottomRecycleAdapter(initAllWeekDates())
+        bottomRecycleAdapter = BottomRecycleAdapter(initAllWeekDates(), this)
         recycleViewBottom.adapter = bottomRecycleAdapter
         recycleViewBottom.addItemDecoration(MarginItemDecoration(0))
         recycleViewBottom.setHasFixedSize(true)
-
+        recycleViewBottom.overScrollMode = View.OVER_SCROLL_NEVER
 
         recycleViewMain.layoutManager = LinearLayoutManager(
             this,
@@ -77,6 +77,7 @@ class MainActivity : AppCompatActivity() {
         )
         mainRecycleAdapter = MainRecycleAdapter()
         recycleViewMain.adapter = mainRecycleAdapter
+        recycleViewMain.overScrollMode = View.OVER_SCROLL_NEVER
 
 
 
@@ -129,7 +130,10 @@ private fun getJSON() {
 
     client.newCall(request).enqueue(object : Callback {
         override fun onFailure(call: Call, e: IOException) {
-//           Toast.makeText(applicationContext, "$e", Toast.LENGTH_LONG).show()
+            runOnUiThread {
+                Toast.makeText(applicationContext, "Проблемы подключения к сети", Toast.LENGTH_LONG).show()
+            }
+
             println("MY TAG $e")
         }
 
