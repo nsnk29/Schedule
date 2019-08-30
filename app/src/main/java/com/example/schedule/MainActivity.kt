@@ -105,11 +105,12 @@ private fun getJSON() {
 
     client.newCall(request).enqueue(object : Callback {
         override fun onFailure(call: Call, e: IOException) {
-           Toast.makeText(applicationContext, "$e", Toast.LENGTH_LONG).show()
+//           Toast.makeText(applicationContext, "$e", Toast.LENGTH_LONG).show()
             println("MY TAG $e")
         }
 
         override fun onResponse(call: Call, response: Response) {
+            println("MY TAG response")
             val body = response.body?.string()
             val builder = GsonBuilder().create()
             val myData = builder.fromJson(body, MyJSONFile::class.java)
