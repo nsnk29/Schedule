@@ -29,6 +29,15 @@ import android.R.attr.y
 import android.R.attr.x
 import android.graphics.Point
 import android.view.Display
+import android.content.SharedPreferences
+import android.R.id.edit
+import android.util.TypedValue
+
+
+
+
+
+
 
 
 
@@ -57,7 +66,7 @@ class MainActivity : AppCompatActivity() {
         )
         bottomRecycleAdapter = BottomRecycleAdapter(initAllWeekDates())
         recycleViewBottom.adapter = bottomRecycleAdapter
-        recycleViewBottom.addItemDecoration(MarginItemDecoration(10))
+        recycleViewBottom.addItemDecoration(MarginItemDecoration(0))
         recycleViewBottom.setHasFixedSize(true)
 
 
@@ -76,12 +85,8 @@ class MainActivity : AppCompatActivity() {
 
         realm = Realm.getDefaultInstance()
         getJSON()
-        val display = windowManager.defaultDisplay
-        val size = Point()
-        display.getSize(size)
-        val width = size.x
-        val height = size.y
 
+        checkFirstStart()
 }
 
     fun check(v:View){
@@ -91,6 +96,25 @@ class MainActivity : AppCompatActivity() {
 
 
     fun checkFirstStart(){
+        val sp = PreferenceManager.getDefaultSharedPreferences(this)
+        val isAgain = sp.getBoolean("isAgain", false)
+        if (!isAgain) {
+//            Toast.makeText(applicationContext, "first time", Toast.LENGTH_LONG).show()
+//            val e = sp.edit()
+//            e.putBoolean("isAgain", true)
+//            e.apply()
+            val display = windowManager.defaultDisplay
+            val size = Point()
+            display.getSize(size)
+            val width = size.x
+            val height = size.y
+            Toast.makeText(applicationContext, "$width ", Toast.LENGTH_LONG).show()
+        }
+        val dimensionInPixel: Float = 1072F
+        val dimensionInDp =
+            TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dimensionInPixel, resources.displayMetrics).toInt()
+        println("MY TAG $dimensionInDp $dimensionInPixel")
+
 
     }
 

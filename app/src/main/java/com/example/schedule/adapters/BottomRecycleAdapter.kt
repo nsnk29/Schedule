@@ -1,13 +1,16 @@
 package com.example.schedule.adapters
 
+import android.app.Activity
+import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
-import com.example.schedule.R
 import java.util.*
+import android.util.TypedValue
+import kotlinx.android.synthetic.main.one_day_layout.view.*
 
 
 class BottomRecycleAdapter(private val allWeekDates: ArrayList<Int>) :
@@ -39,20 +42,28 @@ class BottomRecycleAdapter(private val allWeekDates: ArrayList<Int>) :
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
-        val view: View = LayoutInflater.from(parent.context).inflate(R.layout.one_day_layout, parent, false)
+        val view: View = LayoutInflater.from(parent.context).inflate(com.example.schedule.R.layout.one_day_layout, parent, false)
+
         return CustomViewHolder(view)
     }
 
 
     override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
+//        holder.itemView.layoutParams.width = 178
+//        println("MY TAG ${holder.itemView.nameOfDay.layoutParams.width}")
+//        holder.itemView.nameOfDay.layoutParams.width
+//        holder.itemView.nameOfDay.layoutParams.height = 469
+        holder.itemView.wrapper2.layoutParams.width = 178
+
+
         holder.nameOfDayField.text = nameOfWeekdays[position]
         holder.dateField.text = currentWeekDates[position].toString()
 
     }
 
     class CustomViewHolder(v: View) : RecyclerView.ViewHolder(v) {
-        val nameOfDayField: TextView = itemView.findViewById(R.id.nameOfDay)
-        val dateField: TextView = itemView.findViewById(R.id.date)
+        val nameOfDayField: TextView = itemView.findViewById(com.example.schedule.R.id.nameOfDay)
+        val dateField: TextView = itemView.findViewById(com.example.schedule.R.id.date)
 
         init {
             itemView.setOnClickListener {
