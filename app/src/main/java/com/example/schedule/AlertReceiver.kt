@@ -41,6 +41,7 @@ class AlertReceiver : BroadcastReceiver() {
     }
 
     companion object {
-        const val CHANNEL_ID = "com.example.schedule"
+        const val CHANNEL_ID = "scheduleNotification"
+
     }
 }

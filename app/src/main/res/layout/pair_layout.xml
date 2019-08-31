@@ -8,13 +8,13 @@
             android:layout_height="match_parent" android:layout_weight="1" android:id="@+id/pair">
 
         <TextView
-                android:text="11:30\n13:00"
+                android:text="@string/third_pair_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" android:id="@+id/pair_time" android:layout_margin="4dp"
                 android:padding="4dp" app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintTop_toTopOf="parent"/>
         <TextView
-                android:text="Конструирование алгоритмов и структур данных и ещё каких то структур данных два"
+                android:text="@string/examle_of_subject"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:id="@+id/subject_name" app:layout_constraintStart_toEndOf="@+id/pair_time"

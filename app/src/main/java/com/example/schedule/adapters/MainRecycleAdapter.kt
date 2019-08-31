@@ -15,11 +15,11 @@ class MainRecycleAdapter() :
 
 
     override fun getItemCount(): Int {
-        return 8
+        return 4
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder2 {
-        val view: View = LayoutInflater.from(parent.context).inflate(R.layout.pair_layout, parent, false)
+        val view: View = LayoutInflater.from(parent.context).inflate(R.layout.card_layout, parent, false)
         return CustomViewHolder2(view)
     }
 

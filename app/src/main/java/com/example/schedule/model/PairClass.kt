@@ -9,5 +9,6 @@ open class PairClass : RealmObject(){
     var group: String? = null
     var lecturer: String? = null
     var number: Int = 0
-    var subjectName: String? = null
+    var subject_name: String? = null
+    var type: Int = 0
 }
