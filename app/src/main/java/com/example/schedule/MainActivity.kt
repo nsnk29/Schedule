@@ -42,7 +42,9 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        PreferenceManager.setDefaultValues(this, R.xml.root_preferences, false);
+        PreferenceManager.setDefaultValues(this, R.xml.root_preferences, false)
+        Realm.init(this)
+        realm = Realm.getDefaultInstance()
         createNotificationChannel()
         val currentDay = getCurrentDay()
         recycleViewBottom.layoutManager = LinearLayoutManager(
@@ -62,11 +64,11 @@ class MainActivity : AppCompatActivity() {
             RecyclerView.VERTICAL,
             false
         )
-        mainRecycleAdapter = MainRecycleAdapter()
+        val pairsData = realm.where(PairClass::class.java).equalTo("group", "46/1").findAll()
+        mainRecycleAdapter = MainRecycleAdapter(pairsData)
         recycleViewMain.adapter = mainRecycleAdapter
         recycleViewMain.overScrollMode = View.OVER_SCROLL_NEVER
-        Realm.init(this)
-        realm = Realm.getDefaultInstance()
+
         getJSON()
         checkDB()
 //        checkFirstStart()
@@ -258,9 +260,7 @@ class MainActivity : AppCompatActivity() {
     private fun checkDB(){
         val pairs = realm.where(PairClass::class.java).equalTo("group", "46/1").findAll()
 
-        for (pair in pairs) {
-            println("MY TAG ${pair.lecturer}")
-        }
+
     }
 
     override fun onDestroy() {
