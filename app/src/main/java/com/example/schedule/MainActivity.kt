@@ -52,7 +52,9 @@ class MainActivity : AppCompatActivity() {
             RecyclerView.HORIZONTAL,
             false
         )
-        bottomRecycleAdapter = BottomRecycleAdapter(initAllWeekDates(), this, currentDay)
+        val cal = Calendar.getInstance()
+        val currentWeek =  cal.get(Calendar.WEEK_OF_YEAR)%2
+        bottomRecycleAdapter = BottomRecycleAdapter(initAllWeekDates(), this, currentDay, currentWeek)
         oneTimeDayNameSet(currentDay)
         recycleViewBottom.adapter = bottomRecycleAdapter
         recycleViewBottom.addItemDecoration(MarginItemDecoration(0))
@@ -64,7 +66,7 @@ class MainActivity : AppCompatActivity() {
             RecyclerView.VERTICAL,
             false
         )
-        val pairsData = realm.where(PairClass::class.java).equalTo("group", "46/1").findAll()
+        val pairsData = realm.where(PairClass::class.java).equalTo("group", "46/1").equalTo("day", currentDay + 1).notEqualTo("even", getNegativeWeek(bottomRecycleAdapter.currentWeek)).findAll()
         mainRecycleAdapter = MainRecycleAdapter(pairsData)
         recycleViewMain.adapter = mainRecycleAdapter
         recycleViewMain.overScrollMode = View.OVER_SCROLL_NEVER
@@ -226,13 +228,25 @@ class MainActivity : AppCompatActivity() {
 
     fun updateCurrentWeek(v: View) {
         bottomRecycleAdapter.changeCurrentWeekDate()
-        bottomRecycleAdapter.notifyDataSetChanged()
+        bottomRecycleAdapter.currentWeek = getNegativeWeek(bottomRecycleAdapter.currentWeek)
+//        bottomRecycleAdapter.notifyDataSetChanged()
+        // ПОМЕНЯТЬ 1 на то что изначально выбрал юзер
+        updateBottomRecycler(1)
+//        bottomRecycleAdapter.
     }
 
     fun updateBottomRecycler(position: Int) {
         bottomRecycleAdapter.notifyDataSetChanged()
         bottomRecycleAdapter.selectedDay = position
         weekDayText.text = getDayName(position)
+        val pairs = realm.where(PairClass::class.java)
+            .equalTo("group", "46/1")
+            .equalTo("day", position + 1)
+            .notEqualTo("even", getNegativeWeek(bottomRecycleAdapter.currentWeek))
+            .findAll()
+        pairs.sort("number")
+        mainRecycleAdapter.pairsData = pairs
+        mainRecycleAdapter.notifyDataSetChanged()
     }
 
     private fun getDayName(pos: Int): String {
@@ -244,6 +258,15 @@ class MainActivity : AppCompatActivity() {
             4 -> ("Пятница")
             5 -> ("Суббота")
             else -> ("Воскресенье")
+        }
+    }
+
+    fun getNegativeWeek(i: Int): Int{
+        // заменить это нормальным выражением
+        return when(i) {
+            0 -> 1
+            1 -> 0
+            else -> 0
         }
     }
 
@@ -259,9 +282,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun checkDB(){
         val pairs = realm.where(PairClass::class.java).equalTo("group", "46/1").findAll()
-
-
     }
+
 
     override fun onDestroy() {
         super.onDestroy()

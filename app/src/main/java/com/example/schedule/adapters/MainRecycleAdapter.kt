@@ -6,13 +6,15 @@ import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
+import com.example.schedule.MainActivity
 import com.example.schedule.R
 import com.example.schedule.model.PairClass
 import io.realm.Realm
 import io.realm.RealmResults
+import kotlinx.android.synthetic.main.card_layout.view.*
 
 
-class MainRecycleAdapter(val pairsData: RealmResults<PairClass>) :
+class MainRecycleAdapter(var pairsData: RealmResults<PairClass>) :
     RecyclerView.Adapter<MainRecycleAdapter.CustomViewHolder2>() {
 
 
@@ -30,19 +32,21 @@ class MainRecycleAdapter(val pairsData: RealmResults<PairClass>) :
     override fun onBindViewHolder(holder: CustomViewHolder2, position: Int) {
         holder.aud.text = pairsData[position]?.aud.toString()
         holder.subject_name.text = pairsData[position]?.subject_name.toString()
-        holder.type.text =  getTypeOfPair(pairsData[position]?.type)
+        when (pairsData[position]?.type) {
+            1 -> {
+                holder.type.text = "Практика"
+                holder.itemView.type.setBackgroundResource(R.drawable.type_of_pair_practice)
+            }
+            0 -> {
+                holder.type.text = "Лекция"
+                holder.itemView.type.setBackgroundResource(R.drawable.type_of_pair_lecture)
+            }
+        }
         holder.lecturer.text = pairsData[position]?.lecturer.toString()
         holder.pair_time.text = getPairTime(pairsData[position]?.number)
 
     }
-
-    private fun getTypeOfPair(type: Int?): String{
-        return when(type){
-            1 -> "Практика"
-            0 -> "Лекция"
-            else -> "?"
-        }
-    }
+    
 
     private fun getPairTime(pos: Int?): String {
         return when(pos) {

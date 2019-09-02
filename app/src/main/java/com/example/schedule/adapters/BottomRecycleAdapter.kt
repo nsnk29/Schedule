@@ -15,7 +15,7 @@ import java.util.*
 
 
 class BottomRecycleAdapter(private val allWeekDates: ArrayList<Int>, var context: Context,
-                           var selectedDay: Int
+                           var selectedDay: Int, var currentWeek: Int
 ) :
     RecyclerView.Adapter<BottomRecycleAdapter.CustomViewHolder>() {
 

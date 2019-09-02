@@ -15,8 +15,7 @@
 
             android:gravity="center"
             android:text="29"
-            android:textSize="14sp"
-            app:autoSizeTextType="uniform"
+            app:autoSizeTextType="none"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
