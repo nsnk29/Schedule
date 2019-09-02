@@ -18,23 +18,16 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
-    <Button
-            android:text="Button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+    <Switch
             android:id="@+id/button"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:onClick="check"
-            android:layout_marginEnd="24dp"/>
-    <Button
-            android:text="Button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/button2" app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
             android:onClick="updateCurrentWeek"
-            android:layout_marginStart="24dp"/>
+            android:text="Неделя"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
 
@@ -42,19 +35,33 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginStart="4dp"
+            android:layout_marginTop="8dp"
             android:padding="2dp"
             app:layout_constraintBottom_toTopOf="@+id/recycleViewBottom"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/button" />
+            app:layout_constraintTop_toBottomOf="@+id/weekDayText" />
 
     <TextView
             android:id="@+id/weekDayText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:text="TextView"
-            app:layout_constraintBottom_toTopOf="@+id/recycleViewMain"
+            android:textSize="24sp"
+            android:textStyle="bold"
             app:layout_constraintEnd_toStartOf="@+id/button"
-            app:layout_constraintStart_toEndOf="@+id/button2"
+            app:layout_constraintStart_toEndOf="@+id/imageView"
             app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:onClick="check"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@android:drawable/ic_menu_preferences" />
 </androidx.constraintlayout.widget.ConstraintLayout>

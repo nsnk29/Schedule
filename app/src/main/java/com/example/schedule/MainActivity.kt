@@ -72,8 +72,6 @@ class MainActivity : AppCompatActivity() {
         recycleViewMain.overScrollMode = View.OVER_SCROLL_NEVER
 
         getJSON()
-        checkDB()
-//        checkFirstStart()
     }
 
     fun check(v: View) {
@@ -144,6 +142,7 @@ class MainActivity : AppCompatActivity() {
                 localPair.type = pair.type
             }
         }
+        updateBottomRecycler(0)
     }
 
 
@@ -221,6 +220,7 @@ class MainActivity : AppCompatActivity() {
             allWeekDates.add(cal.get(Calendar.DAY_OF_MONTH))
         }
 
+
         return (allWeekDates)
 
     }
@@ -231,8 +231,7 @@ class MainActivity : AppCompatActivity() {
         bottomRecycleAdapter.currentWeek = getNegativeWeek(bottomRecycleAdapter.currentWeek)
 //        bottomRecycleAdapter.notifyDataSetChanged()
         // ПОМЕНЯТЬ 1 на то что изначально выбрал юзер
-        updateBottomRecycler(1)
-//        bottomRecycleAdapter.
+        updateBottomRecycler(bottomRecycleAdapter.selectedDay)
     }
 
     fun updateBottomRecycler(position: Int) {
@@ -279,10 +278,6 @@ class MainActivity : AppCompatActivity() {
         return cal.get(Calendar.DAY_OF_WEEK) - 2
     }
 
-
-    private fun checkDB(){
-        val pairs = realm.where(PairClass::class.java).equalTo("group", "46/1").findAll()
-    }
 
 
     override fun onDestroy() {

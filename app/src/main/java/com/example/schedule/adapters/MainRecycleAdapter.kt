@@ -18,7 +18,6 @@ class MainRecycleAdapter(var pairsData: RealmResults<PairClass>) :
     RecyclerView.Adapter<MainRecycleAdapter.CustomViewHolder2>() {
 
 
-
     override fun getItemCount(): Int {
         return pairsData.size
     }

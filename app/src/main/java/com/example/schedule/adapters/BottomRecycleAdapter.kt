@@ -15,20 +15,25 @@ import java.util.*
 
 
 class BottomRecycleAdapter(private val allWeekDates: ArrayList<Int>, var context: Context,
-                           var selectedDay: Int, var currentWeek: Int
+                           val currentDay: Int, var currentWeek: Int
 ) :
     RecyclerView.Adapter<BottomRecycleAdapter.CustomViewHolder>() {
 
-    var nextWeek = false
+    var nextWeek = true
     val nameOfWeekdays = arrayOf("ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ")
     var currentWeekDates: ArrayList<Int> = arrayListOf(0, 0, 0, 0, 0, 0)
     var itemWidth = context.resources.displayMetrics.widthPixels / 6
+    var selectedDay = currentDay
+
 
     init {
-        changeCurrentWeekDate()
+        initWeekDate()
     }
 
 
+    private fun initWeekDate(){
+        for (i in 0..5) currentWeekDates[i] = allWeekDates[i]
+    }
 
     fun changeCurrentWeekDate(){
         if (!nextWeek) {
@@ -58,13 +63,19 @@ class BottomRecycleAdapter(private val allWeekDates: ArrayList<Int>, var context
         holder.nameOfDayField.text = nameOfWeekdays[position]
         holder.dateField.text = currentWeekDates[position].toString()
 
-        if (position == selectedDay) {
-            holder.itemView.nameOfDay.setBackgroundResource(R.drawable.rounded_frame_filled)
-            holder.itemView.nameOfDay.setTextColor(ContextCompat.getColor(context, R.color.white))
-        } else {
-            holder.itemView.nameOfDay.setBackgroundResource(R.drawable.rounded_frame)
-            holder.itemView.nameOfDay.setTextColor(ContextCompat.getColor(context, R.color.black))
-
+        when {
+            position == selectedDay -> {
+                holder.itemView.nameOfDay.setBackgroundResource(R.drawable.rounded_frame_filled)
+                holder.itemView.nameOfDay.setTextColor(ContextCompat.getColor(context, R.color.white))
+            }
+            (position == currentDay) and (nextWeek) -> {
+                holder.itemView.nameOfDay.setBackgroundResource(R.drawable.rounded_frame)
+                holder.itemView.nameOfDay.setTextColor(ContextCompat.getColor(context, R.color.black))
+            }
+            else -> {
+                holder.itemView.nameOfDay.setBackgroundResource(0)
+                holder.itemView.nameOfDay.setTextColor(ContextCompat.getColor(context, R.color.black))
+            }
         }
 
     }
@@ -76,7 +87,6 @@ class BottomRecycleAdapter(private val allWeekDates: ArrayList<Int>, var context
         init {
             itemView.setOnClickListener {
                 (itemView.context as MainActivity).updateBottomRecycler(layoutPosition)
-
             }
         }
     }

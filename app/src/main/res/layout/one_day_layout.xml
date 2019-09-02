@@ -15,6 +15,7 @@
 
             android:gravity="center"
             android:text="29"
+            android:textSize="12sp"
             app:autoSizeTextType="none"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -24,7 +25,6 @@
             android:id="@+id/wrapper2"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:layout_marginTop="2dp"
             android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
