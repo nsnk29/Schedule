@@ -86,7 +86,8 @@ class BottomRecycleAdapter(private val allWeekDates: ArrayList<Int>, var context
 
         init {
             itemView.setOnClickListener {
-                (itemView.context as MainActivity).updateBottomRecycler(layoutPosition)
+
+                (itemView.context as MainActivity).updateBottomRecycler(layoutPosition, false)
             }
         }
     }

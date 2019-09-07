@@ -9,6 +9,7 @@ import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import android.widget.CompoundButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceManager
@@ -27,12 +28,6 @@ import okhttp3.*
 import java.io.IOException
 import java.net.URL
 import java.util.*
-import android.widget.CompoundButton
-import androidx.core.app.ComponentActivity.ExtraData
-import androidx.core.content.ContextCompat.getSystemService
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
-
-
 
 
 class MainActivity : AppCompatActivity() {
@@ -49,60 +44,101 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         PreferenceManager.setDefaultValues(this, R.xml.root_preferences, false)
+
         getJSON()
-        weekSwitch.setOnCheckedChangeListener(
-            fun(buttonView: CompoundButton, isChecked: Boolean) {
-                updateCurrentWeek()
-            }
-        )
-        Realm.init(this)
-        realm = Realm.getDefaultInstance()
+        setSwitchAction()
+        initRealm()
         createNotificationChannel()
+
         val currentDay = getCurrentDay()
+
+        setBottomRecyclerView(currentDay)
+        setMainRecyclerView(currentDay)
+    }
+
+    private fun setMainRecyclerView(currentDay: Int) {
+        recycleViewMain.layoutManager = LinearLayoutManager(
+            this,
+            RecyclerView.VERTICAL,
+            false
+        )
+        var current = if (currentDay == -1) 0 else currentDay
+
+        val pairsData =
+            preparePairsData(current, "46/1", getNegativeWeek(bottomRecycleAdapter.currentWeek))
+        mainRecycleAdapter = MainRecycleAdapter(pairsData)
+        recycleViewMain.adapter = mainRecycleAdapter
+        recycleViewMain.overScrollMode = View.OVER_SCROLL_NEVER
+    }
+
+    private fun preparePairsData(currentDay: Int, group: String, even: Int): Array<PairClass> {
+        val pairsData = realm.where(PairClass::class.java).equalTo("group", group)
+            .equalTo("day", currentDay + 1)
+            .notEqualTo("even", even).findAll()
+//        val cal = Calendar.getInstance()
+//
+//        val cal2 = Calendar.getInstance()
+//        cal2.set(Calendar.HOUR_OF_DAY, 19)
+//        cal2.set(Calendar.MINUTE, 50)
+//
+//        if (cal.compareTo(cal2) == -1){
+//            Toast.makeText(this, "Открывать этот день", Toast.LENGTH_LONG).show()
+//        } else {
+//            Toast.makeText(this, "Открывать следующий день", Toast.LENGTH_LONG).show()
+//        }
+
+        val myArray = Array(7) { PairClass() }
+        for (pair in pairsData) {
+            try {
+                myArray[pair.number - 1] = pair
+            } catch (e: ArrayIndexOutOfBoundsException) {
+                Toast.makeText(this, "JSON error", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        return myArray
+    }
+
+
+    private fun setBottomRecyclerView(currentDay: Int) {
         recycleViewBottom.layoutManager = LinearLayoutManager(
             this,
             RecyclerView.HORIZONTAL,
             false
         )
         val cal = Calendar.getInstance()
-        val currentWeek =  cal.get(Calendar.WEEK_OF_YEAR)%2
-        bottomRecycleAdapter = BottomRecycleAdapter(initAllWeekDates(), this, currentDay, currentWeek)
-        oneTimeDayNameSet(currentDay)
+        var current = currentDay
+        var flag = false
+        if (current == -1){
+            cal.set(Calendar.WEEK_OF_YEAR, cal.get(Calendar.WEEK_OF_YEAR) + 1)
+            current = 0
+            flag = true
+        }
+
+        val currentWeek = cal.get(Calendar.WEEK_OF_YEAR) % 2
+        bottomRecycleAdapter =
+            BottomRecycleAdapter(initAllWeekDates(flag), this, current, currentWeek)
+        oneTimeDayNameSet(current)
+
         recycleViewBottom.adapter = bottomRecycleAdapter
         recycleViewBottom.addItemDecoration(MarginItemDecoration(0))
         recycleViewBottom.setHasFixedSize(true)
         recycleViewBottom.overScrollMode = View.OVER_SCROLL_NEVER
+    }
 
-        recycleViewMain.layoutManager = LinearLayoutManager(
-            this,
-            RecyclerView.VERTICAL,
-            false
+    private fun setSwitchAction() {
+        weekSwitch.setOnCheckedChangeListener(
+            fun(_: CompoundButton, _: Boolean) {
+                updateCurrentWeek()
+            }
         )
-        val pairsData = realm.where(PairClass::class.java).equalTo("group", "46/1").equalTo("day", currentDay + 1).notEqualTo("even", getNegativeWeek(bottomRecycleAdapter.currentWeek)).findAll()
-        mainRecycleAdapter = MainRecycleAdapter(pairsData)
-        recycleViewMain.adapter = mainRecycleAdapter
-        recycleViewMain.overScrollMode = View.OVER_SCROLL_NEVER
-
     }
 
-    fun check(v: View) {
-        val intent = Intent(this, SettingsActivity::class.java)
-        startActivity(intent)
+    private fun initRealm() {
+        Realm.init(this)
+        realm = Realm.getDefaultInstance()
     }
 
-
-    private fun checkFirstStart() {
-//        val sp = PreferenceManager.getDefaultSharedPreferences(this)
-//        val isAgain = sp.getBoolean("isAgain", false)
-//        if (!isAgain) {
-//            val display = windowManager.defaultDisplay
-//            val size = Point()
-//            display.getSize(size)
-//            val width = size.x
-//            val height = size.y
-//            Toast.makeText(applicationContext, "$width ", Toast.LENGTH_LONG).show()
-//        }
-    }
 
     private fun getJSON() {
         val client = OkHttpClient()
@@ -141,19 +177,18 @@ class MainActivity : AppCompatActivity() {
     private fun updateDatabaseInfo(data: MyJSONFile) {
         realm.executeTransaction { realm ->
             for (pair in data.pairs) {
-                println("MY TAG ${pair.subject_name}")
                 val localPair = realm.createObject<PairClass>()
-                localPair.aud = pair.aud
+                localPair.studyroom = pair.studyroom
                 localPair.day = pair.day
                 localPair.even = pair.even
                 localPair.group = pair.group
                 localPair.lecturer = pair.lecturer
                 localPair.number = pair.number
-                localPair.subject_name = pair.subject_name
+                localPair.name = pair.name
                 localPair.type = pair.type
             }
         }
-        updateBottomRecycler(0)
+        updateBottomRecycler(getCurrentDay(), true)
     }
 
 
@@ -166,7 +201,7 @@ class MainActivity : AppCompatActivity() {
                 val v = realm.createObject<VersionClass>()
                 v.version = newVersion
             }
-            println("MY TAG first start v=$newVersion")
+            println("first start v=$newVersion")
             // upd all db
             updateDatabaseInfo(data)
         } else if (newVersion > currentVersion.version) {
@@ -174,7 +209,7 @@ class MainActivity : AppCompatActivity() {
             realm.executeTransaction {
                 currentVersion.version = newVersion
             }
-            println("MY TAG version updated, now $newVersion")
+            println("version updated, now $newVersion")
             tryDeleteFromDB()
             updateDatabaseInfo(data)
         }
@@ -189,13 +224,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun startSettings(view: View) {
-        val intent = Intent(this, SettingsActivity::class.java)
+        val intent = Intent(view.context, SettingsActivity::class.java)
         startActivity(intent)
     }
 
     private fun createNotificationChannel() {
-        // Create the NotificationChannel, but only on API 26+ because
-        // the NotificationChannel class is new and not in the support library
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name = getString(R.string.channel_name)
             val descriptionText = getString(R.string.channel_description)
@@ -211,15 +244,19 @@ class MainActivity : AppCompatActivity() {
             val notificationManager: NotificationManager =
                 getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
-
-
         }
     }
 
-    private fun initAllWeekDates(): ArrayList<Int> {
+    private fun initAllWeekDates(next: Boolean): ArrayList<Int> {
         val allWeekDates: ArrayList<Int> = ArrayList(14)
+
         val cal = Calendar.getInstance()
         cal.firstDayOfWeek = GregorianCalendar.MONDAY
+        if (next){
+            cal.set(Calendar.DAY_OF_WEEK, 0)
+            cal.set(Calendar.WEEK_OF_YEAR, cal.get(Calendar.WEEK_OF_YEAR) + 1)
+        }
+
         cal.set(Calendar.HOUR_OF_DAY, 0)
         cal.clear(Calendar.MINUTE)
         cal.clear(Calendar.SECOND)
@@ -230,31 +267,30 @@ class MainActivity : AppCompatActivity() {
             cal.add(Calendar.DATE, 1)
             allWeekDates.add(cal.get(Calendar.DAY_OF_MONTH))
         }
-
-
         return (allWeekDates)
-
     }
 
 
-    fun updateCurrentWeek() {
+    private fun updateCurrentWeek() {
         bottomRecycleAdapter.changeCurrentWeekDate()
         bottomRecycleAdapter.currentWeek = getNegativeWeek(bottomRecycleAdapter.currentWeek)
-        updateBottomRecycler(bottomRecycleAdapter.selectedDay)
+        updateBottomRecycler(bottomRecycleAdapter.selectedDay, true)
     }
 
-    fun updateBottomRecycler(position: Int) {
-        bottomRecycleAdapter.notifyDataSetChanged()
-        bottomRecycleAdapter.selectedDay = position
-        weekDayText.text = getDayName(position)
-        val pairs = realm.where(PairClass::class.java)
-            .equalTo("group", "46/1")
-            .equalTo("day", position + 1)
-            .notEqualTo("even", getNegativeWeek(bottomRecycleAdapter.currentWeek))
-            .findAll()
-        pairs.sort("number")
-        mainRecycleAdapter.pairsData = pairs
-        mainRecycleAdapter.notifyDataSetChanged()
+    fun updateBottomRecycler(position: Int, isNess: Boolean) {
+        if (bottomRecycleAdapter.selectedDay != position || isNess) {
+            bottomRecycleAdapter.selectedDay = position
+            bottomRecycleAdapter.notifyDataSetChanged()
+            weekDayText.text = getDayName(position)
+            mainRecycleAdapter.pairsData = preparePairsData(
+                position,
+                "46/1",
+                getNegativeWeek(bottomRecycleAdapter.currentWeek)
+            )
+            mainRecycleAdapter.notifyDataSetChanged()
+        } else {
+            println("Ah ha")
+        }
     }
 
     private fun getDayName(pos: Int): String {
@@ -269,9 +305,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun getNegativeWeek(i: Int): Int{
-        // заменить это нормальным выражением
-        return when(i) {
+    private fun getNegativeWeek(i: Int): Int {
+        return when (i) {
             0 -> 1
             1 -> 0
             else -> 0
@@ -286,9 +321,6 @@ class MainActivity : AppCompatActivity() {
         val cal = Calendar.getInstance()
         return cal.get(Calendar.DAY_OF_WEEK) - 2
     }
-
-
-
 
 
     override fun onDestroy() {
