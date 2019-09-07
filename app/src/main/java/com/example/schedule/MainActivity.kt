@@ -27,6 +27,12 @@ import okhttp3.*
 import java.io.IOException
 import java.net.URL
 import java.util.*
+import android.widget.CompoundButton
+import androidx.core.app.ComponentActivity.ExtraData
+import androidx.core.content.ContextCompat.getSystemService
+import android.icu.lang.UCharacter.GraphemeClusterBreak.T
+
+
 
 
 class MainActivity : AppCompatActivity() {
@@ -43,6 +49,12 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         PreferenceManager.setDefaultValues(this, R.xml.root_preferences, false)
+        getJSON()
+        weekSwitch.setOnCheckedChangeListener(
+            fun(buttonView: CompoundButton, isChecked: Boolean) {
+                updateCurrentWeek()
+            }
+        )
         Realm.init(this)
         realm = Realm.getDefaultInstance()
         createNotificationChannel()
@@ -71,7 +83,6 @@ class MainActivity : AppCompatActivity() {
         recycleViewMain.adapter = mainRecycleAdapter
         recycleViewMain.overScrollMode = View.OVER_SCROLL_NEVER
 
-        getJSON()
     }
 
     fun check(v: View) {
@@ -226,11 +237,9 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    fun updateCurrentWeek(v: View) {
+    fun updateCurrentWeek() {
         bottomRecycleAdapter.changeCurrentWeekDate()
         bottomRecycleAdapter.currentWeek = getNegativeWeek(bottomRecycleAdapter.currentWeek)
-//        bottomRecycleAdapter.notifyDataSetChanged()
-        // ПОМЕНЯТЬ 1 на то что изначально выбрал юзер
         updateBottomRecycler(bottomRecycleAdapter.selectedDay)
     }
 
@@ -277,6 +286,8 @@ class MainActivity : AppCompatActivity() {
         val cal = Calendar.getInstance()
         return cal.get(Calendar.DAY_OF_WEEK) - 2
     }
+
+
 
 
 
