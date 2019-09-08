@@ -28,11 +28,7 @@ class MainRecycleAdapter(var pairsData: Array<PairClass>) :
 
 
     override fun onBindViewHolder(holder: CustomViewHolder2, position: Int) {
-        if (pairsData[position].name == null){
-            holder.name.text = ""
-            holder.lecturer.text = ""
-            holder.studyroom.text = ""
-            holder.type.text = ""
+        if (pairsData[position].name == ""){
             holder.name.visibility = View.GONE
             holder.lecturer.visibility = View.GONE
             holder.studyroom.visibility = View.GONE
@@ -44,8 +40,8 @@ class MainRecycleAdapter(var pairsData: Array<PairClass>) :
             holder.studyroom.visibility = View.VISIBLE
             holder.type.visibility = View.VISIBLE
 
-            holder.studyroom.text = pairsData[position].studyroom.toString()
-            holder.name.text = pairsData[position].name.toString()
+            holder.studyroom.text = pairsData[position].studyroom
+            holder.name.text = pairsData[position].name
             when (pairsData[position].type) {
                 1 -> {
                     holder.type.text = "Практика"
@@ -56,14 +52,9 @@ class MainRecycleAdapter(var pairsData: Array<PairClass>) :
                     holder.itemView.type.setBackgroundResource(R.drawable.type_of_pair_lecture)
                 }
             }
-            holder.lecturer.text = pairsData[position].lecturer.toString()
+            holder.lecturer.text = pairsData[position].lecturer
             holder.wrapper.setBackgroundResource(R.color.whity)
         }
-
-
-
-
-
 
         holder.pairTime.text = getPairTime(position + 1)
 
@@ -95,9 +86,9 @@ class MainRecycleAdapter(var pairsData: Array<PairClass>) :
 
 
         init {
-            itemView.setOnClickListener {
-                Toast.makeText(itemView.context, "$layoutPosition", Toast.LENGTH_LONG).show()
-            }
+//            itemView.setOnClickListener {
+//                Toast.makeText(itemView.context, "$layoutPosition", Toast.LENGTH_LONG).show()
+//            }
         }
     }
 }

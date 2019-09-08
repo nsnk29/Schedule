@@ -28,6 +28,11 @@ import okhttp3.*
 import java.io.IOException
 import java.net.URL
 import java.util.*
+import android.content.SharedPreferences
+import androidx.core.app.ComponentActivity.ExtraData
+import androidx.core.content.ContextCompat.getSystemService
+import android.icu.lang.UCharacter.GraphemeClusterBreak.T
+import androidx.core.content.ContextCompat.startActivity
 
 
 class MainActivity : AppCompatActivity() {
@@ -62,10 +67,9 @@ class MainActivity : AppCompatActivity() {
             RecyclerView.VERTICAL,
             false
         )
-        var current = if (currentDay == -1) 0 else currentDay
 
         val pairsData =
-            preparePairsData(current, "46/1", getNegativeWeek(bottomRecycleAdapter.currentWeek))
+            preparePairsData(currentDay, "46/1", getNegativeWeek(bottomRecycleAdapter.currentWeek))
         mainRecycleAdapter = MainRecycleAdapter(pairsData)
         recycleViewMain.adapter = mainRecycleAdapter
         recycleViewMain.overScrollMode = View.OVER_SCROLL_NEVER
@@ -75,17 +79,7 @@ class MainActivity : AppCompatActivity() {
         val pairsData = realm.where(PairClass::class.java).equalTo("group", group)
             .equalTo("day", currentDay + 1)
             .notEqualTo("even", even).findAll()
-//        val cal = Calendar.getInstance()
-//
-//        val cal2 = Calendar.getInstance()
-//        cal2.set(Calendar.HOUR_OF_DAY, 19)
-//        cal2.set(Calendar.MINUTE, 50)
-//
-//        if (cal.compareTo(cal2) == -1){
-//            Toast.makeText(this, "Открывать этот день", Toast.LENGTH_LONG).show()
-//        } else {
-//            Toast.makeText(this, "Открывать следующий день", Toast.LENGTH_LONG).show()
-//        }
+
 
         val myArray = Array(7) { PairClass() }
         for (pair in pairsData) {
@@ -107,18 +101,11 @@ class MainActivity : AppCompatActivity() {
             false
         )
         val cal = Calendar.getInstance()
-        var current = currentDay
-        var flag = false
-        if (current == -1){
-            cal.set(Calendar.WEEK_OF_YEAR, cal.get(Calendar.WEEK_OF_YEAR) + 1)
-            current = 0
-            flag = true
-        }
 
         val currentWeek = cal.get(Calendar.WEEK_OF_YEAR) % 2
         bottomRecycleAdapter =
-            BottomRecycleAdapter(initAllWeekDates(flag), this, current, currentWeek)
-        oneTimeDayNameSet(current)
+            BottomRecycleAdapter(initAllWeekDates(), this, currentDay, currentWeek)
+        oneTimeDayNameSet(currentDay)
 
         recycleViewBottom.adapter = bottomRecycleAdapter
         recycleViewBottom.addItemDecoration(MarginItemDecoration(0))
@@ -195,6 +182,7 @@ class MainActivity : AppCompatActivity() {
     fun getVersionFromDB(newVersion: Double, data: MyJSONFile) {
         val currentVersion = realm.where(VersionClass::class.java).findFirst()
 
+
         if (currentVersion == null) {
             // перввый запуск
             realm.executeTransaction { realm ->
@@ -247,15 +235,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun initAllWeekDates(next: Boolean): ArrayList<Int> {
+    private fun initAllWeekDates(): ArrayList<Int> {
         val allWeekDates: ArrayList<Int> = ArrayList(14)
 
         val cal = Calendar.getInstance()
         cal.firstDayOfWeek = GregorianCalendar.MONDAY
-        if (next){
-            cal.set(Calendar.DAY_OF_WEEK, 0)
-            cal.set(Calendar.WEEK_OF_YEAR, cal.get(Calendar.WEEK_OF_YEAR) + 1)
-        }
 
         cal.set(Calendar.HOUR_OF_DAY, 0)
         cal.clear(Calendar.MINUTE)

@@ -20,4 +20,7 @@
     <string name="third_pair_time">11:30\n13:00</string>
     <string name="examle_of_subject">Конструирование алгоритмов и структур данных и ещё каких то структур данных два</string>
 
+
+    <string name="preference_file_key">settings</string>
+
 </resources>
