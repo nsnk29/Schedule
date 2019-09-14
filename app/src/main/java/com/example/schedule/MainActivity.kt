@@ -61,6 +61,7 @@ class MainActivity : AppCompatActivity() {
 
         setBottomRecyclerView(currentDay)
         setMainRecyclerView(currentDay)
+
     }
 
     private fun setMainRecyclerView(currentDay: Int) {

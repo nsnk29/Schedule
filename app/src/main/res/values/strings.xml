@@ -22,6 +22,8 @@
 
 
     <string name="preference_file_key">settings</string>
+    <string name="current_week">текущая</string>
+    <string name="next_week">следующая</string>
 
 
 

@@ -106,7 +106,9 @@ class SettingsActivity : AppCompatActivity(), TimePickerDialog.OnTimeSetListener
                     "Уведомления выключены"
                 }
             }
+
             val notificationStatus = findPreference<SwitchPreferenceCompat>("notification_status")
+
             notificationStatus?.summaryProvider = notificationSummaryProvider
             notificationStatus!!.onPreferenceChangeListener = OnPreferenceChangeListener { preference, newValue ->
                 if (!(newValue as Boolean)) {
