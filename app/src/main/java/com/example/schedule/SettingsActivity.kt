@@ -131,6 +131,7 @@ class SettingsActivity : AppCompatActivity(), TimePickerDialog.OnTimeSetListener
             val notificationTimePicker = findPreference<Preference>("notification_time_picker")
             notificationTimePicker?.setOnPreferenceClickListener {
                 val timePicker = TimePickerFragment()
+
                 timePicker.show(childFragmentManager, "Время для уведомления")
                 true
             }

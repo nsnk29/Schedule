@@ -5,6 +5,4 @@
                                    android:background="@color/colorPrimary"
                                    android:elevation="4dp"
                                    android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
-
-
 </androidx.appcompat.widget.Toolbar>

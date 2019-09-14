@@ -59,21 +59,21 @@ class BottomRecycleAdapter(private val allWeekDates: ArrayList<Int>, var context
 
 
     override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
-        holder.itemView.wrapper2.layoutParams.width = itemWidth
-        holder.nameOfDayField.text = nameOfWeekdays[position]
-        holder.dateField.text = currentWeekDates[position].toString()
+        holder.itemView.wrapper.layoutParams.width = itemWidth
+        holder.nameOfDayField.text = currentWeekDates[position].toString()
+        holder.dateField.text = nameOfWeekdays[position]
 
         when {
             position == selectedDay -> {
-                holder.itemView.wrapper.setBackgroundResource(R.drawable.rounded_frame_filled)
+                holder.itemView.nameOfDay.setBackgroundResource(R.drawable.rounded_frame_filled)
                 holder.itemView.nameOfDay.setTextColor(ContextCompat.getColor(context, R.color.white))
             }
             (position == currentDay) and (nextWeek) -> {
-                holder.itemView.wrapper.setBackgroundResource(R.drawable.rounded_frame)
+                holder.itemView.nameOfDay.setBackgroundResource(R.drawable.rounded_frame)
                 holder.itemView.nameOfDay.setTextColor(ContextCompat.getColor(context, R.color.black))
             }
             else -> {
-                holder.itemView.wrapper.setBackgroundResource(0)
+                holder.itemView.nameOfDay.setBackgroundResource(0)
                 holder.itemView.nameOfDay.setTextColor(ContextCompat.getColor(context, R.color.black))
             }
         }

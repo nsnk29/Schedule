@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">#1E88E5</color>
-    <color name="colorPrimaryDark">#297ccf</color>
+    <color name="colorPrimaryDark">#bababa</color>
     <color name="colorAccent">#D81B60</color>
     <color name="white">#FFFFFF</color>
-    <color name="whity">#FAFAFA</color>
-    <color name="black">#757575</color>
+    <color name="whity">#FFFFFFFF</color>
+    <color name="black">#8a000000</color>
     <color name="blue">#3D5AFE</color>
     <color name="red">#D32F2F</color>
     <color name="lecture_color">#3399ff</color>
     <color name="practice_color">#EE0033</color>
-    <color name="empty_pairs">#ebebeb</color>
+    <color name="empty_pairs">#F4F4F4</color>
+    <color name="trans">#00FFFFFF</color>
+
 
 
 </resources>

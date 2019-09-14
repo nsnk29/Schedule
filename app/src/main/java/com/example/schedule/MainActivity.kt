@@ -50,6 +50,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         PreferenceManager.setDefaultValues(this, R.xml.root_preferences, false)
 
+
+
         getJSON()
         setSwitchAction()
         initRealm()
