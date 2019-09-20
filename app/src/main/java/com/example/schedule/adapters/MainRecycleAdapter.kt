@@ -4,7 +4,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.example.schedule.R
@@ -53,7 +52,7 @@ class MainRecycleAdapter(var pairsData: Array<PairClass>) :
                 }
             }
             holder.lecturer.text = pairsData[position].lecturer
-            holder.wrapper.setBackgroundResource(R.color.whity)
+            holder.wrapper.setBackgroundResource(0)
         }
 
         holder.pairTime.text = getPairTime(position + 1)
@@ -76,8 +75,8 @@ class MainRecycleAdapter(var pairsData: Array<PairClass>) :
     }
 
     class CustomViewHolder2(v: View) : RecyclerView.ViewHolder(v) {
-        val pairTime: TextView = itemView.findViewById(R.id.pair_time)
-        val name: TextView = itemView.findViewById(R.id.subject_name)
+        val pairTime: TextView = itemView.findViewById(R.id.pairTime)
+        val name: TextView = itemView.findViewById(R.id.subjectName)
         val type: TextView = itemView.findViewById(R.id.type)
         val lecturer: TextView = itemView.findViewById(R.id.lecturer)
         val studyroom: TextView = itemView.findViewById(R.id.aud)
@@ -85,10 +84,10 @@ class MainRecycleAdapter(var pairsData: Array<PairClass>) :
 
 
 
-        init {
+//        init {
 //            itemView.setOnClickListener {
 //                Toast.makeText(itemView.context, "$layoutPosition", Toast.LENGTH_LONG).show()
 //            }
-        }
+//        }
     }
 }

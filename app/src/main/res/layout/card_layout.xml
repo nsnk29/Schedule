@@ -16,28 +16,30 @@
             android:layout_height="match_parent">
 
         <TextView
-                android:id="@+id/pair_time"
+                android:id="@+id/pairTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
-                android:text="@string/third_pair_time"
+                android:text="@string/example_of_pair_time"
+                android:textColor="@color/text_color"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-                android:id="@+id/subject_name"
+                android:id="@+id/subjectName"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="4dp"
-                android:text="@string/examle_of_subject"
+                android:text="@string/example_of_subject"
+                android:textColor="@color/text_color"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/pair_time"
+                app:layout_constraintStart_toEndOf="@+id/pairTime"
                 app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
@@ -47,18 +49,18 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="4dp"
                 android:layout_marginBottom="8dp"
-                android:background="#D81B60"
+                android:background="@color/practice_color"
                 android:fontFamily="sans-serif-medium"
                 android:gravity="center"
                 android:minEms="5"
                 android:padding="4dp"
-                android:text="практика"
+                android:text="@string/practice"
                 android:textAllCaps="true"
-                android:textColor="@color/white"
+                android:textColor="@android:color/white"
                 android:textSize="10sp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/pair_time"
-                app:layout_constraintTop_toBottomOf="@+id/subject_name" />
+                app:layout_constraintStart_toEndOf="@+id/pairTime"
+                app:layout_constraintTop_toBottomOf="@+id/subjectName" />
 
         <TextView
                 android:id="@+id/lecturer"
@@ -66,7 +68,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
 
-                android:text="Генералов П.Д."
+                android:text="@string/example_of_lecturer"
+                android:textColor="@color/text_color"
                 app:layout_constraintStart_toEndOf="@+id/type"
                 app:layout_constraintTop_toTopOf="@+id/type" />
 
@@ -75,7 +78,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
-                android:text="А301б"
+                android:text="@string/example_of_aud"
+                android:textColor="@color/text_color"
                 app:layout_constraintBaseline_toBaselineOf="@+id/type"
                 app:layout_constraintEnd_toEndOf="parent" />
 

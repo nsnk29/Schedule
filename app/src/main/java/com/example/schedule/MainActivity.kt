@@ -12,6 +12,7 @@ import android.view.View
 import android.widget.CompoundButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -28,11 +29,6 @@ import okhttp3.*
 import java.io.IOException
 import java.net.URL
 import java.util.*
-import android.content.SharedPreferences
-import androidx.core.app.ComponentActivity.ExtraData
-import androidx.core.content.ContextCompat.getSystemService
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
-import androidx.core.content.ContextCompat.startActivity
 
 
 class MainActivity : AppCompatActivity() {
@@ -45,16 +41,25 @@ class MainActivity : AppCompatActivity() {
         const val CHANNEL_ID = "scheduleNotification"
     }
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
         PreferenceManager.setDefaultValues(this, R.xml.root_preferences, false)
+        val mPreference = PreferenceManager.getDefaultSharedPreferences(this)
+        val darkMode = mPreference.getBoolean("dark_mode", false)
 
+        if (darkMode) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+        }
 
-
+        initRealm()
         getJSON()
         setSwitchAction()
-        initRealm()
+
         createNotificationChannel()
 
         val currentDay = getCurrentDay()
@@ -125,8 +130,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initRealm() {
-        Realm.init(this)
-        realm = Realm.getDefaultInstance()
+        if (!::realm.isInitialized) {
+            Realm.init(this)
+            realm = Realm.getDefaultInstance()
+            println("NK@(@((@(@(@")
+        }
     }
 
 
@@ -312,6 +320,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        realm.close()
+//            realm.close()
     }
 }

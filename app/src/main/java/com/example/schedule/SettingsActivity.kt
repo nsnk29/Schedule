@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.widget.TimePicker
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
 import androidx.preference.Preference
 import androidx.preference.Preference.OnPreferenceChangeListener
@@ -34,7 +35,6 @@ class SettingsActivity : AppCompatActivity(), TimePickerDialog.OnTimeSetListener
             .replace(R.id.settings, SettingsFragment())
             .commit()
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
     }
 
 
@@ -69,7 +69,12 @@ class SettingsActivity : AppCompatActivity(), TimePickerDialog.OnTimeSetListener
         if (c.before(Calendar.getInstance())) {
             c.add(Calendar.DATE, 1)
         }
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, c.timeInMillis, AlarmManager.INTERVAL_DAY, pendingIntent)
+        alarmManager.setRepeating(
+            AlarmManager.RTC_WAKEUP,
+            c.timeInMillis,
+            AlarmManager.INTERVAL_DAY,
+            pendingIntent
+        )
         Toast.makeText(
             applicationContext,
             "Уведомления установлены на $hourString:$minuteString",
@@ -87,7 +92,6 @@ class SettingsActivity : AppCompatActivity(), TimePickerDialog.OnTimeSetListener
         alarmManager.cancel(pendingIntent)
     }
 
-
     override fun onSupportNavigateUp(): Boolean {
         onBackPressed()
         return true
@@ -99,42 +103,58 @@ class SettingsActivity : AppCompatActivity(), TimePickerDialog.OnTimeSetListener
             val mPreference = PreferenceManager.getDefaultSharedPreferences(this.context)
 
 
-            val notificationSummaryProvider = Preference.SummaryProvider<SwitchPreferenceCompat> { preference ->
-                if (preference.isChecked) {
-                    "Уведомление придёт в ${mPreference.getString("time_notification_picker", "18:02")}"
-                } else {
-                    "Уведомления выключены"
+            val notificationSummaryProvider =
+                Preference.SummaryProvider<SwitchPreferenceCompat> { preference ->
+                    if (preference.isChecked) {
+                        "Уведомление придёт в ${mPreference.getString(
+                            "time_notification_picker",
+                            "18:02"
+                        )}"
+                    } else {
+                        "Уведомления выключены"
+                    }
                 }
-            }
 
             val notificationStatus = findPreference<SwitchPreferenceCompat>("notification_status")
 
             notificationStatus?.summaryProvider = notificationSummaryProvider
-            notificationStatus!!.onPreferenceChangeListener = OnPreferenceChangeListener { preference, newValue ->
-                if (!(newValue as Boolean)) {
-                    (activity as SettingsActivity).cancelAlarm()
-                } else {
-                    val text = mPreference.getString("time_notification_picker", "20:00")
-                    val slittedText = text.split(':').toTypedArray()
-                    val hourOfDay = slittedText[0].toInt()
-                    val minute = slittedText[1].toInt()
+            notificationStatus!!.onPreferenceChangeListener =
+                OnPreferenceChangeListener { _, newValue ->
+                    if (!(newValue as Boolean)) {
+                        (activity as SettingsActivity).cancelAlarm()
+                    } else {
+                        val text = mPreference.getString("time_notification_picker", "20:00")
+                        val slittedText = text.split(':').toTypedArray()
+                        val hourOfDay = slittedText[0].toInt()
+                        val minute = slittedText[1].toInt()
 
 
-                    val c = Calendar.getInstance()
-                    c.set(Calendar.HOUR_OF_DAY, hourOfDay)
-                    c.set(Calendar.MINUTE, minute)
-                    c.set(Calendar.SECOND, 0)
-                    (activity as SettingsActivity).startAlarm(c)
+                        val c = Calendar.getInstance()
+                        c.set(Calendar.HOUR_OF_DAY, hourOfDay)
+                        c.set(Calendar.MINUTE, minute)
+                        c.set(Calendar.SECOND, 0)
+                        (activity as SettingsActivity).startAlarm(c)
+                    }
+                    true
+
                 }
-                true
-
-            }
 
             val notificationTimePicker = findPreference<Preference>("notification_time_picker")
             notificationTimePicker?.setOnPreferenceClickListener {
                 val timePicker = TimePickerFragment()
 
                 timePicker.show(childFragmentManager, "Время для уведомления")
+                true
+            }
+
+            val darkMode = findPreference<SwitchPreferenceCompat>("dark_mode")
+            darkMode?.onPreferenceChangeListener = OnPreferenceChangeListener { _, newValue ->
+                if (!(newValue as Boolean)) {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+
+                } else {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                }
                 true
             }
 

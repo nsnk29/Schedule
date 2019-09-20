@@ -40,7 +40,6 @@ class AlertReceiver : BroadcastReceiver() {
         } else {
             info = " c ${getStart(pairs[0]?.number)} до ${getEnd(pairs[pairs.size - 1]?.number)}"
         }
-//        result.dropLast(1)
 
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_notif_main)
@@ -66,7 +65,7 @@ class AlertReceiver : BroadcastReceiver() {
         realm.close()
     }
 
-    fun getStart(i: Int?):String{
+    private fun getStart(i: Int?):String{
         return when(i){
             1 -> "8:00"
             2 -> "9:40"
@@ -79,7 +78,7 @@ class AlertReceiver : BroadcastReceiver() {
         }
     }
 
-    fun getEnd(i: Int?):String{
+    private fun getEnd(i: Int?):String{
         return when(i){
             1 -> "9:30"
             2 -> "11:10"

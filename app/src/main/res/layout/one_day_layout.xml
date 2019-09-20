@@ -2,12 +2,12 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/wrapper"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
     <LinearLayout
+            android:id="@+id/wrapper"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
@@ -18,12 +18,11 @@
             app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-                android:id="@+id/date"
+                android:id="@+id/dateTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="31"
-                android:textColor="@color/black" />
+                android:text="@string/example_of_date" />
 
         <LinearLayout
                 android:layout_width="40dp"
@@ -38,8 +37,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="ПТ"
-                    android:textColor="@color/black"
+                    android:text="@string/example_of_weekday"
                     android:textSize="18sp" />
         </LinearLayout>
     </LinearLayout>

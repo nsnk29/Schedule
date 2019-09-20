@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.schedule.MainActivity
@@ -62,19 +61,20 @@ class BottomRecycleAdapter(private val allWeekDates: ArrayList<Int>, var context
         holder.itemView.wrapper.layoutParams.width = itemWidth
         holder.nameOfDayField.text = currentWeekDates[position].toString()
         holder.dateField.text = nameOfWeekdays[position]
+//        holder.nameOfDayField.setTextColor(ContextCompat.getColor(context, R.color.text_color))
 
         when {
             position == selectedDay -> {
                 holder.itemView.nameOfDay.setBackgroundResource(R.drawable.rounded_frame_filled)
-                holder.itemView.nameOfDay.setTextColor(ContextCompat.getColor(context, R.color.white))
+                holder.itemView.nameOfDay.setTextColor(ContextCompat.getColor(context, R.color.selected_text_color))
             }
             (position == currentDay) and (nextWeek) -> {
                 holder.itemView.nameOfDay.setBackgroundResource(R.drawable.rounded_frame)
-                holder.itemView.nameOfDay.setTextColor(ContextCompat.getColor(context, R.color.black))
+                holder.itemView.nameOfDay.setTextColor(ContextCompat.getColor(context, R.color.text_color))
             }
             else -> {
                 holder.itemView.nameOfDay.setBackgroundResource(0)
-                holder.itemView.nameOfDay.setTextColor(ContextCompat.getColor(context, R.color.black))
+                holder.itemView.nameOfDay.setTextColor(ContextCompat.getColor(context, R.color.text_color))
             }
         }
 
@@ -82,11 +82,10 @@ class BottomRecycleAdapter(private val allWeekDates: ArrayList<Int>, var context
 
     class CustomViewHolder(v: View) : RecyclerView.ViewHolder(v) {
         val nameOfDayField: TextView = itemView.findViewById(R.id.nameOfDay)
-        val dateField: TextView = itemView.findViewById(R.id.date)
+        val dateField: TextView = itemView.findViewById(R.id.dateTextView)
 
         init {
             itemView.setOnClickListener {
-
                 (itemView.context as MainActivity).updateBottomRecycler(layoutPosition, false)
             }
         }

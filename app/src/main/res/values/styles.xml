@@ -3,25 +3,12 @@
     <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:windowLightStatusBar">true</item>
-        <item name="colorControlActivated">@color/lecture_color</item>
-        <item name="colorSwitchThumbNormal">#f1f1f1</item>
-        <item name="android:colorForeground">#42221f1f</item>
-    </style>
-
-    <style name="TimePickerTheme" parent="Theme.AppCompat.Light.Dialog">
         <item name="colorAccent">@color/colorPrimary</item>
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
+        <item name="android:windowLightStatusBar">@bool/dark</item>
     </style>
 
-    <style name="MyToggle" parent="@android:style/Widget.Material.Light.Button.Toggle">
-        <item name="android:textColorPrimary">#d84315</item>
-        <item name="colorAccent">#0288d1</item>
-        <item name="android:colorControlNormal">#f9a825</item>
-        <item name="android:colorControlHighlight">#880e4f</item>
-        <item name="android:colorButtonNormal">#b9f6ca</item>
+    <style name="TimePickerTheme" parent="Theme.AppCompat.DayNight.Dialog">
+        <item name="colorAccent">@color/colorPrimary</item>
     </style>
 
 </resources>

@@ -1,6 +1,5 @@
 <resources>
-    <string name="app_name">Schedule</string>
-    <string name="title_activity_settings">Settings</string>
+    <string name="app_name">Расписание</string>
 
     <!-- Preference Titles -->
     <string name="notification_header">Уведомления</string>
@@ -10,20 +9,27 @@
     <string name="notification_time">Выбрать время</string>
 
 
-
-    <!--channel settings-->
+    <!-- Channel settings -->
     <string name="channel_name">Everyday notification</string>
     <string name="channel_description">Уведомление для пользователя о расписании на следующий день</string>
 
-
-    <string name="snooze">Cheeeck</string>
-    <string name="third_pair_time">11:30\n13:00</string>
-    <string name="examle_of_subject">Конструирование алгоритмов и структур данных и ещё каких то структур данных два</string>
-
-
-    <string name="preference_file_key">settings</string>
+    <!-- Examples for views -->
+    <string name="example_of_pair_time">11:30\n13:00</string>
+    <string name="example_of_subject">Конструирование алгоритмов и структур данных и ещё каких то структур данных два</string>
+    <string name="example_of_lecturer">Генералов П.Д.</string>
+    <string name="example_of_aud">А301б</string>
+    <string name="example_of_date">31</string>
+    <string name="example_of_weekday">ПТ</string>
     <string name="current_week">текущая</string>
     <string name="next_week">следующая</string>
+    <string name="monday">Понедельник</string>
+    <string name="practice">практика</string>
+
+
+    <!-- Other -->
+    <string name="preference_file_key">settings</string>
+    <string name="settings">Настройки</string>
+
 
 
 
