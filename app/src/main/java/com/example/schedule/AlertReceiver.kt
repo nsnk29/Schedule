@@ -24,18 +24,16 @@ class AlertReceiver : BroadcastReceiver() {
         val currentDay = cal.get(Calendar.DAY_OF_WEEK)
         val even = if (currentWeek == 0) 1 else 0
 
-        val pairs = realm.where(PairClass::class.java).
-            equalTo("group", "46/1").
-            equalTo("day", currentDay).
-            notEqualTo("even", even).
-            findAll()
-        var result: String = ""
-        for (pair in pairs){
+        val pairs =
+            realm.where(PairClass::class.java).equalTo("group", "46/1").equalTo("day", currentDay)
+                .notEqualTo("even", even).findAll()
+        var result = ""
+        for (pair in pairs) {
             result += pair.number.toString() + ". " + pair.name + " " + pair.studyroom + "\n"
         }
         val numberOfPairs = pairs.size
         var info = ""
-        if (numberOfPairs == 0){
+        if (numberOfPairs == 0) {
             result = "Завтра выходной"
         } else {
             info = " c ${getStart(pairs[0]?.number)} до ${getEnd(pairs[pairs.size - 1]?.number)}"
@@ -44,8 +42,11 @@ class AlertReceiver : BroadcastReceiver() {
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_notif_main)
             .setLargeIcon(
-                BitmapFactory.decodeResource(context.resources,
-                R.mipmap.ic_launcher_round))
+                BitmapFactory.decodeResource(
+                    context.resources,
+                    R.mipmap.ic_launcher_round
+                )
+            )
             .setContentTitle("Расписание на завтра")
             .setContentText("$numberOfPairs пары$info")
             .setStyle(
@@ -56,7 +57,6 @@ class AlertReceiver : BroadcastReceiver() {
             )
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setDefaults(Notification.DEFAULT_VIBRATE)
-//            .setVibrate(longArrayOf(0, 500))
             .build()
         with(NotificationManagerCompat.from(context)) {
             notify(1, notification)
@@ -65,8 +65,8 @@ class AlertReceiver : BroadcastReceiver() {
         realm.close()
     }
 
-    private fun getStart(i: Int?):String{
-        return when(i){
+    private fun getStart(i: Int?): String {
+        return when (i) {
             1 -> "8:00"
             2 -> "9:40"
             3 -> "11:30"
@@ -78,8 +78,8 @@ class AlertReceiver : BroadcastReceiver() {
         }
     }
 
-    private fun getEnd(i: Int?):String{
-        return when(i){
+    private fun getEnd(i: Int?): String {
+        return when (i) {
             1 -> "9:30"
             2 -> "11:10"
             3 -> "13:00"

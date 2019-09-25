@@ -7,8 +7,4 @@
         <item name="android:windowLightStatusBar">@bool/dark</item>
     </style>
 
-    <style name="TimePickerTheme" parent="Theme.AppCompat.DayNight.Dialog">
-        <item name="colorAccent">@color/colorPrimary</item>
-    </style>
-
 </resources>

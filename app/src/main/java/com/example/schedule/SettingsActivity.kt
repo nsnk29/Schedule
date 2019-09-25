@@ -84,7 +84,6 @@ class SettingsActivity : AppCompatActivity(), TimePickerDialog.OnTimeSetListener
     }
 
     private fun cancelAlarm() {
-        println("MY TAG CANCELED")
         val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(this, AlertReceiver::class.java)
         val pendingIntent = PendingIntent.getBroadcast(this, 1, intent, 0)

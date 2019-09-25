@@ -130,11 +130,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initRealm() {
-        if (!::realm.isInitialized) {
-            Realm.init(this)
-            realm = Realm.getDefaultInstance()
-            println("NK@(@((@(@(@")
-        }
+        Realm.init(this)
+        realm = Realm.getDefaultInstance()
     }
 
 
@@ -156,12 +153,9 @@ class MainActivity : AppCompatActivity() {
                         Toast.LENGTH_LONG
                     ).show()
                 }
-
-                println("MY TAG $e")
             }
 
             override fun onResponse(call: Call, response: Response) {
-                println("MY TAG response")
                 val body = response.body?.string()
                 val builder = GsonBuilder().create()
                 val myData = builder.fromJson(body, MyJSONFile::class.java)
@@ -186,7 +180,7 @@ class MainActivity : AppCompatActivity() {
                 localPair.type = pair.type
             }
         }
-        updateBottomRecycler(getCurrentDay(), true)
+        updateBottomRecycler(bottomRecycleAdapter.currentDay, true)
     }
 
 
@@ -200,7 +194,6 @@ class MainActivity : AppCompatActivity() {
                 val v = realm.createObject<VersionClass>()
                 v.version = newVersion
             }
-            println("first start v=$newVersion")
             // upd all db
             updateDatabaseInfo(data)
         } else if (newVersion > currentVersion.version) {
@@ -208,7 +201,6 @@ class MainActivity : AppCompatActivity() {
             realm.executeTransaction {
                 currentVersion.version = newVersion
             }
-            println("version updated, now $newVersion")
             tryDeleteFromDB()
             updateDatabaseInfo(data)
         }
@@ -283,8 +275,6 @@ class MainActivity : AppCompatActivity() {
                 getNegativeWeek(bottomRecycleAdapter.currentWeek)
             )
             mainRecycleAdapter.notifyDataSetChanged()
-        } else {
-            println("Ah ha")
         }
     }
 
@@ -317,9 +307,4 @@ class MainActivity : AppCompatActivity() {
         return cal.get(Calendar.DAY_OF_WEEK) - 2
     }
 
-
-    override fun onDestroy() {
-        super.onDestroy()
-//            realm.close()
-    }
 }
