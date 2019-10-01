@@ -1,5 +1,6 @@
-package com.example.schedule
+package com.example.schedule.activities
 
+import android.app.Activity
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.app.TimePickerDialog
@@ -11,16 +12,16 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
-import androidx.preference.Preference
+import androidx.preference.*
 import androidx.preference.Preference.OnPreferenceChangeListener
-import androidx.preference.PreferenceFragmentCompat
-import androidx.preference.PreferenceManager
-import androidx.preference.SwitchPreferenceCompat
+import com.example.schedule.AlertReceiver
+import com.example.schedule.R
+import com.example.schedule.TimePickerFragment
 import kotlinx.android.synthetic.main.settings_activity.*
 import java.util.*
 
 
-class SettingsActivity : AppCompatActivity(), TimePickerDialog.OnTimeSetListener {
+class SettingsActivity: AppCompatActivity(), TimePickerDialog.OnTimeSetListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,9 +33,13 @@ class SettingsActivity : AppCompatActivity(), TimePickerDialog.OnTimeSetListener
         supportActionBar?.title = "Настройки"
         supportFragmentManager
             .beginTransaction()
-            .replace(R.id.settings, SettingsFragment())
+            .replace(
+                R.id.settings,
+                SettingsFragment()
+            )
             .commit()
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
     }
 
 
@@ -46,7 +51,10 @@ class SettingsActivity : AppCompatActivity(), TimePickerDialog.OnTimeSetListener
         startAlarm(c)
         supportFragmentManager
             .beginTransaction()
-            .replace(R.id.settings, SettingsFragment())
+            .replace(
+                R.id.settings,
+                SettingsFragment()
+            )
             .commit()
     }
 
@@ -157,9 +165,21 @@ class SettingsActivity : AppCompatActivity(), TimePickerDialog.OnTimeSetListener
                 true
             }
 
+            val cardLayoutPreference = findPreference<ListPreference>("card_layout_preference")
+            cardLayoutPreference?.onPreferenceChangeListener =  OnPreferenceChangeListener { _, _ ->
+                (context as SettingsActivity).layoutChanged()
+                true
+            }
+
         }
 
     }
+
+    fun layoutChanged(){
+        val intent = Intent()
+        setResult(Activity.RESULT_OK, intent)
+    }
+
 
 
 }

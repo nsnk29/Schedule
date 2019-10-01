@@ -1,19 +1,27 @@
 package com.example.schedule.adapters
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.schedule.R
 import com.example.schedule.model.PairClass
-import kotlinx.android.synthetic.main.card_layout.view.*
+import kotlinx.android.synthetic.main.card_layout_two_lines.view.*
 
 
-class MainRecycleAdapter(var pairsData: Array<PairClass>) :
+class MainRecycleAdapter(var pairsData: Array<PairClass>, var context: Context) :
     RecyclerView.Adapter<MainRecycleAdapter.CustomViewHolder2>() {
 
+    private val lineCount: String?
+
+    init {
+        val mPreference = PreferenceManager.getDefaultSharedPreferences(context)
+        lineCount = mPreference.getString("card_layout_preference", "2")
+    }
 
     override fun getItemCount(): Int {
         return pairsData.size
@@ -21,7 +29,12 @@ class MainRecycleAdapter(var pairsData: Array<PairClass>) :
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder2 {
-        val view: View = LayoutInflater.from(parent.context).inflate(R.layout.card_layout, parent, false)
+
+        val view: View = when (lineCount){
+            "3" -> LayoutInflater.from(parent.context).inflate(R.layout.card_layout_three_lines, parent, false)
+            else -> LayoutInflater.from(parent.context).inflate(R.layout.card_layout_two_lines, parent, false)
+        }
+
         return CustomViewHolder2(view)
     }
 

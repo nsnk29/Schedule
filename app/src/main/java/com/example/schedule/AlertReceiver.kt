@@ -7,9 +7,7 @@ import android.content.Intent
 import android.graphics.BitmapFactory
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import com.example.schedule.MainActivity.Companion.CHANNEL_ID
 import com.example.schedule.model.PairClass
-import com.example.schedule.model.VersionClass
 import io.realm.Realm
 import java.util.*
 

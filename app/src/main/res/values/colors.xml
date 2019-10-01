@@ -4,8 +4,8 @@
     <color name="colorPrimaryDark">@android:color/transparent</color>
 
 
-    <color name="lecture_color">#3399ff</color>
-    <color name="practice_color">#EE0033</color>
+    <color name="practice_color">#3399ff</color>
+    <color name="lecture_color">#EE0033</color>
     <color name="empty_pairs">#F4F4F4</color>
 
 

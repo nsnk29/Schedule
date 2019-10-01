@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.example.schedule.MainActivity
+import com.example.schedule.activities.MainActivity
 import com.example.schedule.R
 import kotlinx.android.synthetic.main.one_day_layout.view.*
 import java.util.*

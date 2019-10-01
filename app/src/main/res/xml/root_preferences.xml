@@ -23,7 +23,13 @@
                 app:title="Тёмная тема" />
 
 
-
+        <ListPreference
+                android:key="card_layout_preference"
+                android:title="Количество строк на занятие"
+                android:entries="@array/CardLayoutLineSize"
+                android:entryValues="@array/CardLayoutLineSize"
+                android:defaultValue="2"
+                />
     </PreferenceCategory>
 
 

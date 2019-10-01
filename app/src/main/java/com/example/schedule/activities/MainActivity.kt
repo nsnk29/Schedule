@@ -1,5 +1,6 @@
-package com.example.schedule
+package com.example.schedule.activities
 
+import android.app.Activity
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -16,6 +17,8 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.schedule.MarginItemDecoration
+import com.example.schedule.R
 import com.example.schedule.adapters.BottomRecycleAdapter
 import com.example.schedule.adapters.MainRecycleAdapter
 import com.example.schedule.model.MyJSONFile
@@ -78,7 +81,7 @@ class MainActivity : AppCompatActivity() {
 
         val pairsData =
             preparePairsData(currentDay, "46/1", getNegativeWeek(bottomRecycleAdapter.currentWeek))
-        mainRecycleAdapter = MainRecycleAdapter(pairsData)
+        mainRecycleAdapter = MainRecycleAdapter(pairsData, this)
         recycleViewMain.adapter = mainRecycleAdapter
         recycleViewMain.overScrollMode = View.OVER_SCROLL_NEVER
     }
@@ -216,7 +219,18 @@ class MainActivity : AppCompatActivity() {
 
     fun startSettings(view: View) {
         val intent = Intent(view.context, SettingsActivity::class.java)
-        startActivity(intent)
+        startActivityForResult(intent, 0)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if ((resultCode == Activity.RESULT_OK) && (requestCode == 0)) {
+            val currentDay = getCurrentDay()
+
+            setBottomRecyclerView(currentDay)
+            setMainRecyclerView(currentDay)
+        }
+
     }
 
     private fun createNotificationChannel() {
@@ -303,8 +317,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getCurrentDay(): Int {
-        val cal = Calendar.getInstance()
-        return cal.get(Calendar.DAY_OF_WEEK) - 2
+        return Calendar.getInstance().get(Calendar.DAY_OF_WEEK) - 2
     }
-
 }
