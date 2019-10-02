@@ -42,6 +42,7 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         const val CHANNEL_ID = "scheduleNotification"
+        const val COUNT_LINES_ID = 1
     }
 
 
@@ -224,11 +225,13 @@ class MainActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if ((resultCode == Activity.RESULT_OK) && (requestCode == 0)) {
-            val currentDay = getCurrentDay()
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == COUNT_LINES_ID) {
+                val currentDay = getCurrentDay()
 
-            setBottomRecyclerView(currentDay)
-            setMainRecyclerView(currentDay)
+                setBottomRecyclerView(currentDay)
+                setMainRecyclerView(currentDay)
+            }
         }
 
     }
@@ -245,7 +248,6 @@ class MainActivity : AppCompatActivity() {
             channel.enableVibration(true)
             channel.lightColor = Color.GREEN
             channel.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
-            // Register the channel with the system
             val notificationManager: NotificationManager =
                 getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
