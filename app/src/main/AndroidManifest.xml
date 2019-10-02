@@ -13,18 +13,24 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme"
             tools:ignore="GoogleAppIndexingWarning">
-
         <activity
-                android:name=".activities.SettingsActivity"
-                android:label="@string/settings"
-                android:theme="@style/AppTheme">
-        </activity>
-
-        <activity android:name=".activities.MainActivity">
+                android:name=".activities.SplashScreen"
+                android:theme="@style/AppTheme.Launcher">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+                android:name=".activities.SettingsActivity"
+                android:label="@string/settings"
+                android:theme="@style/AppTheme" />
+        <activity android:name=".activities.MainActivity">
+<!--            <intent-filter>-->
+<!--&lt;!&ndash;                <action android:name="android.intent.action.MAIN" />&ndash;&gt;-->
+
+<!--&lt;!&ndash;                <category android:name="android.intent.category.LAUNCHER" />&ndash;&gt;-->
+<!--            </intent-filter>-->
         </activity>
 
         <receiver android:name=".AlertReceiver" />

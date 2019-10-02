@@ -115,8 +115,7 @@ class SettingsActivity: AppCompatActivity(), TimePickerDialog.OnTimeSetListener 
     }
 
     fun layoutChanged(){
-        val intent = Intent()
-        setResult(Activity.RESULT_OK, intent)
+        setResult(Activity.RESULT_OK)
     }
 
 

@@ -13,8 +13,6 @@ import android.view.View
 import android.widget.CompoundButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
-import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.schedule.MarginItemDecoration
@@ -42,32 +40,18 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         const val CHANNEL_ID = "scheduleNotification"
-        const val COUNT_LINES_ID = 1
+        const val COUNT_LINES_REQUEST_CODE = 1
     }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        PreferenceManager.setDefaultValues(this, R.xml.root_preferences, false)
-        val mPreference = PreferenceManager.getDefaultSharedPreferences(this)
-        val darkMode = mPreference.getBoolean("dark_mode", false)
-
-        if (darkMode) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-        } else {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-        }
-
         initRealm()
         getJSON()
         setSwitchAction()
-
         createNotificationChannel()
-
         val currentDay = getCurrentDay()
-
         setBottomRecyclerView(currentDay)
         setMainRecyclerView(currentDay)
 
@@ -220,22 +204,20 @@ class MainActivity : AppCompatActivity() {
 
     fun startSettings(view: View) {
         val intent = Intent(view.context, SettingsActivity::class.java)
-        startActivityForResult(intent, 0)
+        startActivityForResult(intent, COUNT_LINES_REQUEST_CODE)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == COUNT_LINES_ID) {
+            if (requestCode == COUNT_LINES_REQUEST_CODE) {
                 val currentDay = getCurrentDay()
 
                 setBottomRecyclerView(currentDay)
                 setMainRecyclerView(currentDay)
             }
         }
-
     }
-
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name = getString(R.string.channel_name)
