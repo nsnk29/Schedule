@@ -16,7 +16,7 @@ import androidx.preference.*
 import androidx.preference.Preference.OnPreferenceChangeListener
 import com.example.schedule.AlertReceiver
 import com.example.schedule.R
-import com.example.schedule.TimePickerFragment
+import com.example.schedule.fragments.TimePickerFragment
 import kotlinx.android.synthetic.main.settings_activity.*
 import java.util.*
 
