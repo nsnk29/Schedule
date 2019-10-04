@@ -4,34 +4,75 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Filter
+import android.widget.Filterable
 import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.schedule.R
 
-class PickerRecycleAdapter(var context: Context) : RecyclerView.Adapter<PickerRecycleAdapter.CustomViewHolder3>() {
+import java.util.*
+import kotlin.collections.ArrayList
 
 
-    override fun onBindViewHolder(holder: CustomViewHolder3, position: Int) {
-        holder.dateField.text = "ыы"
-        Toast.makeText(context, "NIce", Toast.LENGTH_SHORT).show()
+class PickerRecycleAdapter(var context: Context, var array: ArrayList<String>) : RecyclerView.Adapter<PickerRecycleAdapter.CaseCell>(), Filterable {
+
+    var arrayFiltred: ArrayList<String> = array
+
+    override fun getFilter(): Filter {
+        return object : Filter() {
+            override fun performFiltering(charSequence: CharSequence): FilterResults {
+                val charString = charSequence.toString()
+                arrayFiltred = if (charString.isEmpty()) {
+                    array
+                } else {
+                    val filteredList = ArrayList<String>()
+                    for (row in array) {
+                        if (row.toLowerCase(Locale("ru", "Russia")).contains(charString.toLowerCase(Locale("ru", "Russia")))
+                        ) {
+                            filteredList.add(row)
+                        }
+                    }
+                    filteredList
+                }
+                val filterResults = FilterResults()
+                filterResults.values = arrayFiltred
+                return filterResults
+            }
+
+            override fun publishResults(
+                charSequence: CharSequence,
+                filterResults: FilterResults
+            ) {
+                arrayFiltred = filterResults.values as ArrayList<String>
+                notifyDataSetChanged()
+            }
+        }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder3 {
-        val view: View = LayoutInflater.from(parent.context).inflate(R.layout.one_day_layout, parent, false)
-        return CustomViewHolder3(view)
 
+    override fun onBindViewHolder(holder: CaseCell, position: Int) {
+        holder.caseCell.text = arrayFiltred[position]
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CaseCell {
+        val view: View = LayoutInflater.from(parent.context).inflate(R.layout.case_cell, parent, false)
+        return CaseCell(view)
     }
 
     override fun getItemCount(): Int {
-        return 5
+        return arrayFiltred.size
     }
 
 
-    class CustomViewHolder3(v: View) : RecyclerView.ViewHolder(v) {
-        val nameOfDayField: TextView = itemView.findViewById(R.id.nameOfDay)
-        val dateField: TextView = itemView.findViewById(R.id.dateTextView)
+    class CaseCell(v: View) : RecyclerView.ViewHolder(v) {
+        val caseCell: TextView = itemView.findViewById(R.id.case_cell)
 
+        init {
+            itemView.setOnClickListener {
+                Toast.makeText(itemView.context, "$layoutPosition", Toast.LENGTH_LONG).show()
+            }
+        }
     }
 
 }
