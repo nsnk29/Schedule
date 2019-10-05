@@ -13,4 +13,11 @@
     <color name="selected_text_color">@color/primary_text_default_material_dark</color>
     <color name="tab_view_color">@color/secondary_text_default_material_light</color>
     <bool name="dark">false</bool>
+
+
+    <color name="pickerActivitySearchBar">#3C3C3C</color>
+<!--    <color name="pickerActivitySearchBar">#DCDCDC</color>-->
+    <color name="pickerActivityTextColor">@color/secondary_text_default_material_dark</color>
+    <color name="pickerActivitySelectedTextColor">@color/primary_text_default_material_dark</color>
+
 </resources>

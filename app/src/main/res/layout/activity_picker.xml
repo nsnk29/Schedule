@@ -10,7 +10,9 @@
             android:id="@+id/appbar"
             android:layout_width="match_parent"
             android:layout_height="?android:attr/actionBarSize"
+            android:layout_margin="0dp"
             android:background="@android:color/transparent"
+            app:elevation="0dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -20,10 +22,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:tabGravity="fill"
-                app:tabIndicatorColor="@color/selected_text_color"
+                app:tabIndicatorColor="@color/pickerActivitySelectedTextColor"
                 app:tabMode="fixed"
-                app:tabSelectedTextColor="@color/selected_text_color"
-                app:tabTextColor="#808080"
+                app:tabSelectedTextColor="@color/pickerActivitySelectedTextColor"
+                app:tabTextColor="@color/pickerActivityTextColor"
                 tools:ignore="PrivateResource">
 
 

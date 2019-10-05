@@ -24,7 +24,7 @@ class SplashScreen : AppCompatActivity() {
     }
 
     private fun isFirstRun() {
-//        startActivity(Intent(this, MainActivity::class.java))
-        startActivity(Intent(this, PickerActivity::class.java))
+        startActivity(Intent(this, MainActivity::class.java))
+//        startActivity(Intent(this, PickerActivity::class.java))
     }
 }

@@ -14,4 +14,9 @@
 
 
     <bool name="dark">true</bool>
+
+    <color name="pickerActivitySearchBar">#E6E6E6</color>
+    <color name="pickerActivityTextColor">@color/secondary_text_default_material_light</color>
+    <color name="pickerActivitySelectedTextColor">@color/primary_text_default_material_light</color>
+
 </resources>
