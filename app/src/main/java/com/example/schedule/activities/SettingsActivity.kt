@@ -21,7 +21,10 @@ import kotlinx.android.synthetic.main.settings_activity.*
 import java.util.*
 
 
-class SettingsActivity: AppCompatActivity(), TimePickerDialog.OnTimeSetListener {
+class SettingsActivity : AppCompatActivity(), TimePickerDialog.OnTimeSetListener {
+    companion object {
+        const val GROUP_PICK_REQUEST_CODE = 2
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,7 +42,6 @@ class SettingsActivity: AppCompatActivity(), TimePickerDialog.OnTimeSetListener 
             )
             .commit()
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
     }
 
 
@@ -54,12 +56,13 @@ class SettingsActivity: AppCompatActivity(), TimePickerDialog.OnTimeSetListener 
                     if (preference.isChecked) {
                         "Уведомление придёт в ${mPreference.getString(
                             "time_notification_picker",
-                            "18:02"
+                            "18:00"
                         )}"
                     } else {
                         "Уведомления выключены"
                     }
                 }
+
 
             val notificationStatus = findPreference<SwitchPreferenceCompat>("notification_status")
 
@@ -70,14 +73,14 @@ class SettingsActivity: AppCompatActivity(), TimePickerDialog.OnTimeSetListener 
                         (activity as SettingsActivity).cancelAlarm()
                     } else {
                         val text = mPreference.getString("time_notification_picker", "20:00")
-                        val slittedText = text.split(':').toTypedArray()
-                        val hourOfDay = slittedText[0].toInt()
-                        val minute = slittedText[1].toInt()
+                        val slittedText = text?.split(':')?.toTypedArray()
+                        val hourOfDay = slittedText?.get(0)?.toInt()
+                        val minute = slittedText?.get(1)?.toInt()
 
 
                         val c = Calendar.getInstance()
-                        c.set(Calendar.HOUR_OF_DAY, hourOfDay)
-                        c.set(Calendar.MINUTE, minute)
+                        c.set(Calendar.HOUR_OF_DAY, hourOfDay!!)
+                        c.set(Calendar.MINUTE, minute!!)
                         c.set(Calendar.SECOND, 0)
                         (activity as SettingsActivity).startAlarm(c)
                     }
@@ -105,28 +108,57 @@ class SettingsActivity: AppCompatActivity(), TimePickerDialog.OnTimeSetListener 
             }
 
             val cardLayoutPreference = findPreference<ListPreference>("card_layout_preference")
-            cardLayoutPreference?.onPreferenceChangeListener =  OnPreferenceChangeListener { _, _ ->
-                (context as SettingsActivity).layoutChanged()
+            cardLayoutPreference?.onPreferenceChangeListener = OnPreferenceChangeListener { _, _ ->
+                (context as SettingsActivity).setOkResult()
                 true
             }
 
-            val picker = findPreference<Preference>("picker")
-            picker?.onPreferenceClickListener = Preference.OnPreferenceClickListener { preference ->
-                startActivity(Intent(this.context, PickerActivity::class.java))
+            val sourceSummaryProvider =
+                Preference.SummaryProvider<Preference> {
+                    "Текущий источник: ${mPreference.getString(
+                        getString(R.string.savedValueOfUsersPick),
+                        "No one"
+                    )}"
+                }
+
+            val sourceOfSchedule = findPreference<Preference>("source_of_schedule")
+            sourceOfSchedule?.summaryProvider = sourceSummaryProvider
+
+            sourceOfSchedule?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+                startActivityForResult(
+                    Intent(this.context, PickerActivity::class.java),
+                    GROUP_PICK_REQUEST_CODE
+                )
                 true
             }
-//            picker?.onPreferenceChangeListener = OnPreferenceChangeListener(_, _ ->
-//            startActivity(Intent(context, PickerActivity::class.java))
-//            true)
 
         }
 
+        override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+            super.onActivityResult(requestCode, resultCode, data)
+            if (resultCode == Activity.RESULT_OK) {
+                if (requestCode == GROUP_PICK_REQUEST_CODE) {
+                    (context as SettingsActivity).setOkResult()
+                    (context as SettingsActivity).updateFragment()
+
+                }
+            }
+        }
     }
 
-    fun layoutChanged(){
+    private fun setOkResult() {
         setResult(Activity.RESULT_OK)
     }
 
+    private fun updateFragment() {
+        supportFragmentManager
+            .beginTransaction()
+            .replace(
+                R.id.settings,
+                SettingsFragment()
+            )
+            .commit()
+    }
 
     override fun onTimeSet(view: TimePicker, hourOfDay: Int, minute: Int) {
         val c = Calendar.getInstance()

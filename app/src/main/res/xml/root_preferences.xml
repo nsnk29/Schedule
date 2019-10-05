@@ -6,13 +6,13 @@
         <SwitchPreferenceCompat
                 app:defaultValue="false"
                 app:key="notification_status"
-                app:title="@string/notification_title" />
+                app:title="@string/notification_title"
+                app:useSimpleSummaryProvider="true" />
         <Preference
                 app:defaultValue="false"
                 app:dependency="notification_status"
                 app:key="notification_time_picker"
-                app:title="@string/notification_time"
-                app:useSimpleSummaryProvider="true" />
+                app:title="@string/notification_time" />
     </PreferenceCategory>
 
     <PreferenceCategory app:title="Оформление">
@@ -24,18 +24,18 @@
 
 
         <ListPreference
-                android:key="card_layout_preference"
-                android:title="Количество строк на занятие"
+                android:defaultValue="2"
                 android:entries="@array/CardLayoutLineSize"
                 android:entryValues="@array/CardLayoutLineSize"
-                android:defaultValue="2"
-                />
+                android:key="card_layout_preference"
+                android:title="Количество строк на занятие" />
     </PreferenceCategory>
+    <PreferenceCategory android:title="Расписание">
+        <Preference
+                android:title="Изменить источник расписания"
+                app:key="source_of_schedule"
+                app:useSimpleSummaryProvider="true" />
 
-    <Preference
-        app:key="picker"
-        android:title="Выбрать группу"
-        />
-
+    </PreferenceCategory>
 
 </androidx.preference.PreferenceScreen>

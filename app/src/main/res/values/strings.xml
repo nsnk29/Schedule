@@ -30,5 +30,9 @@
     <string name="preference_file_key">settings</string>
     <string name="settings">Настройки</string>
 
+    <string name="lecturers">lecturers</string>
+    <string name="groups">groups</string>
+    <string name="isGroupPicked">isGroupPicked</string>
+    <string name="savedValueOfUsersPick">savedValueOfUsersPick</string>
 
 </resources>

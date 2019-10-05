@@ -1,21 +1,22 @@
 package com.example.schedule.adapters
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
 import android.widget.TextView
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.schedule.R
-
+import com.example.schedule.activities.PickerActivity
+import kotlinx.android.synthetic.main.case_cell.view.*
 import java.util.*
 import kotlin.collections.ArrayList
 
 
-class PickerRecycleAdapter(var context: Context, var array: List<String>) : RecyclerView.Adapter<PickerRecycleAdapter.CaseCell>(), Filterable {
+class PickerRecycleAdapter(var array: List<String>, val isGroup: Boolean) :
+    RecyclerView.Adapter<PickerRecycleAdapter.CaseCell>(), Filterable {
+
 
     var arrayFiltred: List<String> = array
 
@@ -28,7 +29,11 @@ class PickerRecycleAdapter(var context: Context, var array: List<String>) : Recy
                 } else {
                     val filteredList = ArrayList<String>()
                     for (row in array) {
-                        if (row.toLowerCase(Locale("ru", "Russia")).contains(charString.toLowerCase(Locale("ru", "Russia")))
+                        if (row.toLowerCase(Locale("ru", "Russia")).contains(
+                                charString.toLowerCase(
+                                    Locale("ru", "Russia")
+                                )
+                            )
                         ) {
                             filteredList.add(row)
                         }
@@ -56,8 +61,9 @@ class PickerRecycleAdapter(var context: Context, var array: List<String>) : Recy
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CaseCell {
-        val view: View = LayoutInflater.from(parent.context).inflate(R.layout.case_cell, parent, false)
-        return CaseCell(view)
+        val view: View =
+            LayoutInflater.from(parent.context).inflate(R.layout.case_cell, parent, false)
+        return CaseCell(view, isGroup)
     }
 
     override fun getItemCount(): Int {
@@ -65,12 +71,13 @@ class PickerRecycleAdapter(var context: Context, var array: List<String>) : Recy
     }
 
 
-    class CaseCell(v: View) : RecyclerView.ViewHolder(v) {
+
+    class CaseCell(v: View, isGroup: Boolean) : RecyclerView.ViewHolder(v) {
         val caseCell: TextView = itemView.findViewById(R.id.case_cell)
 
         init {
             itemView.setOnClickListener {
-                Toast.makeText(itemView.context, "$layoutPosition", Toast.LENGTH_LONG).show()
+                (itemView.context as PickerActivity).confirm(isGroup, itemView.case_cell.text.toString())
             }
         }
     }

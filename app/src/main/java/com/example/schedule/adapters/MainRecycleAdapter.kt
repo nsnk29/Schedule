@@ -15,12 +15,13 @@ import kotlinx.android.synthetic.main.card_layout_two_lines.view.*
 
 class MainRecycleAdapter(var pairsData: Array<PairClass>, var context: Context) :
     RecyclerView.Adapter<MainRecycleAdapter.CustomViewHolder2>() {
-
     private val lineCount: String?
+    private var isGroup: Boolean = true
 
     init {
         val mPreference = PreferenceManager.getDefaultSharedPreferences(context)
         lineCount = mPreference.getString("card_layout_preference", "2")
+        isGroup = mPreference.getBoolean(context.getString(R.string.isGroupPicked), true)
     }
 
     override fun getItemCount(): Int {
@@ -30,9 +31,17 @@ class MainRecycleAdapter(var pairsData: Array<PairClass>, var context: Context) 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder2 {
 
-        val view: View = when (lineCount){
-            "3" -> LayoutInflater.from(parent.context).inflate(R.layout.card_layout_three_lines, parent, false)
-            else -> LayoutInflater.from(parent.context).inflate(R.layout.card_layout_two_lines, parent, false)
+        val view: View = when (lineCount) {
+            "3" -> LayoutInflater.from(parent.context).inflate(
+                R.layout.card_layout_three_lines,
+                parent,
+                false
+            )
+            else -> LayoutInflater.from(parent.context).inflate(
+                R.layout.card_layout_two_lines,
+                parent,
+                false
+            )
         }
 
         return CustomViewHolder2(view)
@@ -40,7 +49,7 @@ class MainRecycleAdapter(var pairsData: Array<PairClass>, var context: Context) 
 
 
     override fun onBindViewHolder(holder: CustomViewHolder2, position: Int) {
-        if (pairsData[position].name == ""){
+        if (pairsData[position].name == "") {
             holder.name.visibility = View.GONE
             holder.lecturer.visibility = View.GONE
             holder.studyroom.visibility = View.GONE
@@ -64,18 +73,21 @@ class MainRecycleAdapter(var pairsData: Array<PairClass>, var context: Context) 
                     holder.itemView.type.setBackgroundResource(R.drawable.type_of_pair_lecture)
                 }
             }
-            holder.lecturer.text = pairsData[position].lecturer
+            if (isGroup)
+                holder.lecturer.text = pairsData[position].lecturer
+            else
+                holder.lecturer.text = pairsData[position].group
             holder.wrapper.setBackgroundResource(0)
         }
 
         holder.pairTime.text = getPairTime(position + 1)
 
     }
-    
+
 
     private fun getPairTime(pos: Int?): String {
 
-        return when(pos) {
+        return when (pos) {
             1 -> "08:00\n09:30"
             2 -> "09:40\n11:10"
             3 -> "11:30\n13:00"
@@ -94,13 +106,5 @@ class MainRecycleAdapter(var pairsData: Array<PairClass>, var context: Context) 
         val lecturer: TextView = itemView.findViewById(R.id.lecturer)
         val studyroom: TextView = itemView.findViewById(R.id.aud)
         val wrapper: ConstraintLayout = itemView.findViewById(R.id.wrapper)
-
-
-
-//        init {
-//            itemView.setOnClickListener {
-//                Toast.makeText(itemView.context, "$layoutPosition", Toast.LENGTH_LONG).show()
-//            }
-//        }
     }
 }
