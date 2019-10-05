@@ -11,5 +11,6 @@
 
     <color name="text_color">@color/primary_text_default_material_dark</color>
     <color name="selected_text_color">@color/primary_text_default_material_dark</color>
+    <color name="tab_view_color">@color/secondary_text_default_material_light</color>
     <bool name="dark">false</bool>
 </resources>

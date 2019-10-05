@@ -52,8 +52,4 @@ class GroupPickerFragment : Fragment() {
         rv.adapter = adapter
         return view
     }
-
-//    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-//
-//    }
 }

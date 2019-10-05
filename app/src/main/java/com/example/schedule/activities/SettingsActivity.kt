@@ -110,6 +110,11 @@ class SettingsActivity: AppCompatActivity(), TimePickerDialog.OnTimeSetListener 
                 true
             }
 
+//            val picker = findPreference<Preference>("picker")
+//            picker?.onPreferenceChangeListener = OnPreferenceChangeListener(_, _ ->
+//            startActivity(Intent(context, PickerActivity::class.java))
+//            true)
+
         }
 
     }

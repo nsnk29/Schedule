@@ -10,6 +10,7 @@
             android:id="@+id/appbar"
             android:layout_width="match_parent"
             android:layout_height="?android:attr/actionBarSize"
+            android:background="@android:color/transparent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -19,10 +20,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:tabGravity="fill"
-                app:tabIndicatorColor="@color/primary_text_default_material_light"
+                app:tabIndicatorColor="@color/selected_text_color"
                 app:tabMode="fixed"
-                app:tabSelectedTextColor="@color/primary_text_default_material_light"
-                app:tabTextColor="@color/primary_text_default_material_dark"
+                app:tabSelectedTextColor="@color/selected_text_color"
+                app:tabTextColor="#808080"
                 tools:ignore="PrivateResource">
 
 

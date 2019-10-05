@@ -32,5 +32,10 @@
                 />
     </PreferenceCategory>
 
+    <Preference
+        app:key="picker"
+        android:title="Выбрать группу"
+        />
+
 
 </androidx.preference.PreferenceScreen>
