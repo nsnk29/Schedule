@@ -15,9 +15,9 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 
-class PickerRecycleAdapter(var context: Context, var array: ArrayList<String>) : RecyclerView.Adapter<PickerRecycleAdapter.CaseCell>(), Filterable {
+class PickerRecycleAdapter(var context: Context, var array: List<String>) : RecyclerView.Adapter<PickerRecycleAdapter.CaseCell>(), Filterable {
 
-    var arrayFiltred: ArrayList<String> = array
+    var arrayFiltred: List<String> = array
 
     override fun getFilter(): Filter {
         return object : Filter() {
@@ -44,7 +44,7 @@ class PickerRecycleAdapter(var context: Context, var array: ArrayList<String>) :
                 charSequence: CharSequence,
                 filterResults: FilterResults
             ) {
-                arrayFiltred = filterResults.values as ArrayList<String>
+                arrayFiltred = filterResults.values as List<String>
                 notifyDataSetChanged()
             }
         }

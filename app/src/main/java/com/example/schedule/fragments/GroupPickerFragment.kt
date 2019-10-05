@@ -10,10 +10,12 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.schedule.adapters.PickerRecycleAdapter
+import com.example.schedule.model.PairClass
+import io.realm.Realm
 import kotlinx.android.synthetic.main.group_picker_fragment.view.*
 
 
-class GroupPickerFragment : Fragment() {
+class GroupPickerFragment(var realm: Realm) : Fragment() {
 
 
     override fun onCreateView(
@@ -33,7 +35,10 @@ class GroupPickerFragment : Fragment() {
         array.add("46/2")
         array.add("36/1")
         array.add("36/2")
-        val adapter = PickerRecycleAdapter(view.context, array)
+
+        val array1 = getGroups()
+
+        val adapter = PickerRecycleAdapter(view.context, array1)
 
         view.search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
 
@@ -56,5 +61,14 @@ class GroupPickerFragment : Fragment() {
         rv.addItemDecoration(dividerItemDecoration)
         rv.adapter = adapter
         return view
+    }
+
+    private fun getGroups(): List<String> {
+        val result = ArrayList<String>()
+        val allPairs = realm.where(PairClass::class.java).findAll()
+        for (pair in allPairs){
+            result.add(pair.group)
+        }
+        return result.distinct()
     }
 }
