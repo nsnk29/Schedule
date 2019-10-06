@@ -68,7 +68,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
 
-                android:text="@string/example_of_lecturer"
                 android:textColor="@color/text_color"
                 app:layout_constraintStart_toEndOf="@+id/type"
                 app:layout_constraintTop_toTopOf="@+id/type" />

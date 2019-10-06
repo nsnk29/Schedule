@@ -41,11 +41,12 @@ class PickerActivity : AppCompatActivity() {
         setContentView(R.layout.activity_picker)
         Realm.init(this)
         realm = Realm.getDefaultInstance()
-        getJSON()
         adapter = ViewPageAdapter(supportFragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT)
         groupsFragment = PickerFragment(true)
         lecturersFragment = PickerFragment(false)
-
+        if (callingActivity == null) {
+            getJSON()
+        }
         adapter.addFragment(groupsFragment, "Группы")
         adapter.addFragment(lecturersFragment, "Преподаватели")
 
@@ -194,9 +195,11 @@ class PickerActivity : AppCompatActivity() {
     }
 
     private fun setDataVisible() {
+//        adapter.addFragment(groupsFragment, "Группы")
+//        adapter.addFragment(lecturersFragment, "Преподаватели")
+
         viewPager.adapter = adapter
         tabs.setupWithViewPager(viewPager)
-
         viewPager?.addOnPageChangeListener(hideKeyBoard())
     }
 }

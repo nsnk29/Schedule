@@ -5,8 +5,10 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
+import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.preference.PreferenceManager
 import com.example.schedule.model.PairClass
 import io.realm.Realm
 import java.util.*
@@ -18,23 +20,35 @@ class AlertReceiver : BroadcastReceiver() {
 
         val realm = Realm.getDefaultInstance()
         val cal = Calendar.getInstance()
+        cal.firstDayOfWeek = Calendar.SUNDAY
         val currentWeek = cal.get(Calendar.WEEK_OF_YEAR) % 2
         val currentDay = cal.get(Calendar.DAY_OF_WEEK)
+        Toast.makeText(context, "$currentDay $currentWeek)}", Toast.LENGTH_SHORT).show()
         val even = if (currentWeek == 0) 1 else 0
+        val mPreference = PreferenceManager.getDefaultSharedPreferences(context)
+        val savedValueOfUsersPick =
+            mPreference.getString(context.getString(R.string.savedValueOfUsersPick), "")
+        val isGroup = mPreference.getBoolean(context.getString(R.string.isGroupPicked), true)
 
         val pairs =
-            realm.where(PairClass::class.java).equalTo("group", "46/1").equalTo("day", currentDay)
+            if (isGroup) realm.where(PairClass::class.java).equalTo("group", savedValueOfUsersPick)
+                .equalTo("day", currentDay)
                 .notEqualTo("even", even).findAll()
+            else realm.where(PairClass::class.java).equalTo("lecturer", savedValueOfUsersPick)
+                .equalTo("day", currentDay)
+                .notEqualTo("even", even).findAll()
+
+
         var result = ""
         for (pair in pairs) {
-            result += pair.number.toString() + ". " + pair.name + " " + pair.studyroom + "\n"
+            result += pair.number.toString() + ") " + pair.name + " " + pair.studyroom + "\n"
         }
         val numberOfPairs = pairs.size
         var info = ""
         if (numberOfPairs == 0) {
-            result = "Завтра выходной"
+            result = "Завтра нет занятий"
         } else {
-            info = " c ${getStart(pairs[0]?.number)} до ${getEnd(pairs[pairs.size - 1]?.number)}"
+            info = "c ${getStart(pairs[0]?.number)} до ${getEnd(pairs[pairs.size - 1]?.number)}"
         }
 
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
@@ -45,8 +59,8 @@ class AlertReceiver : BroadcastReceiver() {
                     R.mipmap.ic_launcher_round
                 )
             )
-            .setContentTitle("Расписание на завтра")
-            .setContentText("$numberOfPairs пары$info")
+            .setContentTitle("Расписание на завтра $savedValueOfUsersPick")
+            .setContentText("$numberOfPairs занятия $info")
             .setStyle(
                 NotificationCompat.BigTextStyle()
                     .bigText(
@@ -57,7 +71,7 @@ class AlertReceiver : BroadcastReceiver() {
             .setDefaults(Notification.DEFAULT_VIBRATE)
             .build()
         with(NotificationManagerCompat.from(context)) {
-            notify(1, notification)
+            notify(NOTIF_ID, notification)
         }
 
         realm.close()
@@ -92,5 +106,6 @@ class AlertReceiver : BroadcastReceiver() {
 
     companion object {
         const val CHANNEL_ID = "scheduleNotification"
+        const val NOTIF_ID = 1
     }
 }

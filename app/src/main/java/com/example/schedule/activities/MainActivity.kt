@@ -95,7 +95,6 @@ class MainActivity : AppCompatActivity() {
                 .equalTo("day", currentDay + 1)
                 .notEqualTo("even", even).findAll()
 
-
         val myArray = Array(7) { PairClass() }
         for (pair in pairsData) {
             try {
@@ -107,7 +106,6 @@ class MainActivity : AppCompatActivity() {
 
         return myArray
     }
-
 
     private fun setBottomRecyclerView(currentDay: Int) {
         recycleViewBottom.layoutManager = LinearLayoutManager(

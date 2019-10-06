@@ -73,10 +73,13 @@ class MainRecycleAdapter(var pairsData: Array<PairClass>, var context: Context) 
                     holder.itemView.type.setBackgroundResource(R.drawable.type_of_pair_lecture)
                 }
             }
+
             if (isGroup)
                 holder.lecturer.text = pairsData[position].lecturer
-            else
+            else {
                 holder.lecturer.text = pairsData[position].group
+            }
+
             holder.wrapper.setBackgroundResource(0)
         }
 

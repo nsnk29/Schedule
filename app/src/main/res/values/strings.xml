@@ -6,7 +6,7 @@
 
     <!-- Notifications Preferences -->
     <string name="notification_title">Получение уведомлений</string>
-    <string name="notification_time">Выбрать время</string>
+    <string name="notification_time">Изменить время</string>
 
 
     <!-- Channel settings -->
