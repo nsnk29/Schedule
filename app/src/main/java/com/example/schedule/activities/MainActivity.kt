@@ -1,5 +1,6 @@
 package com.example.schedule.activities
 
+import android.animation.LayoutTransition
 import android.app.Activity
 import android.app.Notification
 import android.app.NotificationChannel
@@ -60,6 +61,8 @@ class MainActivity : AppCompatActivity() {
         val currentDay = getCurrentDay()
         setBottomRecyclerView(currentDay)
         setMainRecyclerView(currentDay)
+//        weekSwitch.trackDrawable
+//        recycleViewMain.layoutTransition.enableTransitionType(LayoutTransition.CHANGING)
     }
 
     private fun setMainRecyclerView(currentDay: Int) {
