@@ -124,7 +124,6 @@ class PickerActivity : AppCompatActivity() {
 
         if (callingActivity == null) {
             startActivity(Intent(this, MainActivity::class.java))
-            Toast.makeText(this, "FIRST", Toast.LENGTH_SHORT).show()
         }
         finish()
     }

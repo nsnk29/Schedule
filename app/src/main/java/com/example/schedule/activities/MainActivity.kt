@@ -60,7 +60,6 @@ class MainActivity : AppCompatActivity() {
         val currentDay = getCurrentDay()
         setBottomRecyclerView(currentDay)
         setMainRecyclerView(currentDay)
-
     }
 
     private fun setMainRecyclerView(currentDay: Int) {
@@ -75,7 +74,7 @@ class MainActivity : AppCompatActivity() {
         val pairsData =
             preparePairsData(
                 currentDay,
-                getNegativeWeek(bottomRecycleAdapter.currentWeek)
+                getNegativeWeek()
             )
         mainRecycleAdapter = MainRecycleAdapter(pairsData, this)
         recycleViewMain.adapter = mainRecycleAdapter
@@ -295,7 +294,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateCurrentWeek() {
         bottomRecycleAdapter.changeCurrentWeekDate()
-        bottomRecycleAdapter.currentWeek = getNegativeWeek(bottomRecycleAdapter.currentWeek)
+        bottomRecycleAdapter.currentWeek = getNegativeWeek()
         updateBottomRecycler(bottomRecycleAdapter.selectedDay, true)
     }
 
@@ -305,7 +304,7 @@ class MainActivity : AppCompatActivity() {
             bottomRecycleAdapter.notifyDataSetChanged()
             weekDayText.text = getDayName(position)
             mainRecycleAdapter.pairsData =
-                preparePairsData(position, getNegativeWeek(bottomRecycleAdapter.currentWeek))
+                preparePairsData(position, getNegativeWeek())
             mainRecycleAdapter.notifyDataSetChanged()
         }
     }
@@ -322,12 +321,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun getNegativeWeek(i: Int): Int {
-        return when (i) {
-            0 -> 1
-            1 -> 0
-            else -> 0
-        }
+
+    private fun getNegativeWeek(): Int{
+        return if (weekSwitch.isChecked) 1 else 0
     }
 
     private fun oneTimeDayNameSet(position: Int) {
