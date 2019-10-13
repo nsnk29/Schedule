@@ -61,10 +61,11 @@ class MainActivity : AppCompatActivity() {
         val currentDay = getCurrentDay()
         setBottomRecyclerView(currentDay)
         setMainRecyclerView(currentDay)
-        recycleViewMain.setOnTouchListener(getSwipeListener())
+        recycleViewMain.setOnTouchListener(getMainSwipeListener())
+//        recycleViewBottom.setOnTouchListener(getBottomSwipeListener())
     }
 
-    private fun getSwipeListener(): OnSwipeTouchListener{
+    private fun getMainSwipeListener(): OnSwipeTouchListener {
         return object : OnSwipeTouchListener(applicationContext) {
             override fun onSwipeLeft() {
                 if (bottomRecycleAdapter.selectedDay != 5)
@@ -82,6 +83,18 @@ class MainActivity : AppCompatActivity() {
                     bottomRecycleAdapter.selectedDay = 5
                     weekSwitch.isChecked = !weekSwitch.isChecked
                 }
+            }
+        }
+    }
+
+    private fun getBottomSwipeListener(): OnSwipeTouchListener {
+        return object : OnSwipeTouchListener(applicationContext) {
+            override fun onSwipeLeft() {
+                weekSwitch.isChecked = !weekSwitch.isChecked
+            }
+
+            override fun onSwipeRight() {
+                weekSwitch.isChecked = !weekSwitch.isChecked
             }
         }
     }

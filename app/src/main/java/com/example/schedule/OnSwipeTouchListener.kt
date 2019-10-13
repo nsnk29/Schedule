@@ -26,8 +26,9 @@ open class OnSwipeTouchListener(val context: Context) : OnTouchListener {
         gestureDetector = GestureDetector(context, GestureListener())
     }
 
-    @SuppressLint("ClickableViewAccessibility")
+
     override fun onTouch(v: View, event: MotionEvent): Boolean {
+//        v.performClick()
         return gestureDetector.onTouchEvent(event)
     }
 
