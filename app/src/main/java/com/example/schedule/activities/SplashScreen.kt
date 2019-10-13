@@ -2,17 +2,17 @@ package com.example.schedule.activities
 
 import android.content.Intent
 import android.content.SharedPreferences
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.PreferenceManager
 import com.example.schedule.R
-import okhttp3.internal.waitMillis
 
 class SplashScreen : AppCompatActivity() {
     private lateinit var mPreference: SharedPreferences
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
 
         PreferenceManager.setDefaultValues(this, R.xml.root_preferences, false)
         mPreference = PreferenceManager.getDefaultSharedPreferences(this)

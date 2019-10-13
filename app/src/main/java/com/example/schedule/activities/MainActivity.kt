@@ -18,6 +18,7 @@ import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.schedule.MarginItemDecoration
+import com.example.schedule.OnSwipeTouchListener
 import com.example.schedule.R
 import com.example.schedule.adapters.BottomRecycleAdapter
 import com.example.schedule.adapters.MainRecycleAdapter
@@ -60,9 +61,29 @@ class MainActivity : AppCompatActivity() {
         val currentDay = getCurrentDay()
         setBottomRecyclerView(currentDay)
         setMainRecyclerView(currentDay)
+        recycleViewMain.setOnTouchListener(getSwipeListener())
+    }
 
+    private fun getSwipeListener(): OnSwipeTouchListener{
+        return object : OnSwipeTouchListener(applicationContext) {
+            override fun onSwipeLeft() {
+                if (bottomRecycleAdapter.selectedDay != 5)
+                    updateBottomRecycler(bottomRecycleAdapter.selectedDay + 1, false)
+                else {
+                    bottomRecycleAdapter.selectedDay = 0
+                    weekSwitch.isChecked = !weekSwitch.isChecked
+                }
+            }
 
-//        recycleViewMain.layoutTransition.enableTransitionType(LayoutTransition.CHANGING)
+            override fun onSwipeRight() {
+                if (bottomRecycleAdapter.selectedDay != 0)
+                    updateBottomRecycler(bottomRecycleAdapter.selectedDay - 1, false)
+                else {
+                    bottomRecycleAdapter.selectedDay = 5
+                    weekSwitch.isChecked = !weekSwitch.isChecked
+                }
+            }
+        }
     }
 
     private fun setMainRecyclerView(currentDay: Int) {
