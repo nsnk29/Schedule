@@ -1,6 +1,5 @@
 package com.example.schedule.activities
 
-import android.animation.LayoutTransition
 import android.app.Activity
 import android.app.Notification
 import android.app.NotificationChannel
@@ -61,7 +60,8 @@ class MainActivity : AppCompatActivity() {
         val currentDay = getCurrentDay()
         setBottomRecyclerView(currentDay)
         setMainRecyclerView(currentDay)
-//        weekSwitch.trackDrawable
+
+
 //        recycleViewMain.layoutTransition.enableTransitionType(LayoutTransition.CHANGING)
     }
 
@@ -77,9 +77,10 @@ class MainActivity : AppCompatActivity() {
         val pairsData =
             preparePairsData(
                 currentDay,
-                getNegativeWeek()
+                if (weekSwitch.isChecked) getParityOfWeek() else getNegativeWeek(getParityOfWeek())
             )
         mainRecycleAdapter = MainRecycleAdapter(pairsData, this)
+        mainRecycleAdapter.setHasStableIds(true)
         recycleViewMain.adapter = mainRecycleAdapter
         recycleViewMain.overScrollMode = View.OVER_SCROLL_NEVER
     }
@@ -115,11 +116,8 @@ class MainActivity : AppCompatActivity() {
             RecyclerView.HORIZONTAL,
             false
         )
-        val cal = Calendar.getInstance()
-
-        val currentWeek = cal.get(Calendar.WEEK_OF_YEAR) % 2
         bottomRecycleAdapter =
-            BottomRecycleAdapter(initAllWeekDates(), this, currentDay, currentWeek)
+            BottomRecycleAdapter(initAllWeekDates(), this, currentDay, weekSwitch.isChecked)
         oneTimeDayNameSet(currentDay)
 
         recycleViewBottom.adapter = bottomRecycleAdapter
@@ -279,6 +277,8 @@ class MainActivity : AppCompatActivity() {
         val allWeekDates: ArrayList<Int> = ArrayList(14)
 
         val cal = Calendar.getInstance()
+        if (cal.get(Calendar.DAY_OF_WEEK) == 1)
+            cal.add(Calendar.DATE, 1)
         cal.firstDayOfWeek = GregorianCalendar.MONDAY
 
         cal.set(Calendar.HOUR_OF_DAY, 0)
@@ -297,7 +297,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateCurrentWeek() {
         bottomRecycleAdapter.changeCurrentWeekDate()
-        bottomRecycleAdapter.currentWeek = getNegativeWeek()
+//        bottomRecycleAdapter.currentWeek = getNegativeWeek()
         updateBottomRecycler(bottomRecycleAdapter.selectedDay, true)
     }
 
@@ -307,7 +307,7 @@ class MainActivity : AppCompatActivity() {
             bottomRecycleAdapter.notifyDataSetChanged()
             weekDayText.text = getDayName(position)
             mainRecycleAdapter.pairsData =
-                preparePairsData(position, getNegativeWeek())
+                preparePairsData(position, if (weekSwitch.isChecked) 0 else 1)
             mainRecycleAdapter.notifyDataSetChanged()
         }
     }
@@ -325,8 +325,11 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    private fun getNegativeWeek(): Int{
-        return if (weekSwitch.isChecked) 1 else 0
+    private fun getNegativeWeek(x: Int): Int {
+        return when (x) {
+            1 -> 0
+            else -> 1
+        }
     }
 
     private fun oneTimeDayNameSet(position: Int) {
@@ -334,6 +337,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getCurrentDay(): Int {
-        return Calendar.getInstance().get(Calendar.DAY_OF_WEEK) - 2
+        val day = Calendar.getInstance().get(Calendar.DAY_OF_WEEK) - 2
+        return if (day == -1) 0 else day
+    }
+
+    private fun getParityOfWeek(): Int {
+        val cal = Calendar.getInstance()
+        if (cal.get(Calendar.DAY_OF_WEEK) == 1)
+            cal.add(Calendar.DATE, 1)
+        return cal.get(Calendar.WEEK_OF_YEAR) % 2
     }
 }

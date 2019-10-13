@@ -35,4 +35,7 @@
     <string name="isGroupPicked">isGroupPicked</string>
     <string name="savedValueOfUsersPick">savedValueOfUsersPick</string>
 
+    <string name="left">left</string>
+    <string name="right">right</string>
+
 </resources>
