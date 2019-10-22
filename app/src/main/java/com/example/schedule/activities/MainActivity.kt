@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var bottomRecycleAdapter: BottomRecycleAdapter
     private lateinit var mainRecycleAdapter: MainRecycleAdapter
     private lateinit var mPreference: SharedPreferences
-
+    private var currentWeek: Int = 0
 
     companion object {
         const val CHANNEL_ID = "scheduleNotification"
@@ -62,7 +62,6 @@ class MainActivity : AppCompatActivity() {
         setBottomRecyclerView(currentDay)
         setMainRecyclerView(currentDay)
         recycleViewMain.setOnTouchListener(getMainSwipeListener())
-//        recycleViewBottom.setOnTouchListener(getBottomSwipeListener())
     }
 
     private fun getMainSwipeListener(): OnSwipeTouchListener {
@@ -87,17 +86,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun getBottomSwipeListener(): OnSwipeTouchListener {
-        return object : OnSwipeTouchListener(applicationContext) {
-            override fun onSwipeLeft() {
-                weekSwitch.isChecked = !weekSwitch.isChecked
-            }
-
-            override fun onSwipeRight() {
-                weekSwitch.isChecked = !weekSwitch.isChecked
-            }
-        }
-    }
 
     private fun setMainRecyclerView(currentDay: Int) {
         recycleViewMain.layoutManager = LinearLayoutManager(
@@ -111,7 +99,7 @@ class MainActivity : AppCompatActivity() {
         val pairsData =
             preparePairsData(
                 currentDay,
-                if (weekSwitch.isChecked) getParityOfWeek() else getNegativeWeek(getParityOfWeek())
+                if (weekSwitch.isChecked) currentWeek else getNegativeWeek(getParityOfWeek())
             )
         mainRecycleAdapter = MainRecycleAdapter(pairsData, this)
         mainRecycleAdapter.setHasStableIds(true)
@@ -150,8 +138,10 @@ class MainActivity : AppCompatActivity() {
             RecyclerView.HORIZONTAL,
             false
         )
+
+
         bottomRecycleAdapter =
-            BottomRecycleAdapter(initAllWeekDates(), this, currentDay, weekSwitch.isChecked)
+            BottomRecycleAdapter(initAllWeekDates(), this, currentDay)
         oneTimeDayNameSet(currentDay)
 
         recycleViewBottom.adapter = bottomRecycleAdapter
@@ -335,13 +325,13 @@ class MainActivity : AppCompatActivity() {
         updateBottomRecycler(bottomRecycleAdapter.selectedDay, true)
     }
 
-    fun updateBottomRecycler(position: Int, isNess: Boolean) {
-        if (bottomRecycleAdapter.selectedDay != position || isNess) {
+    fun updateBottomRecycler(position: Int, isNecessaryToUpdate: Boolean) {
+        if (bottomRecycleAdapter.selectedDay != position || isNecessaryToUpdate) {
             bottomRecycleAdapter.selectedDay = position
             bottomRecycleAdapter.notifyDataSetChanged()
             weekDayText.text = getDayName(position)
             mainRecycleAdapter.pairsData =
-                preparePairsData(position, if (weekSwitch.isChecked) 0 else 1)
+                preparePairsData(position, if (weekSwitch.isChecked) currentWeek else getNegativeWeek(currentWeek))
             mainRecycleAdapter.notifyDataSetChanged()
         }
     }
@@ -375,10 +365,12 @@ class MainActivity : AppCompatActivity() {
         return if (day == -1) 0 else day
     }
 
+
     private fun getParityOfWeek(): Int {
         val cal = Calendar.getInstance()
         if (cal.get(Calendar.DAY_OF_WEEK) == 1)
             cal.add(Calendar.DATE, 1)
-        return cal.get(Calendar.WEEK_OF_YEAR) % 2
+        currentWeek = cal.get(Calendar.WEEK_OF_YEAR) % 2
+        return currentWeek
     }
 }

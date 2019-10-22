@@ -18,5 +18,9 @@
     <color name="pickerActivitySearchBar">#E6E6E6</color>
     <color name="pickerActivityTextColor">@color/secondary_text_default_material_light</color>
     <color name="pickerActivitySelectedTextColor">@color/primary_text_default_material_light</color>
+    <color name="navigationBarColor">@color/text_color</color>
 
+    <color name="pink">#C2185B</color>
+    <color name="pink2">#BD0047</color>
+    <color name="transparent">#00000000</color>
 </resources>

@@ -20,4 +20,5 @@
     <color name="pickerActivityTextColor">@color/secondary_text_default_material_dark</color>
     <color name="pickerActivitySelectedTextColor">@color/primary_text_default_material_dark</color>
 
+    <color name="navigationBarColor">@android:color/transparent</color>
 </resources>

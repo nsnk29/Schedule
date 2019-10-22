@@ -15,7 +15,7 @@ import java.util.*
 
 class BottomRecycleAdapter(
     private val allWeekDates: ArrayList<Int>, var context: Context,
-    val currentDay: Int, private var nextWeek: Boolean
+    val currentDay: Int
 ) :
     RecyclerView.Adapter<BottomRecycleAdapter.CustomViewHolder>() {
 
@@ -24,6 +24,7 @@ class BottomRecycleAdapter(
     var currentWeekDates: ArrayList<Int> = arrayListOf(0, 0, 0, 0, 0, 0)
     var itemWidth = context.resources.displayMetrics.widthPixels / 6
     var selectedDay = currentDay
+    var nextWeek: Boolean = false
 
 
     init {
