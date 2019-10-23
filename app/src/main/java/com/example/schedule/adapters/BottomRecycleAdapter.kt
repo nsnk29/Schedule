@@ -81,7 +81,7 @@ class BottomRecycleAdapter(
                 holder.itemView.nameOfDay.setTextColor(
                     ContextCompat.getColor(
                         context,
-                        R.color.text_color
+                        R.color.text_color_primary
                     )
                 )
             }
@@ -90,7 +90,7 @@ class BottomRecycleAdapter(
                 holder.itemView.nameOfDay.setTextColor(
                     ContextCompat.getColor(
                         context,
-                        R.color.text_color
+                        R.color.text_color_primary
                     )
                 )
             }

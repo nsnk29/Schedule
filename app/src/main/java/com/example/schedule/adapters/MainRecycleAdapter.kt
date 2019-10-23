@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.schedule.R
@@ -17,11 +18,14 @@ class MainRecycleAdapter(var pairsData: Array<PairClass>, var context: Context) 
     RecyclerView.Adapter<MainRecycleAdapter.CustomViewHolder2>() {
     private val lineCount: String?
     private var isGroup: Boolean = true
+    private var primaryColor = ContextCompat.getColor(context, R.color.text_color_primary)
+    private var secondaryColor = ContextCompat.getColor(context, R.color.text_color_secondary)
 
     init {
         val mPreference = PreferenceManager.getDefaultSharedPreferences(context)
         lineCount = mPreference.getString("card_layout_preference", "2")
         isGroup = mPreference.getBoolean(context.getString(R.string.isGroupPicked), true)
+
     }
 
     override fun getItemCount(): Int {
@@ -43,7 +47,6 @@ class MainRecycleAdapter(var pairsData: Array<PairClass>, var context: Context) 
                 false
             )
         }
-
         return CustomViewHolder2(view)
     }
 
@@ -55,11 +58,14 @@ class MainRecycleAdapter(var pairsData: Array<PairClass>, var context: Context) 
             holder.studyroom.visibility = View.GONE
             holder.type.visibility = View.GONE
             holder.wrapper.setBackgroundResource(R.color.empty_pairs)
+            holder.pairTime.setTextColor(secondaryColor)
         } else {
             holder.name.visibility = View.VISIBLE
             holder.lecturer.visibility = View.VISIBLE
             holder.studyroom.visibility = View.VISIBLE
             holder.type.visibility = View.VISIBLE
+            holder.pairTime.setTextColor(primaryColor)
+
 
             holder.studyroom.text = pairsData[position].studyroom
             holder.name.text = pairsData[position].name

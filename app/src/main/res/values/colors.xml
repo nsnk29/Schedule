@@ -8,7 +8,8 @@
     <color name="empty_pairs">#F4F4F4</color>
 
 
-    <color name="text_color">@color/secondary_text_default_material_light</color>
+    <color name="text_color_secondary">@color/secondary_text_default_material_light</color>
+    <color name="text_color_primary">@color/primary_text_default_material_light</color>
     <color name="selected_text_color">@color/primary_text_default_material_dark</color>
     <color name="tab_view_color">@color/secondary_text_default_material_dark</color>
 
@@ -18,9 +19,6 @@
     <color name="pickerActivitySearchBar">#E6E6E6</color>
     <color name="pickerActivityTextColor">@color/secondary_text_default_material_light</color>
     <color name="pickerActivitySelectedTextColor">@color/primary_text_default_material_light</color>
-    <color name="navigationBarColor">@color/text_color</color>
+    <color name="navigationBarColor">@color/text_color_primary</color>
 
-    <color name="pink">#C2185B</color>
-    <color name="pink2">#BD0047</color>
-    <color name="transparent">#00000000</color>
 </resources>

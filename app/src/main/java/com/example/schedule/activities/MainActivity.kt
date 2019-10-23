@@ -56,7 +56,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         initRealm()
         getJSON()
-        setSwitchAction()
+        setToggleAction()
         createNotificationChannel()
         val currentDay = getCurrentDay()
         setBottomRecyclerView(currentDay)
@@ -71,7 +71,7 @@ class MainActivity : AppCompatActivity() {
                     updateBottomRecycler(bottomRecycleAdapter.selectedDay + 1, false)
                 else {
                     bottomRecycleAdapter.selectedDay = 0
-                    weekSwitch.isChecked = !weekSwitch.isChecked
+                    toggle.isChecked = !toggle.isChecked
                 }
             }
 
@@ -80,7 +80,7 @@ class MainActivity : AppCompatActivity() {
                     updateBottomRecycler(bottomRecycleAdapter.selectedDay - 1, false)
                 else {
                     bottomRecycleAdapter.selectedDay = 5
-                    weekSwitch.isChecked = !weekSwitch.isChecked
+                    toggle.isChecked = !toggle.isChecked
                 }
             }
         }
@@ -99,7 +99,7 @@ class MainActivity : AppCompatActivity() {
         val pairsData =
             preparePairsData(
                 currentDay,
-                if (weekSwitch.isChecked) currentWeek else getNegativeWeek(getParityOfWeek())
+                if (toggle.isChecked) currentWeek else getNegativeWeek(getParityOfWeek())
             )
         mainRecycleAdapter = MainRecycleAdapter(pairsData, this)
         mainRecycleAdapter.setHasStableIds(true)
@@ -150,8 +150,8 @@ class MainActivity : AppCompatActivity() {
         recycleViewBottom.overScrollMode = View.OVER_SCROLL_NEVER
     }
 
-    private fun setSwitchAction() {
-        weekSwitch.setOnCheckedChangeListener(
+    private fun setToggleAction() {
+        toggle.setOnCheckedChangeListener(
             fun(_: CompoundButton, _: Boolean) {
                 updateCurrentWeek()
             }
@@ -331,7 +331,7 @@ class MainActivity : AppCompatActivity() {
             bottomRecycleAdapter.notifyDataSetChanged()
             weekDayText.text = getDayName(position)
             mainRecycleAdapter.pairsData =
-                preparePairsData(position, if (weekSwitch.isChecked) currentWeek else getNegativeWeek(currentWeek))
+                preparePairsData(position, if (toggle.isChecked) currentWeek else getNegativeWeek(currentWeek))
             mainRecycleAdapter.notifyDataSetChanged()
         }
     }
