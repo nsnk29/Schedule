@@ -20,7 +20,7 @@ class BottomRecycleAdapter(
     RecyclerView.Adapter<BottomRecycleAdapter.CustomViewHolder>() {
 
 
-    val nameOfWeekdays = arrayOf("ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ")
+    private val nameOfWeekdays = arrayOf("ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ")
     var currentWeekDates: ArrayList<Int> = arrayListOf(0, 0, 0, 0, 0, 0)
     var itemWidth = context.resources.displayMetrics.widthPixels / 6
     var selectedDay = currentDay

@@ -32,8 +32,8 @@ class PickerFragment(var isGroup: Boolean) : Fragment() {
             false
         )
         var dataArray =
-            if (isGroup) (context as PickerActivity).getInfo(R.string.groups)
-            else (context as PickerActivity).getInfo(R.string.lecturers)
+            if (isGroup) (context as PickerActivity).database.getListOfGroupsOrLecturer(R.string.groups)
+            else (context as PickerActivity).database.getListOfGroupsOrLecturer(R.string.lecturers)
         dataArray = dataArray.sortedBy { it.toLowerCase(Locale("ru", "Russia")) }
         val adapter = PickerRecycleAdapter(dataArray, isGroup)
         view.search.setOnQueryTextListener(

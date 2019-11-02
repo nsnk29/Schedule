@@ -14,15 +14,13 @@ import androidx.viewpager.widget.ViewPager
 import com.example.schedule.R
 import com.example.schedule.adapters.PickerRecycleAdapter
 import com.example.schedule.adapters.ViewPageAdapter
+import com.example.schedule.database.database
 import com.example.schedule.fragments.PickerFragment
 import com.example.schedule.model.ListOfStringClass
 import com.example.schedule.model.MyJSONFile
-import com.example.schedule.model.PairClass
-import com.example.schedule.model.VersionClass
 import com.google.gson.GsonBuilder
 import io.realm.Realm
 import io.realm.RealmList
-import io.realm.kotlin.createObject
 import kotlinx.android.synthetic.main.activity_picker.*
 import okhttp3.*
 import java.io.IOException
@@ -35,20 +33,22 @@ class PickerActivity : AppCompatActivity() {
     lateinit var adapter: ViewPageAdapter
     lateinit var groupsFragment: PickerFragment
     lateinit var lecturersFragment: PickerFragment
+    lateinit var database: database
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_picker)
-        Realm.init(this)
-        realm = Realm.getDefaultInstance()
+        database = database(applicationContext)
+        realm = database.getConnection()
+
         adapter = ViewPageAdapter(supportFragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT)
         groupsFragment = PickerFragment(true)
         lecturersFragment = PickerFragment(false)
         if (callingActivity == null) {
             getJSON()
         }
-        adapter.addFragment(groupsFragment, "Группы")
-        adapter.addFragment(lecturersFragment, "Преподаватели")
+        adapter.addFragment(groupsFragment, getString(R.string.groups_ru_title))
+        adapter.addFragment(lecturersFragment, getString(R.string.lecturer_title_ru))
 
         viewPager.adapter = adapter
         tabs.setupWithViewPager(viewPager)
@@ -96,23 +96,6 @@ class PickerActivity : AppCompatActivity() {
         }
     }
 
-    private fun getNormalList(list: RealmList<String>): List<String> {
-        val result: ArrayList<String> = ArrayList()
-        for (row in list) result.add(row)
-        return result
-    }
-
-    fun getInfo(type: Int): List<String> {
-        val allData =
-            realm.where(ListOfStringClass::class.java)
-                .equalTo("type", getString(type))
-                .findFirst()
-
-
-        return if (allData != null) {
-            getNormalList(allData.data)
-        } else emptyList()
-    }
 
     fun confirm(isGroup: Boolean, str: String) {
         val mPreference = PreferenceManager.getDefaultSharedPreferences(this)
@@ -130,7 +113,7 @@ class PickerActivity : AppCompatActivity() {
 
     private fun getJSON() {
         val client = OkHttpClient()
-        val url = URL("https://api.npoint.io/51288cb390c242f3e007")
+        val url = URL(getString(R.string.URL_JSON))
 
         val request = Request.Builder()
             .url(url)
@@ -151,54 +134,25 @@ class PickerActivity : AppCompatActivity() {
             override fun onResponse(call: Call, response: Response) {
                 val body = response.body?.string()
                 val builder = GsonBuilder().create()
-                val myData = builder.fromJson(body, MyJSONFile::class.java)
+                val mJson = builder.fromJson(body, MyJSONFile::class.java)
                 runOnUiThread {
-                    realm.executeTransaction { realm ->
-                        val v = realm.createObject<VersionClass>()
-                        v.version = myData.version
-                    }
-                    val groupList: RealmList<String> = RealmList()
-                    val lecturerList: RealmList<String> = RealmList()
-
-                    realm.executeTransaction { realm ->
-                        for (pair in myData.pairs) {
-                            val localPair = realm.createObject<PairClass>()
-                            localPair.studyroom = pair.studyroom
-                            localPair.day = pair.day
-                            localPair.even = pair.even
-                            localPair.group = pair.group
-                            localPair.lecturer = pair.lecturer
-                            localPair.number = pair.number
-                            localPair.name = pair.name
-                            localPair.type = pair.type
-                            groupList.add(pair.group)
-                            lecturerList.add(pair.lecturer)
-                        }
-                        val groupToDB = realm.createObject<ListOfStringClass>()
-                        groupToDB.data = getUniqueList(groupList.distinct())
-                        groupToDB.type = getString(R.string.groups)
-                        val lecturerToDB = realm.createObject<ListOfStringClass>()
-                        lecturerToDB.data = getUniqueList(lecturerList.distinct())
-                        lecturerToDB.type = getString(R.string.lecturers)
-                    }
+                    database.addInformationToDBFromJSON(mJson)
+                    database.setVersion(mJson.version)
                     setDataVisible()
                 }
             }
         })
     }
 
-    private fun getUniqueList(data: List<String>): RealmList<String> {
-        val result: RealmList<String> = RealmList()
-        for (str in data) result.add(str)
-        return result
-    }
 
     private fun setDataVisible() {
-//        adapter.addFragment(groupsFragment, "Группы")
-//        adapter.addFragment(lecturersFragment, "Преподаватели")
-
         viewPager.adapter = adapter
         tabs.setupWithViewPager(viewPager)
         viewPager?.addOnPageChangeListener(hideKeyBoard())
+    }
+
+    override fun onDestroy() {
+        database.closeConnection()
+        super.onDestroy()
     }
 }

@@ -33,7 +33,7 @@ class SettingsActivity : AppCompatActivity(), TimePickerDialog.OnTimeSetListener
         setSupportActionBar(toolbar as Toolbar?)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
-        supportActionBar?.title = "Настройки"
+        supportActionBar?.title = getString(R.string.settings)
         supportFragmentManager
             .beginTransaction()
             .replace(
@@ -64,7 +64,8 @@ class SettingsActivity : AppCompatActivity(), TimePickerDialog.OnTimeSetListener
                 }
 
 
-            val notificationStatus = findPreference<SwitchPreferenceCompat>("notification_status")
+            val notificationStatus =
+                findPreference<SwitchPreferenceCompat>(getString(R.string.notification_status))
 
             notificationStatus?.summaryProvider = notificationSummaryProvider
             notificationStatus!!.onPreferenceChangeListener =
@@ -72,7 +73,10 @@ class SettingsActivity : AppCompatActivity(), TimePickerDialog.OnTimeSetListener
                     if (!(newValue as Boolean)) {
                         (activity as SettingsActivity).cancelAlarm()
                     } else {
-                        val text = mPreference.getString("time_notification_picker", "20:00")
+                        val text = mPreference.getString(
+                            getString(R.string.time_notification_picker),
+                            getString(R.string.default_time_notification)
+                        )
                         val slittedText = text?.split(':')?.toTypedArray()
                         val hourOfDay = slittedText?.get(0)?.toInt()
                         val minute = slittedText?.get(1)?.toInt()
@@ -88,7 +92,8 @@ class SettingsActivity : AppCompatActivity(), TimePickerDialog.OnTimeSetListener
 
                 }
 
-            val notificationTimePicker = findPreference<Preference>("notification_time_picker")
+            val notificationTimePicker =
+                findPreference<Preference>(getString(R.string.notification_time_picker))
             notificationTimePicker?.setOnPreferenceClickListener {
                 val timePicker = TimePickerFragment()
 
@@ -96,7 +101,7 @@ class SettingsActivity : AppCompatActivity(), TimePickerDialog.OnTimeSetListener
                 true
             }
 
-            val darkMode = findPreference<SwitchPreferenceCompat>("dark_mode")
+            val darkMode = findPreference<SwitchPreferenceCompat>(getString(R.string.dark_mode))
             darkMode?.onPreferenceChangeListener = OnPreferenceChangeListener { _, newValue ->
                 if (!(newValue as Boolean)) {
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
@@ -107,7 +112,8 @@ class SettingsActivity : AppCompatActivity(), TimePickerDialog.OnTimeSetListener
                 true
             }
 
-            val cardLayoutPreference = findPreference<ListPreference>("card_layout_preference")
+            val cardLayoutPreference =
+                findPreference<ListPreference>(getString(R.string.card_layout_preference))
             cardLayoutPreference?.onPreferenceChangeListener = OnPreferenceChangeListener { _, _ ->
                 (context as SettingsActivity).setOkResult()
                 true
@@ -117,11 +123,12 @@ class SettingsActivity : AppCompatActivity(), TimePickerDialog.OnTimeSetListener
                 Preference.SummaryProvider<Preference> {
                     "Текущий источник: ${mPreference.getString(
                         getString(R.string.savedValueOfUsersPick),
-                        "No one"
+                        getString(R.string.NA)
                     )}"
                 }
 
-            val sourceOfSchedule = findPreference<Preference>("source_of_schedule")
+            val sourceOfSchedule =
+                findPreference<Preference>(getString(R.string.source_of_schedule))
             sourceOfSchedule?.summaryProvider = sourceSummaryProvider
 
             sourceOfSchedule?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
@@ -185,7 +192,7 @@ class SettingsActivity : AppCompatActivity(), TimePickerDialog.OnTimeSetListener
         val hourString = if (hour < 10) "0$hour" else "$hour"
         val minuteString = if (minute < 10) "0$minute" else "$minute"
 
-        mEditor.putString("time_notification_picker", "$hourString:$minuteString")
+        mEditor.putString(getString(R.string.time_notification_picker), "$hourString:$minuteString")
         mEditor.apply()
         val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(this, AlertReceiver::class.java)

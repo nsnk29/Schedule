@@ -16,7 +16,7 @@ class SplashScreen : AppCompatActivity() {
 
         PreferenceManager.setDefaultValues(this, R.xml.root_preferences, false)
         mPreference = PreferenceManager.getDefaultSharedPreferences(this)
-        val darkMode = mPreference.getBoolean("dark_mode", false)
+        val darkMode = mPreference.getBoolean(getString(R.string.dark_mode), false)
         if (darkMode)
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
 
@@ -24,8 +24,16 @@ class SplashScreen : AppCompatActivity() {
     }
 
     private fun isFirstRun() {
-        when (mPreference.getString(getString(R.string.savedValueOfUsersPick), "default")){
-            "default" -> startActivity(Intent(this, PickerActivity::class.java))
+        when (mPreference.getString(
+            getString(R.string.savedValueOfUsersPick),
+            getString(R.string.default_string)
+        )) {
+            getString(R.string.default_string) -> startActivity(
+                Intent(
+                    this,
+                    PickerActivity::class.java
+                )
+            )
             else -> startActivity(Intent(this, MainActivity::class.java))
         }
         finish()

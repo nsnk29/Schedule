@@ -29,7 +29,7 @@ class PickerRecycleAdapter(var array: List<String>, val isGroup: Boolean) :
                 } else {
                     val filteredList = ArrayList<String>()
                     for (row in array) {
-                        if (row.toLowerCase(Locale("ru", "Russia")).contains(
+                        if (row.toLowerCase(Locale("ru", "Russia")).startsWith(
                                 charString.toLowerCase(
                                     Locale("ru", "Russia")
                                 )

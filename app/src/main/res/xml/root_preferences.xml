@@ -5,35 +5,35 @@
 
         <SwitchPreferenceCompat
                 app:defaultValue="false"
-                app:key="notification_status"
+                app:key="@string/notification_status"
                 app:title="@string/notification_title"
                 app:useSimpleSummaryProvider="true" />
         <Preference
                 app:defaultValue="false"
-                app:dependency="notification_status"
-                app:key="notification_time_picker"
+                app:dependency="@string/notification_status"
+                app:key="@string/notification_time_picker"
                 app:title="@string/notification_time" />
     </PreferenceCategory>
 
-    <PreferenceCategory app:title="Оформление">
+    <PreferenceCategory app:title="@string/design">
 
         <SwitchPreferenceCompat
                 app:defaultValue="false"
-                app:key="dark_mode"
-                app:title="Тёмная тема" />
+                app:key="@string/dark_mode"
+                app:title="@string/dark_mode_ru" />
 
 
         <ListPreference
                 android:defaultValue="2"
                 android:entries="@array/CardLayoutLineSize"
                 android:entryValues="@array/CardLayoutLineSize"
-                android:key="card_layout_preference"
-                android:title="Количество строк на занятие" />
+                android:key="@string/card_layout_preference"
+                android:title="@string/strings_counts_title" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="Расписание">
+    <PreferenceCategory android:title="@string/app_name">
         <Preference
-                android:title="Изменить источник расписания"
-                app:key="source_of_schedule"
+                android:title="@string/change_title_of_schedule"
+                app:key="@string/source_of_schedule"
                 app:useSimpleSummaryProvider="true" />
 
     </PreferenceCategory>

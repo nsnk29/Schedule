@@ -22,14 +22,11 @@ import com.example.schedule.OnSwipeTouchListener
 import com.example.schedule.R
 import com.example.schedule.adapters.BottomRecycleAdapter
 import com.example.schedule.adapters.MainRecycleAdapter
-import com.example.schedule.model.ListOfStringClass
+import com.example.schedule.database.database
 import com.example.schedule.model.MyJSONFile
 import com.example.schedule.model.PairClass
-import com.example.schedule.model.VersionClass
 import com.google.gson.GsonBuilder
 import io.realm.Realm
-import io.realm.RealmList
-import io.realm.kotlin.createObject
 import kotlinx.android.synthetic.main.activity_main.*
 import okhttp3.*
 import java.io.IOException
@@ -43,6 +40,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var bottomRecycleAdapter: BottomRecycleAdapter
     private lateinit var mainRecycleAdapter: MainRecycleAdapter
     private lateinit var mPreference: SharedPreferences
+    lateinit var database: database
     private var currentWeek: Int = 0
 
     companion object {
@@ -56,11 +54,11 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         initRealm()
         getJSON()
-        setToggleAction()
         createNotificationChannel()
         val currentDay = getCurrentDay()
         setBottomRecyclerView(currentDay)
         setMainRecyclerView(currentDay)
+        setToggleAction()
         recycleViewMain.setOnTouchListener(getMainSwipeListener())
     }
 
@@ -93,8 +91,6 @@ class MainActivity : AppCompatActivity() {
             RecyclerView.VERTICAL,
             false
         )
-        mPreference = PreferenceManager.getDefaultSharedPreferences(this)
-
 
         val pairsData =
             preparePairsData(
@@ -113,12 +109,8 @@ class MainActivity : AppCompatActivity() {
         val isGroup = mPreference.getBoolean(getString(R.string.isGroupPicked), true)
 
         val pairsData =
-            if (isGroup) realm.where(PairClass::class.java).equalTo("group", savedValueOfUsersPick)
-                .equalTo("day", currentDay + 1)
-                .notEqualTo("even", even).findAll()
-            else realm.where(PairClass::class.java).equalTo("lecturer", savedValueOfUsersPick)
-                .equalTo("day", currentDay + 1)
-                .notEqualTo("even", even).findAll()
+            if (isGroup) database.getPairsOfGroup(savedValueOfUsersPick, currentDay + 1, even)
+            else database.getPairsOfLecturer(savedValueOfUsersPick, currentDay+1, even)
 
         val myArray = Array(7) { PairClass() }
         for (pair in pairsData) {
@@ -139,7 +131,6 @@ class MainActivity : AppCompatActivity() {
             false
         )
 
-
         bottomRecycleAdapter =
             BottomRecycleAdapter(initAllWeekDates(), this, currentDay)
         oneTimeDayNameSet(currentDay)
@@ -159,14 +150,21 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initRealm() {
-        Realm.init(this)
-        realm = Realm.getDefaultInstance()
+        database = database(applicationContext)
+        realm = database.getConnection()
     }
 
 
     private fun getJSON() {
+        mPreference = PreferenceManager.getDefaultSharedPreferences(this)
         val client = OkHttpClient()
-        val url = URL("https://api.npoint.io/51288cb390c242f3e007")
+
+        val url = URL(
+            "https://makson.f-dev.ru/api/getContent.php?v=${mPreference.getLong(
+                "version",
+                0
+            )}&n=Nikita"
+        )
 
         val request = Request.Builder()
             .url(url)
@@ -187,80 +185,25 @@ class MainActivity : AppCompatActivity() {
             override fun onResponse(call: Call, response: Response) {
                 val body = response.body?.string()
                 val builder = GsonBuilder().create()
-                val myData = builder.fromJson(body, MyJSONFile::class.java)
+                val mJson = builder.fromJson(body, MyJSONFile::class.java)
                 runOnUiThread {
-                    getVersionFromDB(myData.version, myData)
+                    Toast.makeText(
+                        applicationContext,
+                        "size = ${mJson.pairs.size} v = ${mPreference.getLong("version", 0)}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                    if (mJson.pairs.isNotEmpty()) {
+                        database.addInformationToDBFromJSON(mJson)
+                        database.setVersion(mJson.version)
+                        Toast.makeText(applicationContext, "UPDATE", Toast.LENGTH_SHORT).show()
+                        updateBottomRecycler(bottomRecycleAdapter.currentDay, true)
+                    }
                 }
             }
         })
     }
 
-    private fun updateDatabaseInfo(data: MyJSONFile) {
-        val groupList: RealmList<String> = RealmList()
-        val lecturerList: RealmList<String> = RealmList()
-
-        realm.executeTransaction { realm ->
-            for (pair in data.pairs) {
-                val localPair = realm.createObject<PairClass>()
-                localPair.studyroom = pair.studyroom
-                localPair.day = pair.day
-                localPair.even = pair.even
-                localPair.group = pair.group
-                localPair.lecturer = pair.lecturer
-                localPair.number = pair.number
-                localPair.name = pair.name
-                localPair.type = pair.type
-                groupList.add(pair.group)
-                lecturerList.add(pair.lecturer)
-            }
-            val groupToDB = realm.createObject<ListOfStringClass>()
-            groupToDB.data = getUniqueList(groupList.distinct())
-            groupToDB.type = getString(R.string.groups)
-            val lecturerToDB = realm.createObject<ListOfStringClass>()
-            lecturerToDB.data = getUniqueList(lecturerList.distinct())
-            lecturerToDB.type = getString(R.string.lecturers)
-        }
-
-        updateBottomRecycler(bottomRecycleAdapter.currentDay, true)
-    }
-
-    private fun getUniqueList(data: List<String>): RealmList<String> {
-        val result: RealmList<String> = RealmList()
-        for (str in data) result.add(str)
-        return result
-    }
-
-
-    fun getVersionFromDB(newVersion: Double, data: MyJSONFile) {
-        val currentVersion = realm.where(VersionClass::class.java).findFirst()
-
-
-        if (currentVersion == null) {
-            // перввый запуск
-            realm.executeTransaction { realm ->
-                val v = realm.createObject<VersionClass>()
-                v.version = newVersion
-            }
-            // upd all db
-            updateDatabaseInfo(data)
-        } else if (newVersion > currentVersion.version) {
-            // обновление данных
-            realm.executeTransaction {
-                currentVersion.version = newVersion
-            }
-            tryDeleteFromDB()
-            updateDatabaseInfo(data)
-        }
-
-    }
-
-    private fun tryDeleteFromDB() {
-        realm.executeTransaction { realm ->
-            realm.delete(PairClass::class.java)
-            realm.delete(ListOfStringClass::class.java)
-        }
-
-    }
 
     fun openSettings(view: View) {
         val intent = Intent(view.context, SettingsActivity::class.java)
@@ -321,7 +264,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateCurrentWeek() {
         bottomRecycleAdapter.changeCurrentWeekDate()
-//        bottomRecycleAdapter.currentWeek = getNegativeWeek()
         updateBottomRecycler(bottomRecycleAdapter.selectedDay, true)
     }
 
@@ -331,20 +273,23 @@ class MainActivity : AppCompatActivity() {
             bottomRecycleAdapter.notifyDataSetChanged()
             weekDayText.text = getDayName(position)
             mainRecycleAdapter.pairsData =
-                preparePairsData(position, if (toggle.isChecked) currentWeek else getNegativeWeek(currentWeek))
+                preparePairsData(
+                    position,
+                    if (toggle.isChecked) currentWeek else getNegativeWeek(currentWeek)
+                )
             mainRecycleAdapter.notifyDataSetChanged()
         }
     }
 
     private fun getDayName(pos: Int): String {
         return when (pos) {
-            0 -> ("Понедельник")
-            1 -> ("Вторник")
-            2 -> ("Среда")
-            3 -> ("Четверг")
-            4 -> ("Пятница")
-            5 -> ("Суббота")
-            else -> ("Воскресенье")
+            0 -> (getString(R.string.monday))
+            1 -> (getString(R.string.tuesday))
+            2 -> (getString(R.string.wednesday))
+            3 -> (getString(R.string.thursday))
+            4 -> (getString(R.string.friday))
+            5 -> (getString(R.string.saturday))
+            else -> (getString(R.string.sunday))
         }
     }
 
@@ -372,5 +317,10 @@ class MainActivity : AppCompatActivity() {
             cal.add(Calendar.DATE, 1)
         currentWeek = cal.get(Calendar.WEEK_OF_YEAR) % 2
         return currentWeek
+    }
+
+    override fun onDestroy() {
+        database.closeConnection()
+        super.onDestroy()
     }
 }
