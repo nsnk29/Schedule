@@ -9,21 +9,20 @@ import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.preference.PreferenceManager
+import com.example.schedule.database.database
 import com.example.schedule.model.PairClass
 import io.realm.Realm
 import java.util.*
 
 class AlertReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
+        val database = database(context)
+        val realm = database.getConnection()
 
-        Realm.init(context)
-
-        val realm = Realm.getDefaultInstance()
         val cal = Calendar.getInstance()
         cal.firstDayOfWeek = Calendar.SUNDAY
         val currentWeek = cal.get(Calendar.WEEK_OF_YEAR) % 2
         val currentDay = cal.get(Calendar.DAY_OF_WEEK)
-        Toast.makeText(context, "$currentDay $currentWeek)}", Toast.LENGTH_SHORT).show()
         val even = if (currentWeek == 0) 1 else 0
         val mPreference = PreferenceManager.getDefaultSharedPreferences(context)
         val savedValueOfUsersPick =
@@ -31,12 +30,8 @@ class AlertReceiver : BroadcastReceiver() {
         val isGroup = mPreference.getBoolean(context.getString(R.string.isGroupPicked), true)
 
         val pairs =
-            if (isGroup) realm.where(PairClass::class.java).equalTo("group", savedValueOfUsersPick)
-                .equalTo("day", currentDay)
-                .notEqualTo("even", even).findAll()
-            else realm.where(PairClass::class.java).equalTo("lecturer", savedValueOfUsersPick)
-                .equalTo("day", currentDay)
-                .notEqualTo("even", even).findAll()
+            if (isGroup) database.getPairsOfGroup(savedValueOfUsersPick, currentDay, even)
+            else database.getPairsOfLecturer(savedValueOfUsersPick, currentDay, even)
 
 
         var result = ""

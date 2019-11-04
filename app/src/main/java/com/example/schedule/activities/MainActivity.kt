@@ -11,6 +11,7 @@ import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import android.view.animation.AnimationUtils
 import android.widget.CompoundButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -110,7 +111,7 @@ class MainActivity : AppCompatActivity() {
 
         val pairsData =
             if (isGroup) database.getPairsOfGroup(savedValueOfUsersPick, currentDay + 1, even)
-            else database.getPairsOfLecturer(savedValueOfUsersPick, currentDay+1, even)
+            else database.getPairsOfLecturer(savedValueOfUsersPick, currentDay + 1, even)
 
         val myArray = Array(7) { PairClass() }
         for (pair in pairsData) {
@@ -132,7 +133,7 @@ class MainActivity : AppCompatActivity() {
         )
 
         bottomRecycleAdapter =
-            BottomRecycleAdapter(initAllWeekDates(), this, currentDay)
+            BottomRecycleAdapter(initAllWeekDates(), this, currentDay, toggle.isChecked)
         oneTimeDayNameSet(currentDay)
 
         recycleViewBottom.adapter = bottomRecycleAdapter
@@ -208,18 +209,25 @@ class MainActivity : AppCompatActivity() {
     fun openSettings(view: View) {
         val intent = Intent(view.context, SettingsActivity::class.java)
         startActivityForResult(intent, COUNT_LINES_REQUEST_CODE)
-
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == COUNT_LINES_REQUEST_CODE) {
-                val currentDay = getCurrentDay()
-                setBottomRecyclerView(currentDay)
-                setMainRecyclerView(currentDay)
+                onSourceChange()
             }
         }
+    }
+
+    private fun onSourceChange() {
+        val pairsData =
+            preparePairsData(
+                bottomRecycleAdapter.selectedDay,
+                if (toggle.isChecked) currentWeek else getNegativeWeek(getParityOfWeek())
+            )
+        mainRecycleAdapter.pairsData = pairsData
+        mainRecycleAdapter.notifyDataSetChanged()
     }
 
     private fun createNotificationChannel() {
@@ -316,6 +324,12 @@ class MainActivity : AppCompatActivity() {
         if (cal.get(Calendar.DAY_OF_WEEK) == 1)
             cal.add(Calendar.DATE, 1)
         currentWeek = cal.get(Calendar.WEEK_OF_YEAR) % 2
+        if (currentWeek % 2 != 0) {
+            Toast.makeText(applicationContext, "Знаменатель", Toast.LENGTH_SHORT).show()
+            toggle.textOn = getString(R.string.current_week)
+            toggle.textOff = getString(R.string.next_week)
+            toggle.isChecked = false
+        }
         return currentWeek
     }
 
