@@ -15,7 +15,7 @@ import kotlinx.android.synthetic.main.group_picker_fragment.view.*
 import java.util.*
 
 
-class PickerFragment(var isGroup: Boolean) : Fragment() {
+class PickerFragment(private var isGroup: Boolean) : Fragment() {
 
 
     override fun onCreateView(

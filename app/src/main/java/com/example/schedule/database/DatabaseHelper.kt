@@ -12,10 +12,10 @@ import io.realm.RealmList
 import io.realm.RealmResults
 import io.realm.kotlin.createObject
 
-class database(val context: Context) {
+class DatabaseHelper(val context: Context) {
     private lateinit var connection: Realm
-    var versionOfSchedule = 0.toLong()
-    val mPreference = PreferenceManager.getDefaultSharedPreferences(context)
+    private var versionOfSchedule = 0.toLong()
+    private val mPreference = PreferenceManager.getDefaultSharedPreferences(context)
 
 
     fun getConnection(): Realm {

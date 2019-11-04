@@ -14,13 +14,11 @@ import androidx.viewpager.widget.ViewPager
 import com.example.schedule.R
 import com.example.schedule.adapters.PickerRecycleAdapter
 import com.example.schedule.adapters.ViewPageAdapter
-import com.example.schedule.database.database
+import com.example.schedule.database.DatabaseHelper
 import com.example.schedule.fragments.PickerFragment
-import com.example.schedule.model.ListOfStringClass
 import com.example.schedule.model.MyJSONFile
 import com.google.gson.GsonBuilder
 import io.realm.Realm
-import io.realm.RealmList
 import kotlinx.android.synthetic.main.activity_picker.*
 import okhttp3.*
 import java.io.IOException
@@ -30,15 +28,15 @@ import java.net.URL
 class PickerActivity : AppCompatActivity() {
 
     lateinit var realm: Realm
-    lateinit var adapter: ViewPageAdapter
-    lateinit var groupsFragment: PickerFragment
-    lateinit var lecturersFragment: PickerFragment
-    lateinit var database: database
+    private lateinit var adapter: ViewPageAdapter
+    private lateinit var groupsFragment: PickerFragment
+    private lateinit var lecturersFragment: PickerFragment
+    lateinit var database: DatabaseHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_picker)
-        database = database(applicationContext)
+        database = DatabaseHelper(applicationContext)
         realm = database.getConnection()
 
         adapter = ViewPageAdapter(supportFragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT)

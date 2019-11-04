@@ -23,8 +23,12 @@ import java.util.*
 
 class SettingsActivity : AppCompatActivity(), TimePickerDialog.OnTimeSetListener {
     companion object {
+        const val COUNT_LINES_REQUEST_CODE = 1
         const val GROUP_PICK_REQUEST_CODE = 2
+        const val BOTH_REQUEST_CODE = 3
     }
+
+    var countOfResults = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,6 +50,7 @@ class SettingsActivity : AppCompatActivity(), TimePickerDialog.OnTimeSetListener
 
 
     class SettingsFragment : PreferenceFragmentCompat() {
+
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey)
             val mPreference = PreferenceManager.getDefaultSharedPreferences(this.context)
@@ -115,7 +120,10 @@ class SettingsActivity : AppCompatActivity(), TimePickerDialog.OnTimeSetListener
             val cardLayoutPreference =
                 findPreference<ListPreference>(getString(R.string.card_layout_preference))
             cardLayoutPreference?.onPreferenceChangeListener = OnPreferenceChangeListener { _, _ ->
-                (context as SettingsActivity).setOkResult()
+                (context as SettingsActivity).countOfResults++
+                if ((context as SettingsActivity).countOfResults == 1)
+                    (context as SettingsActivity).setResult(COUNT_LINES_REQUEST_CODE)
+                else (context as SettingsActivity).setResult(BOTH_REQUEST_CODE)
                 true
             }
 
@@ -145,7 +153,10 @@ class SettingsActivity : AppCompatActivity(), TimePickerDialog.OnTimeSetListener
             super.onActivityResult(requestCode, resultCode, data)
             if (resultCode == Activity.RESULT_OK) {
                 if (requestCode == GROUP_PICK_REQUEST_CODE) {
-                    (context as SettingsActivity).setOkResult()
+                    (context as SettingsActivity).countOfResults++
+                    if ((context as SettingsActivity).countOfResults == 1)
+                        (context as SettingsActivity).setResult(GROUP_PICK_REQUEST_CODE)
+                    else (context as SettingsActivity).setResult(BOTH_REQUEST_CODE)
                     (context as SettingsActivity).updateFragment()
 
                 }
@@ -153,9 +164,6 @@ class SettingsActivity : AppCompatActivity(), TimePickerDialog.OnTimeSetListener
         }
     }
 
-    private fun setOkResult() {
-        setResult(Activity.RESULT_OK)
-    }
 
     private fun updateFragment() {
         supportFragmentManager

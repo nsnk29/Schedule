@@ -5,18 +5,15 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
-import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.preference.PreferenceManager
-import com.example.schedule.database.database
-import com.example.schedule.model.PairClass
-import io.realm.Realm
+import com.example.schedule.database.DatabaseHelper
 import java.util.*
 
 class AlertReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
-        val database = database(context)
+        val database = DatabaseHelper(context)
         val realm = database.getConnection()
 
         val cal = Calendar.getInstance()
@@ -66,7 +63,7 @@ class AlertReceiver : BroadcastReceiver() {
             .setDefaults(Notification.DEFAULT_VIBRATE)
             .build()
         with(NotificationManagerCompat.from(context)) {
-            notify(NOTIF_ID, notification)
+            notify(NOTIFICATION_ID, notification)
         }
 
         realm.close()
@@ -101,6 +98,6 @@ class AlertReceiver : BroadcastReceiver() {
 
     companion object {
         const val CHANNEL_ID = "scheduleNotification"
-        const val NOTIF_ID = 1
+        const val NOTIFICATION_ID = 1
     }
 }

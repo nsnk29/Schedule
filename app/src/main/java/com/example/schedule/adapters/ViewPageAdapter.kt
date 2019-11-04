@@ -7,11 +7,11 @@ import androidx.fragment.app.FragmentPagerAdapter
 class ViewPageAdapter(fm: FragmentManager, behavior: Int) :
     FragmentPagerAdapter(fm, behavior) {
 
-    val fragmentList: MutableList<Fragment> = ArrayList()
-    val FragmentListTitles: MutableList<String> = ArrayList()
+    private val fragmentList: MutableList<Fragment> = ArrayList()
+    private val fragmentListTitles: MutableList<String> = ArrayList()
 
     override fun getCount(): Int {
-        return FragmentListTitles.size
+        return fragmentListTitles.size
     }
 
     override fun getItem(position: Int): Fragment {
@@ -19,12 +19,12 @@ class ViewPageAdapter(fm: FragmentManager, behavior: Int) :
     }
 
     override fun getPageTitle(position: Int): CharSequence? {
-        return FragmentListTitles[position]
+        return fragmentListTitles[position]
     }
 
     fun addFragment(fragment: Fragment, Title: String){
         fragmentList.add(fragment)
-        FragmentListTitles.add(Title)
+        fragmentListTitles.add(Title)
 
     }
 

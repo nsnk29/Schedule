@@ -17,7 +17,7 @@ import kotlinx.android.synthetic.main.card_layout_two_lines.view.*
 class MainRecycleAdapter(var pairsData: Array<PairClass>, var context: Context) :
     RecyclerView.Adapter<MainRecycleAdapter.CustomViewHolder2>() {
     private val lineCount: String?
-    private var isGroup: Boolean = true
+    var isGroup: Boolean = true
     private var primaryColor = ContextCompat.getColor(context, R.color.text_color_primary)
     private var secondaryColor = ContextCompat.getColor(context, R.color.text_color_secondary)
 
@@ -107,6 +107,7 @@ class MainRecycleAdapter(var pairsData: Array<PairClass>, var context: Context) 
             else -> "00:00\n00:00"
         }
     }
+
 
     class CustomViewHolder2(v: View) : RecyclerView.ViewHolder(v) {
         val pairTime: TextView = itemView.findViewById(R.id.pairTime)

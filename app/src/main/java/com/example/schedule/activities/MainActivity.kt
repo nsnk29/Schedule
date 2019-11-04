@@ -1,6 +1,5 @@
 package com.example.schedule.activities
 
-import android.app.Activity
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -11,7 +10,9 @@ import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.view.View
-import android.view.animation.AnimationUtils
+import android.view.animation.Animation
+import android.view.animation.LinearInterpolator
+import android.view.animation.RotateAnimation
 import android.widget.CompoundButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -23,7 +24,7 @@ import com.example.schedule.OnSwipeTouchListener
 import com.example.schedule.R
 import com.example.schedule.adapters.BottomRecycleAdapter
 import com.example.schedule.adapters.MainRecycleAdapter
-import com.example.schedule.database.database
+import com.example.schedule.database.DatabaseHelper
 import com.example.schedule.model.MyJSONFile
 import com.example.schedule.model.PairClass
 import com.google.gson.GsonBuilder
@@ -41,12 +42,16 @@ class MainActivity : AppCompatActivity() {
     private lateinit var bottomRecycleAdapter: BottomRecycleAdapter
     private lateinit var mainRecycleAdapter: MainRecycleAdapter
     private lateinit var mPreference: SharedPreferences
-    lateinit var database: database
+    lateinit var database: DatabaseHelper
     private var currentWeek: Int = 0
+    private lateinit var arrayForMainRecyclerView: Array<PairClass>
+    private lateinit var rotate: RotateAnimation
 
     companion object {
         const val CHANNEL_ID = "scheduleNotification"
         const val COUNT_LINES_REQUEST_CODE = 1
+        const val GROUP_PICK_REQUEST_CODE = 2
+        const val BOTH_REQUEST_CODE = 3
     }
 
 
@@ -61,6 +66,7 @@ class MainActivity : AppCompatActivity() {
         setMainRecyclerView(currentDay)
         setToggleAction()
         recycleViewMain.setOnTouchListener(getMainSwipeListener())
+        initRotateForSettings()
     }
 
     private fun getMainSwipeListener(): OnSwipeTouchListener {
@@ -87,6 +93,8 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun setMainRecyclerView(currentDay: Int) {
+        arrayForMainRecyclerView = Array(7) { PairClass() }
+
         recycleViewMain.layoutManager = LinearLayoutManager(
             this,
             RecyclerView.VERTICAL,
@@ -113,16 +121,15 @@ class MainActivity : AppCompatActivity() {
             if (isGroup) database.getPairsOfGroup(savedValueOfUsersPick, currentDay + 1, even)
             else database.getPairsOfLecturer(savedValueOfUsersPick, currentDay + 1, even)
 
-        val myArray = Array(7) { PairClass() }
+        arrayForMainRecyclerView = Array(7) { PairClass() }
         for (pair in pairsData) {
             try {
-                myArray[pair.number - 1] = pair
+                arrayForMainRecyclerView[pair.number - 1] = pair
             } catch (e: ArrayIndexOutOfBoundsException) {
                 Toast.makeText(this, "JSON error", Toast.LENGTH_SHORT).show()
             }
         }
-
-        return myArray
+        return arrayForMainRecyclerView
     }
 
     private fun setBottomRecyclerView(currentDay: Int) {
@@ -135,10 +142,10 @@ class MainActivity : AppCompatActivity() {
         bottomRecycleAdapter =
             BottomRecycleAdapter(initAllWeekDates(), this, currentDay, toggle.isChecked)
         oneTimeDayNameSet(currentDay)
-
         recycleViewBottom.adapter = bottomRecycleAdapter
         recycleViewBottom.addItemDecoration(MarginItemDecoration(0))
         recycleViewBottom.setHasFixedSize(true)
+
         recycleViewBottom.overScrollMode = View.OVER_SCROLL_NEVER
     }
 
@@ -151,7 +158,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initRealm() {
-        database = database(applicationContext)
+        database = DatabaseHelper(applicationContext)
         realm = database.getConnection()
     }
 
@@ -188,16 +195,9 @@ class MainActivity : AppCompatActivity() {
                 val builder = GsonBuilder().create()
                 val mJson = builder.fromJson(body, MyJSONFile::class.java)
                 runOnUiThread {
-                    Toast.makeText(
-                        applicationContext,
-                        "size = ${mJson.pairs.size} v = ${mPreference.getLong("version", 0)}",
-                        Toast.LENGTH_SHORT
-                    ).show()
-
                     if (mJson.pairs.isNotEmpty()) {
                         database.addInformationToDBFromJSON(mJson)
                         database.setVersion(mJson.version)
-                        Toast.makeText(applicationContext, "UPDATE", Toast.LENGTH_SHORT).show()
                         updateBottomRecycler(bottomRecycleAdapter.currentDay, true)
                     }
                 }
@@ -213,11 +213,13 @@ class MainActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == COUNT_LINES_REQUEST_CODE) {
-                onSourceChange()
-            }
-        }
+
+        settingsButton.startAnimation(rotate)
+        if (resultCode == GROUP_PICK_REQUEST_CODE)
+            onSourceChange()
+        else if (requestCode == BOTH_REQUEST_CODE || requestCode == COUNT_LINES_REQUEST_CODE)
+            setMainRecyclerView(bottomRecycleAdapter.selectedDay)
+
     }
 
     private fun onSourceChange() {
@@ -226,6 +228,7 @@ class MainActivity : AppCompatActivity() {
                 bottomRecycleAdapter.selectedDay,
                 if (toggle.isChecked) currentWeek else getNegativeWeek(getParityOfWeek())
             )
+        mainRecycleAdapter.isGroup = mPreference.getBoolean(getString(R.string.isGroupPicked), true)
         mainRecycleAdapter.pairsData = pairsData
         mainRecycleAdapter.notifyDataSetChanged()
     }
@@ -325,7 +328,6 @@ class MainActivity : AppCompatActivity() {
             cal.add(Calendar.DATE, 1)
         currentWeek = cal.get(Calendar.WEEK_OF_YEAR) % 2
         if (currentWeek % 2 != 0) {
-            Toast.makeText(applicationContext, "Знаменатель", Toast.LENGTH_SHORT).show()
             toggle.textOn = getString(R.string.current_week)
             toggle.textOff = getString(R.string.next_week)
             toggle.isChecked = false
@@ -333,6 +335,18 @@ class MainActivity : AppCompatActivity() {
         return currentWeek
     }
 
+    private fun initRotateForSettings(){
+        rotate = RotateAnimation(
+            0f,
+            120f,
+            Animation.RELATIVE_TO_SELF,
+            0.5f,
+            Animation.RELATIVE_TO_SELF,
+            0.5f
+        )
+        rotate.duration = 600
+        rotate.interpolator = LinearInterpolator()
+    }
     override fun onDestroy() {
         database.closeConnection()
         super.onDestroy()

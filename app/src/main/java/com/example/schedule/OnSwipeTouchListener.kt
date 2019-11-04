@@ -1,7 +1,6 @@
 package com.example.schedule
 
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.view.GestureDetector
 import android.view.GestureDetector.SimpleOnGestureListener
@@ -28,7 +27,7 @@ open class OnSwipeTouchListener(val context: Context) : OnTouchListener {
 
 
     override fun onTouch(v: View, event: MotionEvent): Boolean {
-//        v.performClick()
+        v.performClick()
         return gestureDetector.onTouchEvent(event)
     }
 
