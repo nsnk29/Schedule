@@ -124,7 +124,20 @@ class MainActivity : AppCompatActivity() {
         arrayForMainRecyclerView = Array(7) { PairClass() }
         for (pair in pairsData) {
             try {
-                arrayForMainRecyclerView[pair.number - 1] = pair
+                if (arrayForMainRecyclerView[pair.number - 1].group == "") {
+                    arrayForMainRecyclerView[pair.number - 1].studyroom = pair.studyroom
+                    arrayForMainRecyclerView[pair.number - 1].day = pair.day
+                    arrayForMainRecyclerView[pair.number - 1].even = pair.even
+                    arrayForMainRecyclerView[pair.number - 1].group = pair.group
+                    arrayForMainRecyclerView[pair.number - 1].lecturer = pair.lecturer
+                    arrayForMainRecyclerView[pair.number - 1].number = pair.number
+                    arrayForMainRecyclerView[pair.number - 1].name = pair.name
+                    arrayForMainRecyclerView[pair.number - 1].name = pair.name
+                    arrayForMainRecyclerView[pair.number - 1].type = pair.type
+                } else
+                    arrayForMainRecyclerView[pair.number - 1].group += ", ${pair.group}"
+
+
             } catch (e: ArrayIndexOutOfBoundsException) {
                 Toast.makeText(this, "JSON error", Toast.LENGTH_SHORT).show()
             }
@@ -151,7 +164,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setToggleAction() {
         toggle.setOnCheckedChangeListener(
-            fun(_: CompoundButton, _: Boolean) {
+            fun(view: CompoundButton, _: Boolean) {
                 updateCurrentWeek()
             }
         )
@@ -166,13 +179,13 @@ class MainActivity : AppCompatActivity() {
     private fun getJSON() {
         mPreference = PreferenceManager.getDefaultSharedPreferences(this)
         val client = OkHttpClient()
-
         val url = URL(
-            "https://makson.f-dev.ru/api/getContent.php?v=${mPreference.getLong(
-                "version",
-                0
-            )}&n=Nikita"
+            getString(R.string.URL_JSON).replace(
+                "VERSION",
+                mPreference.getLong(getString(R.string.version), 0).toString()
+            )
         )
+
 
         val request = Request.Builder()
             .url(url)
@@ -292,8 +305,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun getDayName(pos: Int): String {
-        return when (pos) {
+    private fun getDayName(pos: Int) =
+        when (pos) {
             0 -> (getString(R.string.monday))
             1 -> (getString(R.string.tuesday))
             2 -> (getString(R.string.wednesday))
@@ -302,15 +315,13 @@ class MainActivity : AppCompatActivity() {
             5 -> (getString(R.string.saturday))
             else -> (getString(R.string.sunday))
         }
-    }
 
 
-    private fun getNegativeWeek(x: Int): Int {
-        return when (x) {
-            1 -> 0
-            else -> 1
-        }
+    private fun getNegativeWeek(x: Int) = when (x) {
+        1 -> 0
+        else -> 1
     }
+
 
     private fun oneTimeDayNameSet(position: Int) {
         weekDayText.text = getDayName(position)
@@ -335,7 +346,7 @@ class MainActivity : AppCompatActivity() {
         return currentWeek
     }
 
-    private fun initRotateForSettings(){
+    private fun initRotateForSettings() {
         rotate = RotateAnimation(
             0f,
             120f,
@@ -347,6 +358,7 @@ class MainActivity : AppCompatActivity() {
         rotate.duration = 600
         rotate.interpolator = LinearInterpolator()
     }
+
     override fun onDestroy() {
         database.closeConnection()
         super.onDestroy()

@@ -111,7 +111,7 @@ class PickerActivity : AppCompatActivity() {
 
     private fun getJSON() {
         val client = OkHttpClient()
-        val url = URL(getString(R.string.URL_JSON))
+        val url = URL(getString(R.string.URL_JSON).replace("VERSION", "0"))
 
         val request = Request.Builder()
             .url(url)

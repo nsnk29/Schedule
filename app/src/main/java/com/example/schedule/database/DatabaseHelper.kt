@@ -16,7 +16,7 @@ class DatabaseHelper(val context: Context) {
     private lateinit var connection: Realm
     private var versionOfSchedule = 0.toLong()
     private val mPreference = PreferenceManager.getDefaultSharedPreferences(context)
-
+    private val pairdSelectedDay: Array<PairClass> = Array(7) { PairClass() }
 
     fun getConnection(): Realm {
         if (!(::connection.isInitialized)) {
@@ -97,12 +97,22 @@ class DatabaseHelper(val context: Context) {
             .findAll()
     }
 
-    fun getPairsOfLecturer(lecturer: String?, day: Int, even: Int): RealmResults<PairClass>{
+    fun getPairsOfLecturer(lecturer: String?, day: Int, even: Int): RealmResults<PairClass> {
         return connection.where(PairClass::class.java)
             .equalTo(context.getString(R.string.lecturer_parameter), lecturer)
             .equalTo(context.getString(R.string.day_parameter), day)
             .notEqualTo(context.getString(R.string.even_parameter), even)
             .findAll()
+    }
+
+    fun getPairsByDay(day: Int, even: Int) {
+        clrPairsSelectedDay()
+
+    }
+
+    private fun clrPairsSelectedDay() {
+        for (pair in pairdSelectedDay)
+            pair.name = ""
     }
 
     fun closeConnection() {
