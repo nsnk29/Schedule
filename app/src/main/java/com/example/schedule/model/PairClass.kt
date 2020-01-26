@@ -11,4 +11,15 @@ open class PairClass : RealmObject(){
     var number: Int = 0
     var name: String = ""
     var type: Int = 0
+
+    fun clear(){
+        studyroom = ""
+        day = 0
+        even = 0
+        group = ""
+        lecturer = ""
+        number = 0
+        name = ""
+        type = 0
+    }
 }

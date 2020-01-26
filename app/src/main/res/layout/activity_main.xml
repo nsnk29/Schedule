@@ -17,31 +17,23 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/weekDayText"
-                app:layout_constraintTop_toTopOf="parent">
+        <ToggleButton
+                android:id="@+id/toggle"
+                android:layout_width="125dp"
+                android:layout_height="30dp"
+                android:layout_marginEnd="8dp"
+                android:background="@color/empty_pairs"
+                android:gravity="center"
+                android:maxLines="1"
+                android:padding="4dp"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="@color/text_color_primary"
+                android:textOff="@string/current_week"
+                android:textOn="@string/next_week"
 
-            <ToggleButton
-                    android:id="@+id/toggle"
-                    android:layout_width="125dp"
-                    android:layout_height="30dp"
-                    android:layout_marginEnd="8dp"
-                    android:background="@color/empty_pairs"
-                    android:gravity="center"
-                    android:maxLines="1"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:padding="4dp"
-                    android:textColor="@color/text_color_primary"
-                    android:textOff="@string/current_week"
-                    android:textOn="@string/next_week"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                app:layout_constraintBottom_toBottomOf="@+id/settingsButton"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/settingsButton" />
 
         <ImageView
                 android:id="@+id/settingsButton"
@@ -57,17 +49,17 @@
 
         <TextView
                 android:id="@+id/weekDayText"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:gravity="center"
                 android:text="@string/monday"
-                android:textColor="@color/text_color_primary"
                 android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="@color/text_color_primary"
                 android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toBottomOf="@+id/settingsButton"
+                app:layout_constraintEnd_toStartOf="@+id/toggle"
                 app:layout_constraintStart_toEndOf="@+id/settingsButton"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="@+id/settingsButton" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -90,13 +82,13 @@
             android:layout_marginStart="4dp"
             android:layout_marginEnd="4dp"
             android:clipToPadding="false"
-
             android:padding="2dp"
             app:layout_constraintBottom_toTopOf="@+id/recycleViewBottom"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/topMenu" />
+            app:layout_constraintTop_toBottomOf="@+id/topMenu"
+            tools:listitem="@layout/card_layout_two_lines" />
 
     <View
             android:id="@+id/bottomShadow"

@@ -13,8 +13,8 @@ import java.util.*
 
 class AlertReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
-        val database = DatabaseHelper(context)
-        val realm = database.getConnection()
+        DatabaseHelper.init(context)
+        val realm = DatabaseHelper.getConnection()
 
         val cal = Calendar.getInstance()
         cal.firstDayOfWeek = Calendar.SUNDAY
@@ -27,8 +27,8 @@ class AlertReceiver : BroadcastReceiver() {
         val isGroup = mPreference.getBoolean(context.getString(R.string.isGroupPicked), true)
 
         val pairs =
-            if (isGroup) database.getPairsOfGroup(savedValueOfUsersPick, currentDay, even)
-            else database.getPairsOfLecturer(savedValueOfUsersPick, currentDay, even)
+            if (isGroup) DatabaseHelper.getPairsOfGroup(savedValueOfUsersPick, currentDay, even)
+            else DatabaseHelper.getPairsOfLecturer(savedValueOfUsersPick, currentDay, even)
 
 
         var result = ""

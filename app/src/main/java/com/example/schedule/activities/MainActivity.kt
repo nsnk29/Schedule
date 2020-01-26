@@ -22,27 +22,22 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.schedule.MarginItemDecoration
 import com.example.schedule.OnSwipeTouchListener
 import com.example.schedule.R
+import com.example.schedule.URLRequests
 import com.example.schedule.adapters.BottomRecycleAdapter
 import com.example.schedule.adapters.MainRecycleAdapter
 import com.example.schedule.database.DatabaseHelper
-import com.example.schedule.model.MyJSONFile
 import com.example.schedule.model.PairClass
-import com.google.gson.GsonBuilder
 import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_main.*
-import okhttp3.*
-import java.io.IOException
-import java.net.URL
 import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var realm: Realm
-    private lateinit var bottomRecycleAdapter: BottomRecycleAdapter
+    lateinit var bottomRecycleAdapter: BottomRecycleAdapter
     private lateinit var mainRecycleAdapter: MainRecycleAdapter
     private lateinit var mPreference: SharedPreferences
-    lateinit var database: DatabaseHelper
     private var currentWeek: Int = 0
     private lateinit var arrayForMainRecyclerView: Array<PairClass>
     private lateinit var rotate: RotateAnimation
@@ -58,8 +53,9 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        initRealm()
-        getJSON()
+        DatabaseHelper.init(this)
+        realm = DatabaseHelper.getConnection()
+        URLRequests.getJSON(this)
         createNotificationChannel()
         val currentDay = getCurrentDay()
         setBottomRecyclerView(currentDay)
@@ -100,6 +96,7 @@ class MainActivity : AppCompatActivity() {
             RecyclerView.VERTICAL,
             false
         )
+        mPreference = PreferenceManager.getDefaultSharedPreferences(this)
 
         val pairsData =
             preparePairsData(
@@ -118,10 +115,11 @@ class MainActivity : AppCompatActivity() {
         val isGroup = mPreference.getBoolean(getString(R.string.isGroupPicked), true)
 
         val pairsData =
-            if (isGroup) database.getPairsOfGroup(savedValueOfUsersPick, currentDay + 1, even)
-            else database.getPairsOfLecturer(savedValueOfUsersPick, currentDay + 1, even)
+            if (isGroup) DatabaseHelper.getPairsOfGroup(savedValueOfUsersPick, currentDay + 1, even)
+            else DatabaseHelper.getPairsOfLecturer(savedValueOfUsersPick, currentDay + 1, even)
 
-        arrayForMainRecyclerView = Array(7) { PairClass() }
+        arrayForMainRecyclerView.map { it.clear() }
+
         for (pair in pairsData) {
             try {
                 if (arrayForMainRecyclerView[pair.number - 1].group == "") {
@@ -136,7 +134,6 @@ class MainActivity : AppCompatActivity() {
                     arrayForMainRecyclerView[pair.number - 1].type = pair.type
                 } else
                     arrayForMainRecyclerView[pair.number - 1].group += ", ${pair.group}"
-
 
             } catch (e: ArrayIndexOutOfBoundsException) {
                 Toast.makeText(this, "JSON error", Toast.LENGTH_SHORT).show()
@@ -164,60 +161,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun setToggleAction() {
         toggle.setOnCheckedChangeListener(
-            fun(view: CompoundButton, _: Boolean) {
+            fun(_: CompoundButton, _: Boolean) {
                 updateCurrentWeek()
             }
         )
     }
-
-    private fun initRealm() {
-        database = DatabaseHelper(applicationContext)
-        realm = database.getConnection()
-    }
-
-
-    private fun getJSON() {
-        mPreference = PreferenceManager.getDefaultSharedPreferences(this)
-        val client = OkHttpClient()
-        val url = URL(
-            getString(R.string.URL_JSON).replace(
-                "VERSION",
-                mPreference.getLong(getString(R.string.version), 0).toString()
-            )
-        )
-
-
-        val request = Request.Builder()
-            .url(url)
-            .get()
-            .build()
-
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                runOnUiThread {
-                    Toast.makeText(
-                        applicationContext,
-                        "Проблемы подключения к сети",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-                val body = response.body?.string()
-                val builder = GsonBuilder().create()
-                val mJson = builder.fromJson(body, MyJSONFile::class.java)
-                runOnUiThread {
-                    if (mJson.pairs.isNotEmpty()) {
-                        database.addInformationToDBFromJSON(mJson)
-                        database.setVersion(mJson.version)
-                        updateBottomRecycler(bottomRecycleAdapter.currentDay, true)
-                    }
-                }
-            }
-        })
-    }
-
 
     fun openSettings(view: View) {
         val intent = Intent(view.context, SettingsActivity::class.java)
@@ -226,13 +174,11 @@ class MainActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-
         settingsButton.startAnimation(rotate)
         if (resultCode == GROUP_PICK_REQUEST_CODE)
             onSourceChange()
         else if (requestCode == BOTH_REQUEST_CODE || requestCode == COUNT_LINES_REQUEST_CODE)
             setMainRecyclerView(bottomRecycleAdapter.selectedDay)
-
     }
 
     private fun onSourceChange() {
@@ -360,7 +306,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        database.closeConnection()
+        DatabaseHelper.closeConnection()
         super.onDestroy()
     }
 }

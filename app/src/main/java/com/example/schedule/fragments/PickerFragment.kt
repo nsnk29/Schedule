@@ -11,12 +11,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.schedule.R
 import com.example.schedule.activities.PickerActivity
 import com.example.schedule.adapters.PickerRecycleAdapter
+import com.example.schedule.database.DatabaseHelper
 import kotlinx.android.synthetic.main.group_picker_fragment.view.*
 import java.util.*
 
 
 class PickerFragment(private var isGroup: Boolean) : Fragment() {
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -32,8 +32,8 @@ class PickerFragment(private var isGroup: Boolean) : Fragment() {
             false
         )
         var dataArray =
-            if (isGroup) (context as PickerActivity).database.getListOfGroupsOrLecturer(R.string.groups)
-            else (context as PickerActivity).database.getListOfGroupsOrLecturer(R.string.lecturers)
+            if (isGroup) DatabaseHelper.getListOfGroupsOrLecturer(R.string.groups)
+            else DatabaseHelper.getListOfGroupsOrLecturer(R.string.lecturers)
         dataArray = dataArray.sortedBy { it.toLowerCase(Locale("ru", "Russia")) }
         val adapter = PickerRecycleAdapter(dataArray, isGroup)
         view.search.setOnQueryTextListener(

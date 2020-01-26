@@ -1,6 +1,7 @@
 package com.example.schedule.database
 
 import android.content.Context
+import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
 import com.example.schedule.R
 import com.example.schedule.model.ListOfStringClass
@@ -12,20 +13,28 @@ import io.realm.RealmList
 import io.realm.RealmResults
 import io.realm.kotlin.createObject
 
-class DatabaseHelper(val context: Context) {
+object DatabaseHelper {
     private lateinit var connection: Realm
     private var versionOfSchedule = 0.toLong()
-    private val mPreference = PreferenceManager.getDefaultSharedPreferences(context)
-    private val pairdSelectedDay: Array<PairClass> = Array(7) { PairClass() }
+    private lateinit var mPreference: SharedPreferences
+    private val pairsSelectedDay: Array<PairClass> = Array(7) { PairClass() }
+    private lateinit var context: Context
+
+    fun init(context: Context) {
+        this.context = context
+        mPreference = PreferenceManager.getDefaultSharedPreferences(context)
+        getConnection()
+    }
 
     fun getConnection(): Realm {
-        if (!(::connection.isInitialized)) {
-            Realm.init(context)
-            val configuration =
-                RealmConfiguration.Builder().name("schedule.realm").schemaVersion(1).build()
-            Realm.setDefaultConfiguration(configuration)
-            connection = Realm.getInstance(configuration)
+        if (::connection.isInitialized) {
+            closeConnection()
         }
+        Realm.init(context)
+        val configuration =
+            RealmConfiguration.Builder().name("schedule.realm").schemaVersion(1).build()
+        Realm.setDefaultConfiguration(configuration)
+        connection = Realm.getInstance(configuration)
         return connection
     }
 
@@ -103,16 +112,6 @@ class DatabaseHelper(val context: Context) {
             .equalTo(context.getString(R.string.day_parameter), day)
             .notEqualTo(context.getString(R.string.even_parameter), even)
             .findAll()
-    }
-
-    fun getPairsByDay(day: Int, even: Int) {
-        clrPairsSelectedDay()
-
-    }
-
-    private fun clrPairsSelectedDay() {
-        for (pair in pairdSelectedDay)
-            pair.name = ""
     }
 
     fun closeConnection() {
