@@ -89,7 +89,7 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun setMainRecyclerView(currentDay: Int) {
-        arrayForMainRecyclerView = Array(7) { PairClass() }
+        arrayForMainRecyclerView = Array(8) { PairClass() }
 
         recycleViewMain.layoutManager = LinearLayoutManager(
             this,

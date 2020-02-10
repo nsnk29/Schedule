@@ -104,6 +104,7 @@ class MainRecycleAdapter(var pairsData: Array<PairClass>, var context: Context) 
             5 -> "15:00\n16:30"
             6 -> "16:40\n18:10"
             7 -> "18:20\n19:50"
+            8 -> "20:00\n21:30"
             else -> "00:00\n00:00"
         }
     }
