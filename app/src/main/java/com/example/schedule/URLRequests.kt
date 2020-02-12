@@ -1,6 +1,8 @@
 package com.example.schedule
 
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import android.widget.Toast
 import androidx.preference.PreferenceManager
 import com.example.schedule.activities.MainActivity
@@ -11,6 +13,7 @@ import com.google.gson.GsonBuilder
 import okhttp3.*
 import java.io.IOException
 import java.net.URL
+
 
 object URLRequests {
     fun getJSON(context: Context) {
@@ -30,12 +33,14 @@ object URLRequests {
 
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                Toast.makeText(
-                    context,
-                    "Проблемы подключения к сети",
-                    Toast.LENGTH_LONG
-                ).show()
 
+                Handler(Looper.getMainLooper()).post {
+                    Toast.makeText(
+                        context,
+                        "Проблемы подключения к сети",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
             }
 
             override fun onResponse(call: Call, response: Response) {
