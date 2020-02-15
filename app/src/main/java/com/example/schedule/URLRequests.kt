@@ -59,7 +59,7 @@ object URLRequests {
                             DatabaseHelper.addInformationToDBFromJSON(mJson)
                             DatabaseHelper.setVersion(mJson.version)
                             context.updateBottomRecycler(
-                                context.bottomRecycleAdapter.currentDay,
+                                context.bottomRecycleAdapter.selectedDay,
                                 true
                             )
                         }

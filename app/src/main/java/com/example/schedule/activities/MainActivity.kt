@@ -305,6 +305,13 @@ class MainActivity : AppCompatActivity() {
         rotate.interpolator = LinearInterpolator()
     }
 
+
+    override fun onResume() {
+        super.onResume()
+        URLRequests.getJSON(this)
+    }
+
+
     override fun onDestroy() {
         DatabaseHelper.closeConnection()
         super.onDestroy()

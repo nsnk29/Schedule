@@ -39,8 +39,9 @@ class AlertReceiver : BroadcastReceiver() {
         var info = ""
         if (numberOfPairs == 0) {
             result = "Завтра нет занятий"
+            info = result
         } else {
-            info = "c ${getStart(pairs[0]?.number)} до ${getEnd(pairs[pairs.size - 1]?.number)}"
+            info = "$numberOfPairs занятия c ${getStart(pairs[0]?.number)} до ${getEnd(pairs[pairs.size - 1]?.number)}"
         }
 
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
@@ -52,7 +53,7 @@ class AlertReceiver : BroadcastReceiver() {
                 )
             )
             .setContentTitle("Расписание на завтра $savedValueOfUsersPick")
-            .setContentText("$numberOfPairs занятия $info")
+            .setContentText(info)
             .setStyle(
                 NotificationCompat.BigTextStyle()
                     .bigText(
