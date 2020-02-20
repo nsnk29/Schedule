@@ -4,8 +4,8 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
 import com.example.schedule.R
+import com.example.schedule.model.JSONStructure
 import com.example.schedule.model.ListOfStringClass
-import com.example.schedule.model.MyJSONFile
 import com.example.schedule.model.PairClass
 import io.realm.Realm
 import io.realm.RealmConfiguration
@@ -17,7 +17,6 @@ object DatabaseHelper {
     private lateinit var connection: Realm
     private var versionOfSchedule = 0.toLong()
     private lateinit var mPreference: SharedPreferences
-    private val pairsSelectedDay: Array<PairClass> = Array(7) { PairClass() }
     private lateinit var context: Context
 
     fun init(context: Context) {
@@ -46,7 +45,7 @@ object DatabaseHelper {
         versionOfSchedule = newVersion
     }
 
-    fun addInformationToDBFromJSON(json: MyJSONFile) {
+    fun addInformationToDBFromJSON(json: JSONStructure) {
         deleteAllPairsFromBD()
         val groupList: RealmList<String> = RealmList()
         val lecturerList: RealmList<String> = RealmList()

@@ -15,7 +15,7 @@ import kotlinx.android.synthetic.main.card_layout_two_lines.view.*
 
 
 class MainRecycleAdapter(var pairsData: Array<PairClass>, var context: Context) :
-    RecyclerView.Adapter<MainRecycleAdapter.CustomViewHolder2>() {
+    RecyclerView.Adapter<MainRecycleAdapter.PairViewHolder>() {
     private val lineCount: String?
     var isGroup: Boolean = true
     private var primaryColor = ContextCompat.getColor(context, R.color.text_color_primary)
@@ -33,7 +33,7 @@ class MainRecycleAdapter(var pairsData: Array<PairClass>, var context: Context) 
     }
 
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder2 {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PairViewHolder {
 
         val view: View = when (lineCount) {
             "3" -> LayoutInflater.from(parent.context).inflate(
@@ -47,11 +47,11 @@ class MainRecycleAdapter(var pairsData: Array<PairClass>, var context: Context) 
                 false
             )
         }
-        return CustomViewHolder2(view)
+        return PairViewHolder(view)
     }
 
 
-    override fun onBindViewHolder(holder: CustomViewHolder2, position: Int) {
+    override fun onBindViewHolder(holder: PairViewHolder, position: Int) {
         if (pairsData[position].name == "") {
             holder.name.visibility = View.GONE
             holder.lecturer.visibility = View.GONE
@@ -94,9 +94,7 @@ class MainRecycleAdapter(var pairsData: Array<PairClass>, var context: Context) 
     }
 
 
-    private fun getPairTime(pos: Int?): String {
-
-        return when (pos) {
+    private fun getPairTime(pos: Int?): String = when (pos) {
             1 -> "08:00\n09:30"
             2 -> "09:40\n11:10"
             3 -> "11:30\n13:00"
@@ -106,11 +104,10 @@ class MainRecycleAdapter(var pairsData: Array<PairClass>, var context: Context) 
             7 -> "18:20\n19:50"
             8 -> "20:00\n21:30"
             else -> "00:00\n00:00"
-        }
     }
 
 
-    class CustomViewHolder2(v: View) : RecyclerView.ViewHolder(v) {
+    class PairViewHolder(v: View) : RecyclerView.ViewHolder(v) {
         val pairTime: TextView = itemView.findViewById(R.id.pairTime)
         val name: TextView = itemView.findViewById(R.id.subjectName)
         val type: TextView = itemView.findViewById(R.id.type)

@@ -8,7 +8,7 @@ import androidx.preference.PreferenceManager
 import com.example.schedule.activities.MainActivity
 import com.example.schedule.activities.PickerActivity
 import com.example.schedule.database.DatabaseHelper
-import com.example.schedule.model.MyJSONFile
+import com.example.schedule.model.JSONStructure
 import com.google.gson.GsonBuilder
 import kotlinx.android.synthetic.main.activity_main.*
 import okhttp3.*
@@ -49,7 +49,7 @@ object URLRequests {
             override fun onResponse(call: Call, response: Response) {
                 val body = response.body?.string()
                 val builder = GsonBuilder().create()
-                val mJson = builder.fromJson(body, MyJSONFile::class.java)
+                val mJson = builder.fromJson(body, JSONStructure::class.java)
                 if (mJson.pairs.isNotEmpty()) {
                     if (context is PickerActivity)
                         context.runOnUiThread {

@@ -1,6 +1,6 @@
 package com.example.schedule.model
 
-data class MyJSONFile(
+data class JSONStructure(
     var pairs: List<PairClass>,
     var version: Long
 )

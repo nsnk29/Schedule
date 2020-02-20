@@ -15,9 +15,9 @@ import java.util.*
 
 class BottomRecycleAdapter(
     private val allWeekDates: ArrayList<Int>, var context: Context,
-    val currentDay: Int, private var nextWeek: Boolean
+    private val currentDay: Int, private var nextWeek: Boolean
 ) :
-    RecyclerView.Adapter<BottomRecycleAdapter.CustomViewHolder>() {
+    RecyclerView.Adapter<BottomRecycleAdapter.WeekDayViewHolder>() {
 
 
     private val nameOfWeekdays = arrayOf("ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ")
@@ -52,15 +52,15 @@ class BottomRecycleAdapter(
         return 6
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WeekDayViewHolder {
         val view: View =
             LayoutInflater.from(parent.context).inflate(R.layout.one_day_layout, parent, false)
 
-        return CustomViewHolder(view)
+        return WeekDayViewHolder(view)
     }
 
 
-    override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: WeekDayViewHolder, position: Int) {
         holder.itemView.wrapper.layoutParams.width = itemWidth
         holder.nameOfDayField.text = currentWeekDates[position].toString()
         holder.dateField.text = nameOfWeekdays[position]
@@ -97,7 +97,7 @@ class BottomRecycleAdapter(
 
     }
 
-    class CustomViewHolder(v: View) : RecyclerView.ViewHolder(v) {
+    class WeekDayViewHolder(v: View) : RecyclerView.ViewHolder(v) {
         val nameOfDayField: TextView = itemView.findViewById(R.id.nameOfDay)
         val dateField: TextView = itemView.findViewById(R.id.dateTextView)
 
