@@ -68,7 +68,9 @@ object URLRequests {
                         }
                 }
                 if (context is MainActivity)
-                    context.refreshLayout.isRefreshing = false
+                    context.runOnUiThread {
+                        context.refreshLayout.isRefreshing = false
+                    }
             }
         })
     }
