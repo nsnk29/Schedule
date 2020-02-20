@@ -10,6 +10,7 @@ import com.example.schedule.activities.PickerActivity
 import com.example.schedule.database.DatabaseHelper
 import com.example.schedule.model.MyJSONFile
 import com.google.gson.GsonBuilder
+import kotlinx.android.synthetic.main.activity_main.*
 import okhttp3.*
 import java.io.IOException
 import java.net.URL
@@ -40,6 +41,8 @@ object URLRequests {
                         "Проблемы подключения к сети",
                         Toast.LENGTH_LONG
                     ).show()
+                    if (context is MainActivity)
+                        context.refreshLayout.isRefreshing = false
                 }
             }
 
@@ -64,6 +67,8 @@ object URLRequests {
                             )
                         }
                 }
+                if (context is MainActivity)
+                    context.refreshLayout.isRefreshing = false
             }
         })
     }

@@ -19,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.schedule.MarginItemDecoration
 import com.example.schedule.OnSwipeTouchListener
 import com.example.schedule.R
@@ -32,7 +33,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
 
     private lateinit var realm: Realm
     lateinit var bottomRecycleAdapter: BottomRecycleAdapter
@@ -51,11 +52,12 @@ class MainActivity : AppCompatActivity() {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // toDo обработать onSavedInstance, добавить индикатор обновления
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         DatabaseHelper.init(this)
         realm = DatabaseHelper.getConnection()
-        URLRequests.getJSON(this)
+        refreshLayout.setOnRefreshListener(this)
         createNotificationChannel()
         val currentDay = getCurrentDay()
         setBottomRecyclerView(currentDay)
@@ -104,7 +106,6 @@ class MainActivity : AppCompatActivity() {
                 if (toggle.isChecked) currentWeek else getNegativeWeek(getParityOfWeek())
             )
         mainRecycleAdapter = MainRecycleAdapter(pairsData, this)
-        mainRecycleAdapter.setHasStableIds(true)
         recycleViewMain.adapter = mainRecycleAdapter
         recycleViewMain.overScrollMode = View.OVER_SCROLL_NEVER
     }
@@ -315,5 +316,9 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         DatabaseHelper.closeConnection()
         super.onDestroy()
+    }
+
+    override fun onRefresh() {
+        URLRequests.getJSON(this)
     }
 }

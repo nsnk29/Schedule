@@ -75,7 +75,7 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/simpleSwipeRefreshLayout"
+        android:id="@+id/refreshLayout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/recycleViewBottom"
@@ -109,7 +109,7 @@
         android:layout_width="wrap_content"
         android:layout_height="2dp"
         android:background="@drawable/shadow"
-        app:layout_constraintBottom_toTopOf="@+id/simpleSwipeRefreshLayout"
+        app:layout_constraintBottom_toTopOf="@+id/refreshLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/topMenu" />
