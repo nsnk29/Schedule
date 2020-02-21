@@ -10,13 +10,20 @@ import com.example.schedule.activities.PickerActivity
 import com.example.schedule.database.DatabaseHelper
 import com.example.schedule.model.JSONStructure
 import com.google.gson.GsonBuilder
-import kotlinx.android.synthetic.main.activity_main.*
 import okhttp3.*
 import java.io.IOException
 import java.net.URL
 
 
 object URLRequests {
+
+    fun hideRefreshing(context: Context) {
+        if (context is MainActivity)
+            context.runOnUiThread { context.hideRefreshing() }
+        else if (context is PickerActivity)
+            context.runOnUiThread { context.hideRefreshing() }
+    }
+
     fun getJSON(context: Context) {
         val mPreference = PreferenceManager.getDefaultSharedPreferences(context)
         val client = OkHttpClient()
@@ -26,7 +33,6 @@ object URLRequests {
                 mPreference.getLong(context.getString(R.string.version), 0).toString()
             )
         )
-
         val request = Request.Builder()
             .url(url)
             .get()
@@ -39,10 +45,9 @@ object URLRequests {
                     Toast.makeText(
                         context,
                         "Проблемы подключения к сети",
-                        Toast.LENGTH_LONG
+                        Toast.LENGTH_SHORT
                     ).show()
-                    if (context is MainActivity)
-                        context.refreshLayout.isRefreshing = false
+                    this@URLRequests.hideRefreshing(context)
                 }
             }
 
@@ -50,6 +55,34 @@ object URLRequests {
                 val body = response.body?.string()
                 val builder = GsonBuilder().create()
                 val mJson = builder.fromJson(body, JSONStructure::class.java)
+
+                if (mJson.pairs == null) {
+                    /*
+                         вывод сообщения об ошибке в ответе API. Выводится двумя if-ами, так как ч
+                         ерез || или when (context) is MainActivity, is PickerActivity ->" выдаёт
+                         unresolved reference, idk why
+                     */
+                    if (context is MainActivity)
+                        context.runOnUiThread {
+                            Toast.makeText(
+                                context,
+                                "API response error",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            context.hideRefreshing()
+                        }
+                    else if (context is PickerActivity)
+                        context.runOnUiThread {
+                            Toast.makeText(
+                                context,
+                                "API response error",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            context.hideRefreshing()
+                        }
+                    return
+                }
+
                 if (mJson.pairs.isNotEmpty()) {
                     if (context is PickerActivity)
                         context.runOnUiThread {
@@ -67,10 +100,7 @@ object URLRequests {
                             )
                         }
                 }
-                if (context is MainActivity)
-                    context.runOnUiThread {
-                        context.refreshLayout.isRefreshing = false
-                    }
+                this@URLRequests.hideRefreshing(context)
             }
         })
     }

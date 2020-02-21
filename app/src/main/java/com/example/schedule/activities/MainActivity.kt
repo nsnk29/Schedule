@@ -52,7 +52,7 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        // toDo обработать onSavedInstance, добавить индикатор обновления
+        // toDo обработать onSavedInstance
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         DatabaseHelper.init(this)
@@ -306,12 +306,15 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
         rotate.interpolator = LinearInterpolator()
     }
 
+    fun hideRefreshing() {
+        refreshLayout.isRefreshing = false
+    }
+
 
     override fun onResume() {
         super.onResume()
         URLRequests.getJSON(this)
     }
-
 
     override fun onDestroy() {
         DatabaseHelper.closeConnection()

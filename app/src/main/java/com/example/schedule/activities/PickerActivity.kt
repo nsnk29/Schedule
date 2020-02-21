@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT
 import androidx.preference.PreferenceManager
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.viewpager.widget.ViewPager
 import com.example.schedule.R
 import com.example.schedule.URLRequests
@@ -20,7 +21,7 @@ import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_picker.*
 
 
-class PickerActivity : AppCompatActivity() {
+class PickerActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
 
     lateinit var realm: Realm
     private lateinit var adapter: ViewPageAdapter
@@ -30,9 +31,6 @@ class PickerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_picker)
-
-
-
         adapter = ViewPageAdapter(supportFragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT)
         groupsFragment = PickerFragment(true)
         lecturersFragment = PickerFragment(false)
@@ -47,6 +45,7 @@ class PickerActivity : AppCompatActivity() {
         viewPager.adapter = adapter
         tabs.setupWithViewPager(viewPager)
         viewPager?.addOnPageChangeListener(hideKeyBoard())
+        refreshLayout.setOnRefreshListener(this)
     }
 
 
@@ -110,5 +109,15 @@ class PickerActivity : AppCompatActivity() {
         viewPager.adapter = adapter
         tabs.setupWithViewPager(viewPager)
         viewPager?.addOnPageChangeListener(hideKeyBoard())
+    }
+
+    fun hideRefreshing() {
+        refreshLayout.isRefreshing = false
+    }
+
+    override fun onRefresh() {
+        DatabaseHelper.init(this@PickerActivity)
+        URLRequests.getJSON(this@PickerActivity)
+
     }
 }
