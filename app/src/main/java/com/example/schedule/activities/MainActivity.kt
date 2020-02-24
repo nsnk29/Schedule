@@ -35,8 +35,8 @@ import java.util.*
 class MainActivity : AppCompatActivity() {
 
     private lateinit var realm: Realm
-    lateinit var bottomRecycleAdapter: BottomRecycleAdapter
-    private lateinit var mainRecycleAdapter: MainRecycleAdapter
+    lateinit var bottomRecyclerAdapter: BottomRecycleAdapter
+    private lateinit var mainRecyclerAdapter: MainRecycleAdapter
     private lateinit var mPreference: SharedPreferences
     private var currentWeek: Int = 0
     private lateinit var arrayForMainRecyclerView: Array<PairClass>
@@ -61,26 +61,26 @@ class MainActivity : AppCompatActivity() {
         setBottomRecyclerView(currentDay)
         setMainRecyclerView(currentDay)
         setToggleAction()
-        recycleViewMain.setOnTouchListener(getMainSwipeListener())
+        recyclerViewMain.setOnTouchListener(getMainSwipeListener())
         initRotateForSettings()
     }
 
     private fun getMainSwipeListener(): OnSwipeTouchListener {
         return object : OnSwipeTouchListener(applicationContext) {
             override fun onSwipeLeft() {
-                if (bottomRecycleAdapter.selectedDay != 5)
-                    updateBottomRecycler(bottomRecycleAdapter.selectedDay + 1, false)
+                if (bottomRecyclerAdapter.selectedDay != 5)
+                    updateBottomRecycler(bottomRecyclerAdapter.selectedDay + 1, false)
                 else {
-                    bottomRecycleAdapter.selectedDay = 0
+                    bottomRecyclerAdapter.selectedDay = 0
                     toggle.isChecked = !toggle.isChecked
                 }
             }
 
             override fun onSwipeRight() {
-                if (bottomRecycleAdapter.selectedDay != 0)
-                    updateBottomRecycler(bottomRecycleAdapter.selectedDay - 1, false)
+                if (bottomRecyclerAdapter.selectedDay != 0)
+                    updateBottomRecycler(bottomRecyclerAdapter.selectedDay - 1, false)
                 else {
-                    bottomRecycleAdapter.selectedDay = 5
+                    bottomRecyclerAdapter.selectedDay = 5
                     toggle.isChecked = !toggle.isChecked
                 }
             }
@@ -91,7 +91,7 @@ class MainActivity : AppCompatActivity() {
     private fun setMainRecyclerView(currentDay: Int) {
         arrayForMainRecyclerView = Array(8) { PairClass() }
 
-        recycleViewMain.layoutManager = LinearLayoutManager(
+        recyclerViewMain.layoutManager = LinearLayoutManager(
             this,
             RecyclerView.VERTICAL,
             false
@@ -103,9 +103,9 @@ class MainActivity : AppCompatActivity() {
                 currentDay,
                 if (toggle.isChecked) currentWeek else getNegativeWeek(getParityOfWeek())
             )
-        mainRecycleAdapter = MainRecycleAdapter(pairsData, this)
-        recycleViewMain.adapter = mainRecycleAdapter
-        recycleViewMain.overScrollMode = View.OVER_SCROLL_NEVER
+        mainRecyclerAdapter = MainRecycleAdapter(pairsData, this)
+        recyclerViewMain.adapter = mainRecyclerAdapter
+        recyclerViewMain.overScrollMode = View.OVER_SCROLL_NEVER
     }
 
     private fun preparePairsData(currentDay: Int, even: Int): Array<PairClass> {
@@ -135,27 +135,27 @@ class MainActivity : AppCompatActivity() {
                     arrayForMainRecyclerView[pair.number - 1].group += ", ${pair.group}"
 
             } catch (e: ArrayIndexOutOfBoundsException) {
-                Toast.makeText(this, "JSON error", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "JSON format error", Toast.LENGTH_SHORT).show()
             }
         }
         return arrayForMainRecyclerView
     }
 
     private fun setBottomRecyclerView(currentDay: Int) {
-        recycleViewBottom.layoutManager = LinearLayoutManager(
+        recyclerViewBottom.layoutManager = LinearLayoutManager(
             this,
             RecyclerView.HORIZONTAL,
             false
         )
 
-        bottomRecycleAdapter =
+        bottomRecyclerAdapter =
             BottomRecycleAdapter(initAllWeekDates(), this, currentDay, toggle.isChecked)
         oneTimeDayNameSet(currentDay)
-        recycleViewBottom.adapter = bottomRecycleAdapter
-        recycleViewBottom.addItemDecoration(MarginItemDecoration(0))
-        recycleViewBottom.setHasFixedSize(true)
+        recyclerViewBottom.adapter = bottomRecyclerAdapter
+        recyclerViewBottom.addItemDecoration(MarginItemDecoration(0))
+        recyclerViewBottom.setHasFixedSize(true)
 
-        recycleViewBottom.overScrollMode = View.OVER_SCROLL_NEVER
+        recyclerViewBottom.overScrollMode = View.OVER_SCROLL_NEVER
     }
 
     private fun setToggleAction() {
@@ -177,18 +177,19 @@ class MainActivity : AppCompatActivity() {
         if (resultCode == GROUP_PICK_REQUEST_CODE)
             onSourceChange()
         else if (requestCode == BOTH_REQUEST_CODE || requestCode == COUNT_LINES_REQUEST_CODE)
-            setMainRecyclerView(bottomRecycleAdapter.selectedDay)
+            setMainRecyclerView(bottomRecyclerAdapter.selectedDay)
     }
 
     private fun onSourceChange() {
         val pairsData =
             preparePairsData(
-                bottomRecycleAdapter.selectedDay,
+                bottomRecyclerAdapter.selectedDay,
                 if (toggle.isChecked) currentWeek else getNegativeWeek(getParityOfWeek())
             )
-        mainRecycleAdapter.isGroup = mPreference.getBoolean(getString(R.string.isGroupPicked), true)
-        mainRecycleAdapter.pairsData = pairsData
-        mainRecycleAdapter.notifyDataSetChanged()
+        mainRecyclerAdapter.isGroup =
+            mPreference.getBoolean(getString(R.string.isGroupPicked), true)
+        mainRecyclerAdapter.pairsData = pairsData
+        mainRecyclerAdapter.notifyDataSetChanged()
     }
 
     private fun createNotificationChannel() {
@@ -232,21 +233,21 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun updateCurrentWeek() {
-        bottomRecycleAdapter.changeCurrentWeekDate()
-        updateBottomRecycler(bottomRecycleAdapter.selectedDay, true)
+        bottomRecyclerAdapter.changeCurrentWeekDate()
+        updateBottomRecycler(bottomRecyclerAdapter.selectedDay, true)
     }
 
     fun updateBottomRecycler(position: Int, isNecessaryToUpdate: Boolean) {
-        if (bottomRecycleAdapter.selectedDay != position || isNecessaryToUpdate) {
-            bottomRecycleAdapter.selectedDay = position
-            bottomRecycleAdapter.notifyDataSetChanged()
+        if (bottomRecyclerAdapter.selectedDay != position || isNecessaryToUpdate) {
+            bottomRecyclerAdapter.selectedDay = position
+            bottomRecyclerAdapter.notifyDataSetChanged()
             weekDayText.text = getDayName(position)
-            mainRecycleAdapter.pairsData =
+            mainRecyclerAdapter.pairsData =
                 preparePairsData(
                     position,
                     if (toggle.isChecked) currentWeek else getNegativeWeek(currentWeek)
                 )
-            mainRecycleAdapter.notifyDataSetChanged()
+            mainRecyclerAdapter.notifyDataSetChanged()
         }
     }
 

@@ -64,7 +64,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycleViewBottom"
+        android:id="@+id/recyclerViewBottom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:elevation="4dp"
@@ -76,13 +76,13 @@
 
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycleViewMain"
+        android:id="@+id/recyclerViewMain"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginStart="4dp"
         android:layout_marginEnd="4dp"
         android:clipToPadding="false"
-        app:layout_constraintBottom_toTopOf="@+id/recycleViewBottom"
+        app:layout_constraintBottom_toTopOf="@+id/recyclerViewBottom"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -94,7 +94,7 @@
         android:layout_width="wrap_content"
         android:layout_height="4dp"
         android:background="@drawable/shadow"
-        app:layout_constraintBottom_toTopOf="@+id/recycleViewBottom"
+        app:layout_constraintBottom_toTopOf="@+id/recyclerViewBottom"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -103,7 +103,7 @@
         android:layout_width="wrap_content"
         android:layout_height="2dp"
         android:background="@drawable/shadow"
-        app:layout_constraintBottom_toTopOf="@+id/recycleViewMain"
+        app:layout_constraintBottom_toTopOf="@+id/recyclerViewMain"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/topMenu" />
