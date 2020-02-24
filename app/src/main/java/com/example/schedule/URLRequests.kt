@@ -18,9 +18,7 @@ import java.net.URL
 object URLRequests {
 
     fun hideRefreshing(context: Context) {
-        if (context is MainActivity)
-            context.runOnUiThread { context.hideRefreshing() }
-        else if (context is PickerActivity)
+        if (context is PickerActivity)
             context.runOnUiThread { context.hideRefreshing() }
     }
 
@@ -69,7 +67,6 @@ object URLRequests {
                                 "API response error",
                                 Toast.LENGTH_SHORT
                             ).show()
-                            context.hideRefreshing()
                         }
                     else if (context is PickerActivity)
                         context.runOnUiThread {

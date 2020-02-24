@@ -19,7 +19,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.schedule.MarginItemDecoration
 import com.example.schedule.OnSwipeTouchListener
 import com.example.schedule.R
@@ -33,7 +32,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 
 
-class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
+class MainActivity : AppCompatActivity() {
 
     private lateinit var realm: Realm
     lateinit var bottomRecycleAdapter: BottomRecycleAdapter
@@ -57,7 +56,6 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
         setContentView(R.layout.activity_main)
         DatabaseHelper.init(this)
         realm = DatabaseHelper.getConnection()
-        refreshLayout.setOnRefreshListener(this)
         createNotificationChannel()
         val currentDay = getCurrentDay()
         setBottomRecyclerView(currentDay)
@@ -306,10 +304,6 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
         rotate.interpolator = LinearInterpolator()
     }
 
-    fun hideRefreshing() {
-        refreshLayout.isRefreshing = false
-    }
-
 
     override fun onResume() {
         super.onResume()
@@ -319,9 +313,5 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
     override fun onDestroy() {
         DatabaseHelper.closeConnection()
         super.onDestroy()
-    }
-
-    override fun onRefresh() {
-        URLRequests.getJSON(this)
     }
 }
