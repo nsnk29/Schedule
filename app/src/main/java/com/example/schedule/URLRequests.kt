@@ -53,8 +53,7 @@ object URLRequests {
                 val body = response.body?.string()
                 val builder = GsonBuilder().create()
                 val mJson = builder.fromJson(body, JSONStructure::class.java)
-
-                if (mJson.pairs == null) {
+                if (mJson.error != null) {
                     /*
                          вывод сообщения об ошибке в ответе API. Выводится двумя if-ами, так как ч
                          ерез || или when (context) is MainActivity, is PickerActivity ->" выдаёт
