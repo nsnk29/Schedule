@@ -8,15 +8,22 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.schedule.R
 import com.example.schedule.activities.PickerActivity
+import com.example.schedule.adapters.OnItemClickListener
 import com.example.schedule.adapters.PickerRecycleAdapter
 import com.example.schedule.database.DatabaseHelper
-import kotlinx.android.synthetic.main.group_picker_fragment.view.*
 import java.util.*
 
 
-class PickerFragment(private var isGroup: Boolean) : Fragment() {
+class PickerFragment(private val isGroup: Boolean) : Fragment(), OnItemClickListener,
+    SwipeRefreshLayout.OnRefreshListener {
+    var pickerRecycleAdapter: PickerRecycleAdapter
+
+    init {
+        pickerRecycleAdapter = PickerRecycleAdapter(getRelevantData(), isGroup, this)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -25,28 +32,41 @@ class PickerFragment(private var isGroup: Boolean) : Fragment() {
     ): View? {
         val view =
             inflater.inflate(R.layout.group_picker_fragment, container, false)
-        val rv = view.findViewById<RecyclerView>(R.id.recyclerViewID)
-        rv.layoutManager = LinearLayoutManager(
-            view.context,
-            RecyclerView.VERTICAL,
-            false
-        )
-        var dataArray =
-            if (isGroup) DatabaseHelper.getListOfGroupsOrLecturer(R.string.groups)
-            else DatabaseHelper.getListOfGroupsOrLecturer(R.string.lecturers)
-        dataArray = dataArray.sortedBy { it.toLowerCase(Locale("ru", "Russia")) }
-        val adapter = PickerRecycleAdapter(dataArray, isGroup)
-        view.search.setOnQueryTextListener(
-            (context as PickerActivity).getOnQueryTextListener(
-                adapter
+
+        val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerViewID)
+        recyclerView.apply {
+            layoutManager = LinearLayoutManager(
+                view.context,
+                RecyclerView.VERTICAL,
+                false
             )
-        )
-        val dividerItemDecoration = DividerItemDecoration(
-            rv.context,
-            RecyclerView.VERTICAL
-        )
-        rv.addItemDecoration(dividerItemDecoration)
-        rv.adapter = adapter
+            addItemDecoration(
+                DividerItemDecoration(
+                    recyclerView.context,
+                    RecyclerView.VERTICAL
+                )
+            )
+            adapter = pickerRecycleAdapter
+        }
+        val refreshLayout =
+            view.findViewById<SwipeRefreshLayout>(R.id.refreshLayout)
+        refreshLayout.setOnRefreshListener(this)
         return view
     }
+
+    fun getRelevantData(): List<String> {
+        val dataArray =
+            if (isGroup) DatabaseHelper.getListOfGroupsOrLecturer(R.string.groups)
+            else DatabaseHelper.getListOfGroupsOrLecturer(R.string.lecturers)
+        return dataArray.sortedBy { it.toLowerCase(Locale("ru", "Russia")) }
+    }
+
+    override fun onItemClicked(isGroup: Boolean, name: String) {
+        (activity as PickerActivity).confirm(isGroup, name)
+    }
+
+    override fun onRefresh() {
+        (activity as PickerActivity).getNewData()
+    }
+
 }

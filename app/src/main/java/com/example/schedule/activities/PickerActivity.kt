@@ -1,15 +1,12 @@
 package com.example.schedule.activities
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT
 import androidx.preference.PreferenceManager
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.viewpager.widget.ViewPager
 import com.example.schedule.R
 import com.example.schedule.URLRequests
@@ -19,46 +16,46 @@ import com.example.schedule.database.DatabaseHelper
 import com.example.schedule.fragments.PickerFragment
 import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_picker.*
+import kotlinx.android.synthetic.main.group_picker_fragment.*
 
 
-class PickerActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
+class PickerActivity : AppCompatActivity() {
 
     lateinit var realm: Realm
-    private lateinit var adapter: ViewPageAdapter
+    private lateinit var viewPageAdapter: ViewPageAdapter
     private lateinit var groupsFragment: PickerFragment
     private lateinit var lecturersFragment: PickerFragment
+    private lateinit var onQueryTextListenerGroup: SearchView.OnQueryTextListener
+    private lateinit var onQueryTextListenerLecturers: SearchView.OnQueryTextListener
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_picker)
-        adapter = ViewPageAdapter(supportFragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT)
+        DatabaseHelper.init(this@PickerActivity)
+        viewPageAdapter =
+            ViewPageAdapter(supportFragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT)
         groupsFragment = PickerFragment(true)
         lecturersFragment = PickerFragment(false)
         if (callingActivity == null) {
-            DatabaseHelper.init(this@PickerActivity)
             URLRequests.getJSON(this@PickerActivity)
         }
+        viewPageAdapter.addFragment(groupsFragment, getString(R.string.groups_ru_title))
+        viewPageAdapter.addFragment(lecturersFragment, getString(R.string.lecturer_title_ru))
 
-        adapter.addFragment(groupsFragment, getString(R.string.groups_ru_title))
-        adapter.addFragment(lecturersFragment, getString(R.string.lecturer_title_ru))
-
-        viewPager.adapter = adapter
+        viewPager.adapter = viewPageAdapter
         tabs.setupWithViewPager(viewPager)
-        viewPager?.addOnPageChangeListener(hideKeyBoard())
-        refreshLayout.setOnRefreshListener(this)
+        viewPager?.addOnPageChangeListener(getSearchHelper())
+        onQueryTextListenerGroup = getOnQueryTextListener(groupsFragment.pickerRecycleAdapter)
+        onQueryTextListenerLecturers =
+            getOnQueryTextListener(lecturersFragment.pickerRecycleAdapter)
+        main_search_view.setOnQueryTextListener(onQueryTextListenerGroup)
     }
 
 
-    private fun hideKeyBoard(): ViewPager.OnPageChangeListener {
+    private fun getSearchHelper(): ViewPager.OnPageChangeListener {
         return object : ViewPager.OnPageChangeListener {
 
             override fun onPageScrollStateChanged(state: Int) {
-                if (state == ViewPager.SCROLL_STATE_IDLE) {
-                    val imm =
-                        viewPager.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                    imm.hideSoftInputFromWindow(viewPager.windowToken, 0)
-
-                }
             }
 
             override fun onPageScrolled(
@@ -69,11 +66,21 @@ class PickerActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener
             }
 
             override fun onPageSelected(position: Int) {
+                when (position) {
+                    0 -> {
+                        main_search_view.setOnQueryTextListener(onQueryTextListenerGroup)
+                        groupsFragment.pickerRecycleAdapter.filter.filter(main_search_view.query)
+                    }
+                    1 -> {
+                        main_search_view.setOnQueryTextListener(onQueryTextListenerLecturers)
+                        lecturersFragment.pickerRecycleAdapter.filter.filter(main_search_view.query)
+                    }
+                }
             }
         }
     }
 
-    fun getOnQueryTextListener(adapter: PickerRecycleAdapter): SearchView.OnQueryTextListener {
+    private fun getOnQueryTextListener(adapter: PickerRecycleAdapter): SearchView.OnQueryTextListener {
         return object : SearchView.OnQueryTextListener {
 
             override fun onQueryTextChange(newText: String): Boolean {
@@ -106,18 +113,33 @@ class PickerActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener
 
 
     fun setDataVisible() {
-        viewPager.adapter = adapter
-        tabs.setupWithViewPager(viewPager)
-        viewPager?.addOnPageChangeListener(hideKeyBoard())
+        groupsFragment.pickerRecycleAdapter.apply {
+            dataList = groupsFragment.getRelevantData()
+            notifyDataSetChanged()
+            filter.filter(main_search_view.query)
+        }
+        lecturersFragment.pickerRecycleAdapter.apply {
+            dataList = lecturersFragment.getRelevantData()
+            notifyDataSetChanged()
+            filter.filter(main_search_view.query)
+        }
+
+        when (tabs.selectedTabPosition) {
+            0 -> main_search_view.setOnQueryTextListener(onQueryTextListenerGroup)
+            1 -> main_search_view.setOnQueryTextListener(onQueryTextListenerLecturers)
+        }
+
     }
 
-    fun hideRefreshing() {
-        refreshLayout.isRefreshing = false
+    fun getNewData() {
+        URLRequests.getJSON(this, true)
     }
 
-    override fun onRefresh() {
-        DatabaseHelper.init(this@PickerActivity)
-        URLRequests.getJSON(this@PickerActivity)
-
+    fun hideLoading() {
+        groupsFragment.refreshLayout.isRefreshing = false
+        lecturersFragment.refreshLayout.isRefreshing = false
     }
 }
+
+
+

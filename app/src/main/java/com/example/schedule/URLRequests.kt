@@ -17,12 +17,13 @@ import java.net.URL
 
 object URLRequests {
 
-    fun hideRefreshing(context: Context) {
-        if (context is PickerActivity)
-            context.runOnUiThread { context.hideRefreshing() }
+    fun hideLoading(isUpdate: Boolean, context: Context) {
+        if (isUpdate && context is PickerActivity) {
+            context.hideLoading()
+        }
     }
 
-    fun getJSON(context: Context) {
+    fun getJSON(context: Context, isUpdate: Boolean = false) {
         val mPreference = PreferenceManager.getDefaultSharedPreferences(context)
         val client = OkHttpClient()
         val url = URL(
@@ -38,14 +39,13 @@ object URLRequests {
 
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-
+                hideLoading(isUpdate, context)
                 Handler(Looper.getMainLooper()).post {
                     Toast.makeText(
                         context,
                         "Проблемы подключения к сети",
                         Toast.LENGTH_SHORT
                     ).show()
-                    this@URLRequests.hideRefreshing(context)
                 }
             }
 
@@ -74,7 +74,7 @@ object URLRequests {
                                 "API response error",
                                 Toast.LENGTH_SHORT
                             ).show()
-                            context.hideRefreshing()
+                            context.hideLoading()
                         }
                     return
                 }
@@ -96,7 +96,7 @@ object URLRequests {
                             )
                         }
                 }
-                this@URLRequests.hideRefreshing(context)
+                hideLoading(isUpdate, context)
             }
         })
     }

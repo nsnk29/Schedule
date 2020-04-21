@@ -12,8 +12,6 @@ class SplashScreen : AppCompatActivity() {
     private lateinit var mPreference: SharedPreferences
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-
         PreferenceManager.setDefaultValues(this, R.xml.root_preferences, false)
         mPreference = PreferenceManager.getDefaultSharedPreferences(this)
         val darkMode = mPreference.getBoolean(getString(R.string.dark_mode), false)

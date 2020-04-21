@@ -5,31 +5,52 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
-import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.schedule.R
-import com.example.schedule.activities.PickerActivity
-import kotlinx.android.synthetic.main.case_cell.view.*
+import kotlinx.android.synthetic.main.group_item.view.*
 import java.util.*
 import kotlin.collections.ArrayList
 
+class ListItemHolder(itemView: View, isGroup: Boolean) : RecyclerView.ViewHolder(itemView) {
+    private val nameTextView: TextView = itemView.name_text_view
 
-class PickerRecycleAdapter(var array: List<String>, private val isGroup: Boolean) :
-    RecyclerView.Adapter<PickerRecycleAdapter.CaseCell>(), Filterable {
+
+    init {
+        val drawable = ContextCompat.getDrawable(
+            itemView.context,
+            if (isGroup) R.drawable.ic_group else R.drawable.ic_lecturer
+        )
+        nameTextView.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null)
+    }
+
+    fun bind(name: String, isGroup: Boolean, listener: OnItemClickListener) {
+        nameTextView.text = name
+        itemView.setOnClickListener { listener.onItemClicked(isGroup, name) }
+    }
+
+}
+
+class PickerRecycleAdapter(
+    var dataList: List<String>,
+    private val isGroup: Boolean,
+    private val itemClickListener: OnItemClickListener
+) :
+    RecyclerView.Adapter<ListItemHolder>(), Filterable {
 
 
-    var arrayFiltered: List<String> = array
+    var arrayFiltered: List<String> = dataList
 
     override fun getFilter(): Filter {
         return object : Filter() {
             override fun performFiltering(charSequence: CharSequence): FilterResults {
                 val charString = charSequence.toString()
                 arrayFiltered = if (charString.isEmpty()) {
-                    array
+                    dataList
                 } else {
                     val filteredList = ArrayList<String>()
-                    for (row in array) {
+                    for (row in dataList) {
                         if (row.toLowerCase(Locale("ru", "Russia")).startsWith(
                                 charString.toLowerCase(
                                     Locale("ru", "Russia")
@@ -57,34 +78,20 @@ class PickerRecycleAdapter(var array: List<String>, private val isGroup: Boolean
     }
 
 
-    override fun onBindViewHolder(holder: CaseCell, position: Int) {
-        holder.caseCell.text = arrayFiltered[position]
+    override fun onBindViewHolder(holder: ListItemHolder, position: Int) {
+        holder.bind(arrayFiltered[position], isGroup, itemClickListener)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CaseCell {
-        val view: View =
-            LayoutInflater.from(parent.context).inflate(R.layout.case_cell, parent, false)
-        return CaseCell(view, isGroup)
-    }
-
-    override fun getItemCount(): Int {
-        return arrayFiltered.size
-    }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListItemHolder =
+        ListItemHolder(
+            LayoutInflater.from(parent.context).inflate(R.layout.group_item, parent, false),
+            isGroup
+        )
 
 
-
-    class CaseCell(v: View, isGroup: Boolean) : RecyclerView.ViewHolder(v) {
-        val caseCell: TextView = itemView.findViewById(R.id.case_cell)
-        private val img: ImageView = itemView.findViewById(R.id.imageView)
-
-
-        init {
-            img.setImageResource(if (isGroup) R.drawable.ic_group else R.drawable.ic_lecturer)
-            itemView.setOnClickListener {
-                (itemView.context as PickerActivity).confirm(isGroup, itemView.case_cell.text.toString())
-            }
-        }
-    }
-
+    override fun getItemCount(): Int = arrayFiltered.size
 }
 
+interface OnItemClickListener {
+    fun onItemClicked(isGroup: Boolean, name: String)
+}

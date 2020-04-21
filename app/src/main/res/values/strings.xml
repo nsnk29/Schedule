@@ -45,6 +45,11 @@
     <string name="lecturer_title_ru">Преподаватели</string>
 
 
+    <!--    Examples -->
+    <string name="group_example">46/1</string>
+    <string name="lecturer_example">Жуков С.А</string>
+
+
     <!--    Database parameters -->
     <string name="group_parameter">group</string>
     <string name="day_parameter">day</string>
@@ -60,8 +65,6 @@
     <string name="friday">Пятница</string>
     <string name="saturday">Суббота</string>
     <string name="sunday">Воскресенье</string>
-
-
 
 
     <string name="notification_status">notification_status</string>
