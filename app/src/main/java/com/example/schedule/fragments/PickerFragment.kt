@@ -11,13 +11,13 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.schedule.R
 import com.example.schedule.activities.PickerActivity
-import com.example.schedule.adapters.OnItemClickListener
 import com.example.schedule.adapters.PickerRecycleAdapter
 import com.example.schedule.database.DatabaseHelper
+import com.example.schedule.interfaces.OnPickerItemClickListener
 import java.util.*
 
 
-class PickerFragment(private val isGroup: Boolean) : Fragment(), OnItemClickListener,
+class PickerFragment(private val isGroup: Boolean) : Fragment(), OnPickerItemClickListener,
     SwipeRefreshLayout.OnRefreshListener {
     var pickerRecycleAdapter: PickerRecycleAdapter
 

@@ -8,43 +8,50 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.schedule.R
-import com.example.schedule.activities.MainActivity
-import kotlinx.android.synthetic.main.one_day_layout.view.*
-import java.util.*
+import com.example.schedule.interfaces.BottomRecyclerClickListener
+import kotlinx.android.synthetic.main.day_item_layout.view.*
 
 
 class BottomRecycleAdapter(
-    private val allWeekDates: ArrayList<Int>, var context: Context,
-    private val currentDay: Int, private var nextWeek: Boolean
+    private val allWeekDates: List<Int>, var context: Context,
+    private val currentDay: Int, private var isSecondWeek: Boolean,
+    private val itemClickListener: BottomRecyclerClickListener
 ) :
     RecyclerView.Adapter<BottomRecycleAdapter.WeekDayViewHolder>() {
 
 
     private val nameOfWeekdays = arrayOf("ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ")
-    private var currentWeekDates: ArrayList<Int> = arrayListOf(0, 0, 0, 0, 0, 0)
+    private var currentWeekDates: Array<Int> = Array(6) { 0 }
     private var itemWidth = context.resources.displayMetrics.widthPixels / 6
     var selectedDay = currentDay
+    private var selectedTextColor: Int
+    private var primaryTextColor: Int
 
 
     init {
         initWeekDate()
+        selectedTextColor = ContextCompat.getColor(
+            context,
+            R.color.selected_text_color
+        )
+        primaryTextColor = ContextCompat.getColor(
+            context,
+            R.color.text_color_primary
+        )
     }
 
 
     private fun initWeekDate() {
-        if (!nextWeek)
+        if (!isSecondWeek)
             for (i in 0..5) currentWeekDates[i] = allWeekDates[i]
         else
             for (i in 7..12) currentWeekDates[i - 7] = allWeekDates[i]
     }
 
     fun changeCurrentWeekDate() {
-        nextWeek = !nextWeek
-        if (!nextWeek)
-            for (i in 0..5) currentWeekDates[i] = allWeekDates[i]
-        else
-            for (i in 7..12) currentWeekDates[i - 7] = allWeekDates[i]
-
+        isSecondWeek = !isSecondWeek
+        initWeekDate()
+        notifyDataSetChanged()
     }
 
 
@@ -52,59 +59,52 @@ class BottomRecycleAdapter(
         return 6
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WeekDayViewHolder {
-        val view: View =
-            LayoutInflater.from(parent.context).inflate(R.layout.one_day_layout, parent, false)
-
-        return WeekDayViewHolder(view)
-    }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WeekDayViewHolder =
+        WeekDayViewHolder(
+            LayoutInflater.from(parent.context).inflate(R.layout.day_item_layout, parent, false),
+            itemWidth
+        )
 
 
     override fun onBindViewHolder(holder: WeekDayViewHolder, position: Int) {
-        holder.itemView.wrapper.layoutParams.width = itemWidth
-        holder.nameOfDayField.text = currentWeekDates[position].toString()
-        holder.dateField.text = nameOfWeekdays[position]
+        holder.bind(
+            currentWeekDates[position].toString(),
+            nameOfWeekdays[position],
+            itemClickListener
+        )
 
         when {
             position == selectedDay -> {
-                holder.itemView.nameOfDay.setBackgroundResource(R.drawable.rounded_frame_filled)
-                holder.itemView.nameOfDay.setTextColor(
-                    ContextCompat.getColor(
-                        context,
-                        R.color.selected_text_color
-                    )
-                )
+                holder.setBackgroundAndTextColor(R.drawable.rounded_frame_filled, selectedTextColor)
             }
-            (position == currentDay) and (!nextWeek) -> {
-                holder.itemView.nameOfDay.setBackgroundResource(R.drawable.rounded_frame)
-                holder.itemView.nameOfDay.setTextColor(
-                    ContextCompat.getColor(
-                        context,
-                        R.color.text_color_primary
-                    )
-                )
+            (position == currentDay) and (!isSecondWeek) -> {
+                holder.setBackgroundAndTextColor(R.drawable.rounded_frame, primaryTextColor)
             }
             else -> {
-                holder.itemView.nameOfDay.setBackgroundResource(0)
-                holder.itemView.nameOfDay.setTextColor(
-                    ContextCompat.getColor(
-                        context,
-                        R.color.text_color_primary
-                    )
-                )
+                holder.setBackgroundAndTextColor(0, primaryTextColor)
             }
         }
 
     }
 
-    class WeekDayViewHolder(v: View) : RecyclerView.ViewHolder(v) {
-        val nameOfDayField: TextView = itemView.findViewById(R.id.nameOfDay)
-        val dateField: TextView = itemView.findViewById(R.id.dateTextView)
+    class WeekDayViewHolder(v: View, itemWidth: Int) : RecyclerView.ViewHolder(v) {
+        private val nameOfDayTextView: TextView = itemView.nameOfDay
+        private val dateTextView: TextView = itemView.dateTextView
 
         init {
-            itemView.setOnClickListener {
-                (itemView.context as MainActivity).updateBottomRecycler(layoutPosition, false)
-            }
+            itemView.wrapper.layoutParams.width = itemWidth
+        }
+
+        fun bind(dayName: String, date: String, itemClickListener: BottomRecyclerClickListener) {
+            nameOfDayTextView.text = dayName
+            dateTextView.text = date
+            itemView.setOnClickListener { itemClickListener.onItemClicked(layoutPosition) }
+        }
+
+        fun setBackgroundAndTextColor(background: Int, textColor: Int) {
+            itemView.nameOfDay.setBackgroundResource(background)
+            itemView.nameOfDay.setTextColor(textColor)
         }
     }
 }
+

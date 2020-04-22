@@ -90,7 +90,7 @@ object URLRequests {
                         context.runOnUiThread {
                             DatabaseHelper.addInformationToDBFromJSON(mJson)
                             DatabaseHelper.setVersion(mJson.version)
-                            context.updateBottomRecycler(
+                            context.onItemClicked(
                                 context.bottomRecyclerAdapter.selectedDay,
                                 true
                             )

@@ -59,7 +59,7 @@ object DatabaseHelper {
                 localPair.group = pair.group
                 localPair.lecturer = pair.lecturer
                 localPair.number = pair.number
-                localPair.name = pair.name
+                localPair.title = pair.title
                 localPair.type = pair.type
                 groupList.add(pair.group)
                 lecturerList.add(pair.lecturer)
@@ -97,7 +97,7 @@ object DatabaseHelper {
         }
     }
 
-    fun getPairsOfGroup(group: String?, day: Int, even: Int): RealmResults<PairClass> {
+    fun getPairsOfGroup(group: String, day: Int, even: Int): RealmResults<PairClass> {
         return connection.where(PairClass::class.java)
             .equalTo(context.getString(R.string.group_parameter), group)
             .equalTo(context.getString(R.string.day_parameter), day)
@@ -105,7 +105,7 @@ object DatabaseHelper {
             .findAll()
     }
 
-    fun getPairsOfLecturer(lecturer: String?, day: Int, even: Int): RealmResults<PairClass> {
+    fun getPairsOfLecturer(lecturer: String, day: Int, even: Int): RealmResults<PairClass> {
         return connection.where(PairClass::class.java)
             .equalTo(context.getString(R.string.lecturer_parameter), lecturer)
             .equalTo(context.getString(R.string.day_parameter), day)

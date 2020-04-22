@@ -27,6 +27,7 @@
     <string name="current_week">числитель</string>
     <string name="next_week">знаменатель</string>
     <string name="practice">практика</string>
+    <string name="lecture">лекция</string>
     <string name="default_time_notification">20:00</string>
 
 

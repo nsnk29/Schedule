@@ -23,7 +23,7 @@ class AlertReceiver : BroadcastReceiver() {
         val even = if (currentWeek == 0) 1 else 0
         val mPreference = PreferenceManager.getDefaultSharedPreferences(context)
         val savedValueOfUsersPick =
-            mPreference.getString(context.getString(R.string.savedValueOfUsersPick), "")
+            mPreference.getString(context.getString(R.string.savedValueOfUsersPick), "") ?: ""
         val isGroup = mPreference.getBoolean(context.getString(R.string.isGroupPicked), true)
 
         val pairs =
@@ -33,10 +33,10 @@ class AlertReceiver : BroadcastReceiver() {
 
         var result = ""
         for (pair in pairs) {
-            result += pair.number.toString() + ") " + pair.name + " " + pair.studyroom + "\n"
+            result += pair.number.toString() + ") " + pair.title + " " + pair.studyroom + "\n"
         }
         val numberOfPairs = pairs.size
-        var info = ""
+        val info: String
         if (numberOfPairs == 0) {
             result = "Завтра нет занятий"
             info = result

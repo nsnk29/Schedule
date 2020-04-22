@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.schedule.R
+import com.example.schedule.interfaces.OnPickerItemClickListener
 import kotlinx.android.synthetic.main.group_item.view.*
 import java.util.*
 import kotlin.collections.ArrayList
@@ -25,7 +26,7 @@ class ListItemHolder(itemView: View, isGroup: Boolean) : RecyclerView.ViewHolder
         nameTextView.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null)
     }
 
-    fun bind(name: String, isGroup: Boolean, listener: OnItemClickListener) {
+    fun bind(name: String, isGroup: Boolean, listener: OnPickerItemClickListener) {
         nameTextView.text = name
         itemView.setOnClickListener { listener.onItemClicked(isGroup, name) }
     }
@@ -35,7 +36,7 @@ class ListItemHolder(itemView: View, isGroup: Boolean) : RecyclerView.ViewHolder
 class PickerRecycleAdapter(
     var dataList: List<String>,
     private val isGroup: Boolean,
-    private val itemClickListener: OnItemClickListener
+    private val itemClickListener: OnPickerItemClickListener
 ) :
     RecyclerView.Adapter<ListItemHolder>(), Filterable {
 
@@ -71,7 +72,7 @@ class PickerRecycleAdapter(
                 charSequence: CharSequence,
                 filterResults: FilterResults
             ) {
-                arrayFiltered = filterResults.values as List<String>
+                arrayFiltered = (filterResults.values as Iterable<*>).map { it.toString() }
                 notifyDataSetChanged()
             }
         }
@@ -92,6 +93,3 @@ class PickerRecycleAdapter(
     override fun getItemCount(): Int = arrayFiltered.size
 }
 
-interface OnItemClickListener {
-    fun onItemClicked(isGroup: Boolean, name: String)
-}
