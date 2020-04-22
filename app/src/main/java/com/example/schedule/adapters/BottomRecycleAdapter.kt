@@ -13,8 +13,8 @@ import kotlinx.android.synthetic.main.day_item_layout.view.*
 
 
 class BottomRecycleAdapter(
-    private val allWeekDates: List<Int>, var context: Context,
-    private val currentDay: Int, private var isSecondWeek: Boolean,
+    val allWeekDates: List<Int>, var context: Context,
+    val currentDay: Int, private var isSecondWeek: Boolean,
     private val itemClickListener: BottomRecyclerClickListener
 ) :
     RecyclerView.Adapter<BottomRecycleAdapter.WeekDayViewHolder>() {

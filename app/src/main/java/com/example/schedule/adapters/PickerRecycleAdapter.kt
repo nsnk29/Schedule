@@ -42,7 +42,7 @@ class PickerRecycleAdapter(
 
 
     var arrayFiltered: List<String> = dataList
-
+    @Suppress("UNCHECKED_CAST")
     override fun getFilter(): Filter {
         return object : Filter() {
             override fun performFiltering(charSequence: CharSequence): FilterResults {
@@ -72,7 +72,7 @@ class PickerRecycleAdapter(
                 charSequence: CharSequence,
                 filterResults: FilterResults
             ) {
-                arrayFiltered = (filterResults.values as Iterable<*>).map { it.toString() }
+                arrayFiltered = filterResults.values as List<String>
                 notifyDataSetChanged()
             }
         }

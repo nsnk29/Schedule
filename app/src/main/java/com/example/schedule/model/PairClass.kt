@@ -1,9 +1,11 @@
 package com.example.schedule.model
 
+import android.os.Parcel
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 import io.realm.RealmObject
 
-open class PairClass : RealmObject() {
+open class PairClass() : RealmObject(), Parcelable {
     @SerializedName("studyroom")
     var studyroom: String = ""
 
@@ -27,6 +29,17 @@ open class PairClass : RealmObject() {
 
     @SerializedName("type")
     var type: Int = 0
+
+    constructor(parcel: Parcel) : this() {
+        studyroom = parcel.readString() ?: ""
+        day = parcel.readInt()
+        even = parcel.readInt()
+        group = parcel.readString() ?: ""
+        lecturer = parcel.readString() ?: ""
+        number = parcel.readInt()
+        title = parcel.readString() ?: ""
+        type = parcel.readInt()
+    }
 
     fun clear() {
         studyroom = ""
@@ -59,4 +72,29 @@ open class PairClass : RealmObject() {
                 && number == 0
                 && title.isBlank()
                 && type == 0
+
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeString(studyroom)
+        parcel.writeInt(day)
+        parcel.writeInt(even)
+        parcel.writeString(group)
+        parcel.writeString(lecturer)
+        parcel.writeInt(number)
+        parcel.writeString(title)
+        parcel.writeInt(type)
+    }
+
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    companion object CREATOR : Parcelable.Creator<PairClass> {
+        override fun createFromParcel(parcel: Parcel): PairClass {
+            return PairClass(parcel)
+        }
+
+        override fun newArray(size: Int): Array<PairClass?> {
+            return arrayOfNulls(size)
+        }
+    }
 }

@@ -38,7 +38,6 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener {
     private lateinit var realm: Realm
     lateinit var bottomRecyclerAdapter: BottomRecycleAdapter
 
-
     private lateinit var mainRecyclerAdapter: MainRecycleAdapter
     private lateinit var mPreference: SharedPreferences
     private var currentWeek: Int = 0
@@ -54,13 +53,17 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        // toDo обработать onSavedInstance
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        if (savedInstanceState != null) {
+            restoreData(savedInstanceState)
+        }
+
         DatabaseHelper.init(this)
         realm = DatabaseHelper.getConnection()
         createNotificationChannel()
         mPreference = PreferenceManager.getDefaultSharedPreferences(this)
+
         val currentDay = getCurrentDay()
         setBottomRecyclerView(currentDay)
         setMainRecyclerView(currentDay)
@@ -68,6 +71,21 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener {
         recyclerViewMain.setOnTouchListener(getMainSwipeListener())
         initRotateForSettings()
     }
+
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putParcelableArray("pairsData", mainRecyclerAdapter.pairsData)
+        outState.putIntegerArrayList(
+            "allWeekDates",
+            bottomRecyclerAdapter.allWeekDates as ArrayList<Int>
+        )
+        outState.putInt("currentDay", bottomRecyclerAdapter.currentDay)
+        outState.putInt("selectedDay", bottomRecyclerAdapter.selectedDay)
+        outState.putInt("currentWeek", currentWeek)
+        outState.putBoolean("isChecked", toggle.isChecked)
+        super.onSaveInstanceState(outState)
+    }
+
 
     private fun getMainSwipeListener(): OnSwipeTouchListener =
         object : OnSwipeTouchListener(this@MainActivity) {
@@ -90,14 +108,39 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener {
             }
         }
 
+    @Suppress("UNCHECKED_CAST")
+    private fun restoreData(savedInstanceState: Bundle) {
+        currentWeek = savedInstanceState.getInt("currentWeek")
+        toggle.isChecked = savedInstanceState.getBoolean("isChecked")
+        if (currentWeek % 2 != 0) {
+            toggle.textOn = getString(R.string.current_week)
+            toggle.textOff = getString(R.string.next_week)
+        }
+
+        val allWeekDates = savedInstanceState.getIntegerArrayList("allWeekDates") as List<Int>
+        val currentDay = savedInstanceState.getInt("currentDay")
+        val selectedDay = savedInstanceState.getInt("selectedDay")
+
+        setWeekDay(selectedDay)
+        bottomRecyclerAdapter =
+            BottomRecycleAdapter(allWeekDates, this, currentDay, toggle.isChecked, this)
+        bottomRecyclerAdapter.selectedDay = selectedDay
+
+        mainRecyclerAdapter = MainRecycleAdapter(
+            savedInstanceState.getParcelableArray("pairsData") as Array<PairClass>,
+            this
+        )
+        super.onRestoreInstanceState(savedInstanceState)
+    }
 
     private fun setMainRecyclerView(currentDay: Int) {
-        val pairsData =
-            preparePairsData(
-                currentDay,
-                if (toggle.isChecked) currentWeek else getNegativeWeek(getParityOfWeek())
+        if (!this::mainRecyclerAdapter.isInitialized)
+            mainRecyclerAdapter = MainRecycleAdapter(
+                preparePairsData(
+                    currentDay,
+                    if (toggle.isChecked) currentWeek else getNegativeWeek(currentWeek)
+                ), this
             )
-        mainRecyclerAdapter = MainRecycleAdapter(pairsData, this)
         recyclerViewMain.apply {
             layoutManager = LinearLayoutManager(
                 this@MainActivity,
@@ -134,10 +177,13 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener {
         return arrayForMainRecyclerView
     }
 
-    private fun setBottomRecyclerView(currentDay: Int) {
-        bottomRecyclerAdapter =
-            BottomRecycleAdapter(initAllWeekDates(), this, currentDay, toggle.isChecked, this)
-        setWeekDay(currentDay)
+    private fun setBottomRecyclerView(day: Int) {
+        if (!this::bottomRecyclerAdapter.isInitialized) {
+            getParityOfWeek()
+            bottomRecyclerAdapter =
+                BottomRecycleAdapter(initAllWeekDates(), this, day, toggle.isChecked, this)
+            setWeekDay(day)
+        }
         recyclerViewBottom.apply {
             layoutManager = LinearLayoutManager(
                 this@MainActivity,
@@ -219,7 +265,7 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener {
             allWeekDates.add(cal.get(Calendar.DAY_OF_MONTH))
             cal.add(Calendar.DATE, 1)
         }
-        return (allWeekDates)
+        return allWeekDates
     }
 
 
@@ -251,7 +297,7 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener {
     }
 
 
-    private fun getParityOfWeek(): Int {
+    private fun getParityOfWeek() {
         val cal = Calendar.getInstance()
         if (cal.get(Calendar.DAY_OF_WEEK) == 1)
             cal.add(Calendar.DATE, 1)
@@ -261,7 +307,6 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener {
             toggle.textOff = getString(R.string.next_week)
             toggle.isChecked = false
         }
-        return currentWeek
     }
 
     private fun initRotateForSettings() {
@@ -306,4 +351,5 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener {
             )
         mainRecyclerAdapter.notifyDataSetChanged()
     }
+
 }
