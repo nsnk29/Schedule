@@ -136,10 +136,9 @@ class PickerActivity : AppCompatActivity() {
     }
 
     fun hideLoading() {
-        groupsFragment.refreshLayout.isRefreshing = false
-        lecturersFragment.refreshLayout.isRefreshing = false
+        runOnUiThread {
+            groupsFragment.refreshLayout.isRefreshing = false
+            lecturersFragment.refreshLayout.isRefreshing = false
+        }
     }
 }
-
-
-

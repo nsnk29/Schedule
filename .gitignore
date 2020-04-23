@@ -13,3 +13,4 @@
 .externalNativeBuild
 *.log
 scheduleKey1.jks
+*.apk
