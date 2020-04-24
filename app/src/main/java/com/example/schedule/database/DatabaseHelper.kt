@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
 import com.example.schedule.R
-import com.example.schedule.model.JSONStructure
+import com.example.schedule.model.LessonJSONStructure
 import com.example.schedule.model.ListOfStringClass
 import com.example.schedule.model.PairClass
 import io.realm.Realm
@@ -45,7 +45,7 @@ object DatabaseHelper {
         versionOfSchedule = newVersion
     }
 
-    fun addInformationToDBFromJSON(json: JSONStructure) {
+    fun addInformationToDBFromJSON(json: LessonJSONStructure) {
         deleteAllPairsFromBD()
         val groupList: RealmList<String> = RealmList()
         val lecturerList: RealmList<String> = RealmList()

@@ -1,15 +1,21 @@
 package com.example.schedule
 
+import android.app.AlertDialog
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceManager
 import com.example.schedule.activities.MainActivity
 import com.example.schedule.activities.PickerActivity
+import com.example.schedule.activities.SettingsActivity
 import com.example.schedule.database.DatabaseHelper
-import com.example.schedule.model.JSONStructure
+import com.example.schedule.model.LessonJSONStructure
+import com.example.schedule.model.UpdateJSONScheme
+import com.google.android.material.snackbar.Snackbar
 import com.google.gson.GsonBuilder
+import kotlinx.android.synthetic.main.settings_activity.*
 import okhttp3.*
 import java.io.IOException
 import java.net.URL
@@ -17,13 +23,15 @@ import java.net.URL
 
 object URLRequests {
 
-    fun hideLoading(isUpdate: Boolean, context: Context) {
-        if (isUpdate && context is PickerActivity) {
-            context.hideLoading()
-        }
-    }
+    var lastDownloadController: DownloadController? = null
 
-    fun getJSON(context: Context, isUpdate: Boolean = false) {
+    fun getLessonsJSON(context: Context, isUpdate: Boolean = false) {
+        fun hideLoading(isUpdate: Boolean, context: Context) {
+            if (isUpdate && context is PickerActivity) {
+                context.hideLoading()
+            }
+        }
+
         val mPreference = PreferenceManager.getDefaultSharedPreferences(context)
         val client = OkHttpClient()
         val url = URL(
@@ -43,7 +51,7 @@ object URLRequests {
                 Handler(Looper.getMainLooper()).post {
                     Toast.makeText(
                         context,
-                        "Проблемы подключения к сети",
+                        context.getString(R.string.connection_problem),
                         Toast.LENGTH_SHORT
                     ).show()
                 }
@@ -52,30 +60,17 @@ object URLRequests {
             override fun onResponse(call: Call, response: Response) {
                 val body = response.body?.string()
                 val builder = GsonBuilder().create()
-                val mJson = builder.fromJson(body, JSONStructure::class.java)
+                val mJson = builder.fromJson(body, LessonJSONStructure::class.java)
                 if (mJson.error != null) {
-                    /*
-                         вывод сообщения об ошибке в ответе API. Выводится двумя if-ами, так как ч
-                         ерез || или when (context) is MainActivity, is PickerActivity ->" выдаёт
-                         unresolved reference, idk why
-                     */
-                    if (context is MainActivity)
-                        context.runOnUiThread {
-                            Toast.makeText(
-                                context,
-                                "API response error",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    else if (context is PickerActivity)
-                        context.runOnUiThread {
-                            Toast.makeText(
-                                context,
-                                "API response error",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            context.hideLoading()
-                        }
+                    Handler(Looper.getMainLooper()).post {
+                        Toast.makeText(
+                            context,
+                            "API response error",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    if (context is PickerActivity)
+                        context.hideLoading()
                     return
                 }
 
@@ -100,4 +95,56 @@ object URLRequests {
             }
         })
     }
+
+    fun checkUpdate(activity: AppCompatActivity) {
+        val client = OkHttpClient()
+        val request = Request.Builder()
+            .url(URL("https://api.npoint.io/51b425c3ad56fb04168a"))
+            .get()
+            .build()
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                if (activity is SettingsActivity)
+                    activity.runOnUiThread {
+                        Snackbar.make(
+                            activity.mainLayout,
+                            R.string.connection_problem,
+                            Snackbar.LENGTH_LONG
+                        ).setAction(R.string.try_again) {
+                            checkUpdate(activity)
+                        }.show()
+                    }
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                val body = response.body?.string()
+                val json = GsonBuilder().create().fromJson(body, UpdateJSONScheme::class.java)
+                if (json.version <= BuildConfig.VERSION_CODE) {
+                    if (activity is SettingsActivity)
+                        activity.runOnUiThread {
+                            Snackbar.make(
+                                activity.mainLayout,
+                                R.string.last_version_installed,
+                                Snackbar.LENGTH_LONG
+                            ).show()
+                        }
+                    return
+                }
+                lastDownloadController = DownloadController(activity, json.link)
+                Handler(Looper.getMainLooper()).post {
+                    AlertDialog.Builder(activity)
+                        .setTitle(R.string.update)
+                        .setMessage("${activity.getString(R.string.new_version)}\nРазмер обновления: ${json.size}")
+                        .setPositiveButton(R.string.need_to_download) { _, _ ->
+                            lastDownloadController?.checkStoragePermission()
+                        }
+                        .setNegativeButton(android.R.string.no) { dialog, _ ->
+                            dialog.dismiss()
+                        }
+                        .show()
+                }
+            }
+        })
+    }
 }
+

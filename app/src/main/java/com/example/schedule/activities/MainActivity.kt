@@ -6,6 +6,7 @@ import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
@@ -19,15 +20,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.schedule.MarginItemDecoration
-import com.example.schedule.OnSwipeTouchListener
-import com.example.schedule.R
-import com.example.schedule.URLRequests
+import com.example.schedule.*
 import com.example.schedule.adapters.BottomRecycleAdapter
 import com.example.schedule.adapters.MainRecycleAdapter
 import com.example.schedule.database.DatabaseHelper
 import com.example.schedule.interfaces.BottomRecyclerClickListener
 import com.example.schedule.model.PairClass
+import com.google.android.material.snackbar.Snackbar
 import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
@@ -70,6 +69,8 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener {
         setToggleAction()
         recyclerViewMain.setOnTouchListener(getMainSwipeListener())
         initRotateForSettings()
+        if (savedInstanceState == null)
+            URLRequests.checkUpdate(this)
     }
 
 
@@ -325,8 +326,8 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener {
 
     override fun onResume() {
         super.onResume()
-        URLRequests.getJSON(this)
         DatabaseHelper.init(this)
+        URLRequests.getLessonsJSON(this)
     }
 
     override fun onDestroy() {
@@ -350,6 +351,21 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener {
                 if (toggle.isChecked) currentWeek else getNegativeWeek(currentWeek)
             )
         mainRecyclerAdapter.notifyDataSetChanged()
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        if (requestCode == DownloadController.PERMISSION_REQUEST_STORAGE) {
+            if (grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                URLRequests.lastDownloadController?.enqueueDownload()
+            } else {
+                Snackbar.make(wrapper, R.string.storage_permission_denied, Snackbar.LENGTH_LONG)
+                    .show()
+            }
+        }
     }
 
 }

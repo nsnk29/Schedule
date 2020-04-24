@@ -7,6 +7,8 @@
     <string name="dark_mode_ru">Тёмная тема</string>
     <string name="strings_counts_title">Количество строк на занятие</string>
     <string name="change_title_of_schedule">Изменить источник расписания</string>
+    <string name="updates">Версия приложения</string>
+    <string name="check_for_updates">Проверить обновления</string>
 
 
     <!-- Notifications Preferences -->
@@ -73,8 +75,20 @@
     <string name="card_layout_preference">card_layout_preference</string>
     <string name="NA">NA</string>
     <string name="source_of_schedule">source_of_schedule</string>
+    <string name="update_app">update_app</string>
+    <string name="update_folder">updateFolder/</string>
 
     <string name="version">version</string>
 
-
+<!--    Upload system-->
+    <string name="downloading">Загрузка…</string>
+    <string name="title_file_download">Скачивание файла</string>
+    <string name="storage_access_required">Чтобы обновить приложение необходим доступ к хранилищу.</string>
+    <string name="storage_permission_denied">Отказано в доступе к хранилищу.</string>
+    <string name="last_version_installed">Установлена последняя версия приложения.</string>
+    <string name="new_version">Обнаружена новая версия приложения</string>
+    <string name="update">Обновление</string>
+    <string name="connection_problem">Проблемы c подключенем к сети.</string>
+    <string name="try_again">Попробовать снова</string>
+    <string name="need_to_download">Загрузить</string>
 </resources>

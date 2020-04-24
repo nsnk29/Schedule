@@ -6,12 +6,12 @@
         <item name="colorAccent">@color/colorPrimary</item>
         <item name="android:navigationBarColor">@color/navigationBarColor</item>
         <item name="android:windowLightStatusBar">@bool/dark</item>
+        <item name="android:overScrollMode">never</item>
     </style>
 
     <style name="AppTheme.Launcher">
         <item name="android:windowBackground">@drawable/launch_screen</item>
         <item name="android:windowNoTitle">true</item>
-        <!-- <item name="colorPrimaryDark">@android:color/white</item> -->
     </style>
 
 

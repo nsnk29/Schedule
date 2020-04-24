@@ -37,7 +37,7 @@ class PickerActivity : AppCompatActivity() {
         groupsFragment = PickerFragment(true)
         lecturersFragment = PickerFragment(false)
         if (callingActivity == null) {
-            URLRequests.getJSON(this@PickerActivity)
+            URLRequests.getLessonsJSON(this@PickerActivity)
         }
         viewPageAdapter.addFragment(groupsFragment, getString(R.string.groups_ru_title))
         viewPageAdapter.addFragment(lecturersFragment, getString(R.string.lecturer_title_ru))
@@ -132,7 +132,7 @@ class PickerActivity : AppCompatActivity() {
     }
 
     fun getNewData() {
-        URLRequests.getJSON(this, true)
+        URLRequests.getLessonsJSON(this, true)
     }
 
     fun hideLoading() {

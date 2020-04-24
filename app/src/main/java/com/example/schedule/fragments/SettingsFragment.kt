@@ -2,22 +2,28 @@ package com.example.schedule.fragments
 
 import android.app.Activity
 import android.content.Intent
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.FileProvider
 import androidx.preference.*
 import com.example.schedule.R
+import com.example.schedule.URLRequests
 import com.example.schedule.activities.MainActivity
 import com.example.schedule.activities.PickerActivity
 import com.example.schedule.activities.SettingsActivity
+import java.io.File
 import java.util.*
+
 
 class SettingsFragment : PreferenceFragmentCompat() {
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.root_preferences, rootKey)
         val mPreference = PreferenceManager.getDefaultSharedPreferences(this.context)
-
-
         val notificationSummaryProvider =
             Preference.SummaryProvider<SwitchPreferenceCompat> { preference ->
                 if (preference.isChecked) {
@@ -113,6 +119,11 @@ class SettingsFragment : PreferenceFragmentCompat() {
             true
         }
 
+        val updatePreference = findPreference<Preference>(getString(R.string.update_app))
+        updatePreference?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+            activity?.let { activity -> URLRequests.checkUpdate(activity as AppCompatActivity) }
+            true
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -125,6 +136,27 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 else (context as SettingsActivity).setResult(MainActivity.CODES.BOTH_REQUEST_CODE)
                 (context as SettingsActivity).updateFragment()
             }
+        }
+    }
+
+    private val APP_DIR = ""
+    private fun install(fileName: String) {
+        val file = File(File(context?.filesDir, "updateFolder"), fileName)
+        if (file.exists()) {
+            val intent = Intent(Intent.ACTION_VIEW)
+            val type = "application/vnd.android.package-archive"
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                val downloadedApk: Uri =
+                    FileProvider.getUriForFile(requireContext(), "com.example.schedule", file)
+                intent.setDataAndType(downloadedApk, type)
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            } else {
+                intent.setDataAndType(Uri.fromFile(file), type)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            }
+            requireContext().startActivity(intent)
+        } else {
+            Toast.makeText(context, "File not found!", Toast.LENGTH_SHORT).show()
         }
     }
 }

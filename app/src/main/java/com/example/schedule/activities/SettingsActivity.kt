@@ -5,6 +5,7 @@ import android.app.PendingIntent
 import android.app.TimePickerDialog
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.TimePicker
 import android.widget.Toast
@@ -12,8 +13,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.preference.PreferenceManager
 import com.example.schedule.AlertReceiver
+import com.example.schedule.DownloadController.Companion.PERMISSION_REQUEST_STORAGE
 import com.example.schedule.R
+import com.example.schedule.URLRequests
 import com.example.schedule.fragments.SettingsFragment
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.settings_activity.*
 import java.util.*
 
@@ -105,5 +109,18 @@ class SettingsActivity : AppCompatActivity(), TimePickerDialog.OnTimeSetListener
         return true
     }
 
-
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        if (requestCode == PERMISSION_REQUEST_STORAGE) {
+            if (grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                URLRequests.lastDownloadController?.enqueueDownload()
+            } else {
+                Snackbar.make(mainLayout, R.string.storage_permission_denied, Snackbar.LENGTH_LONG)
+                    .show()
+            }
+        }
+    }
 }

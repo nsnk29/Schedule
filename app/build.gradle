@@ -22,8 +22,8 @@ android {
         applicationId "com.example.schedule"
         minSdkVersion 23
         targetSdkVersion 29
-        versionCode 40
-        versionName "2.3.5.2"
+        versionCode 44
+        versionName "2.3.5.2.4"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

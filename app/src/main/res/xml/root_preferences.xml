@@ -1,41 +1,48 @@
 <androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root">
 
     <PreferenceCategory app:title="@string/notification_header">
 
         <SwitchPreferenceCompat
-                app:defaultValue="false"
-                app:key="@string/notification_status"
-                app:title="@string/notification_title"
-                app:useSimpleSummaryProvider="true" />
+            app:defaultValue="false"
+            app:key="@string/notification_status"
+            app:title="@string/notification_title"
+            app:useSimpleSummaryProvider="true" />
         <Preference
-                app:defaultValue="false"
-                app:dependency="@string/notification_status"
-                app:key="@string/notification_time_picker"
-                app:title="@string/notification_time" />
+            app:defaultValue="false"
+            app:dependency="@string/notification_status"
+            app:key="@string/notification_time_picker"
+            app:title="@string/notification_time" />
     </PreferenceCategory>
 
     <PreferenceCategory app:title="@string/design">
 
         <SwitchPreferenceCompat
-                app:defaultValue="false"
-                app:key="@string/dark_mode"
-                app:title="@string/dark_mode_ru" />
+            app:defaultValue="false"
+            app:key="@string/dark_mode"
+            app:title="@string/dark_mode_ru" />
 
 
         <ListPreference
-                android:defaultValue="2"
-                android:entries="@array/CardLayoutLineSize"
-                android:entryValues="@array/CardLayoutLineSize"
-                android:key="@string/card_layout_preference"
-                android:title="@string/strings_counts_title" />
+            android:defaultValue="2"
+            android:entries="@array/CardLayoutLineSize"
+            android:entryValues="@array/CardLayoutLineSize"
+            android:key="@string/card_layout_preference"
+            android:title="@string/strings_counts_title" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/app_name">
         <Preference
-                android:title="@string/change_title_of_schedule"
-                app:key="@string/source_of_schedule"
-                app:useSimpleSummaryProvider="true" />
+            android:title="@string/change_title_of_schedule"
+            app:key="@string/source_of_schedule"
+            app:useSimpleSummaryProvider="true" />
 
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/updates">
+        <Preference
+            android:title="@string/check_for_updates"
+            app:key="@string/update_app" />
     </PreferenceCategory>
 
 </androidx.preference.PreferenceScreen>
