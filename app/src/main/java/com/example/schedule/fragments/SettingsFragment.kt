@@ -2,6 +2,7 @@ package com.example.schedule.fragments
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.*
@@ -114,6 +115,12 @@ class SettingsFragment : PreferenceFragmentCompat() {
         val updatePreference = findPreference<Preference>(getString(R.string.update_app))
         updatePreference?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
             activity?.let { activity -> URLRequests.checkUpdate(activity as AppCompatActivity) }
+            true
+        }
+
+        val aboutPreference = findPreference<Preference>(getString(R.string.about_app))
+        aboutPreference?.setOnPreferenceClickListener {
+            Toast.makeText(context, "Soon", Toast.LENGTH_SHORT).show()
             true
         }
     }

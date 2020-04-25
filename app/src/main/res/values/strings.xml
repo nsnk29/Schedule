@@ -9,6 +9,7 @@
     <string name="change_title_of_schedule">Изменить источник расписания</string>
     <string name="updates">Версия приложения</string>
     <string name="check_for_updates">Проверить обновления</string>
+    <string name="about">О приложении</string>
 
 
     <!-- Notifications Preferences -->
@@ -78,6 +79,7 @@
     <string name="NA">NA</string>
     <string name="source_of_schedule">source_of_schedule</string>
     <string name="update_app">update_app</string>
+    <string name="about_app">about_app</string>
     <string name="update_folder">updateFolder/</string>
 
     <string name="version">version</string>

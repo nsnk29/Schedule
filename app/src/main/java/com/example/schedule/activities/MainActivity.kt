@@ -26,13 +26,10 @@ import com.example.schedule.adapters.BottomRecycleAdapter
 import com.example.schedule.adapters.MainRecycleAdapter
 import com.example.schedule.database.DatabaseHelper
 import com.example.schedule.interfaces.BottomRecyclerClickListener
-import com.example.schedule.model.PairClass
+import com.example.schedule.model.*
 import com.google.android.material.snackbar.Snackbar
 import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_main.*
-import java.util.*
-import kotlin.collections.ArrayList
-
 
 class MainActivity : AppCompatActivity(), BottomRecyclerClickListener {
 
@@ -121,10 +118,7 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener {
             currentWeek = getInt("currentWeek")
             toggle.isChecked = getBoolean("isChecked")
         }
-        if (currentWeek % 2 != 0) {
-            toggle.textOn = getString(R.string.current_week)
-            toggle.textOff = getString(R.string.next_week)
-        }
+        setToggleTitles()
         val allWeekDates = savedInstanceState.getIntegerArrayList("allWeekDates") as List<Int>
         val currentDay = savedInstanceState.getInt("currentDay")
         val selectedDay = savedInstanceState.getInt("selectedDay")
@@ -152,6 +146,28 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener {
                 false
             )
             adapter = mainRecyclerAdapter
+            overScrollMode = View.OVER_SCROLL_NEVER
+        }
+    }
+
+
+    private fun setBottomRecyclerView(day: Int) {
+        if (!this::bottomRecyclerAdapter.isInitialized) {
+            currentWeek = getParityOfWeek()
+            setToggleTitles()
+            bottomRecyclerAdapter =
+                BottomRecycleAdapter(initAllWeekDates(), this, day, toggle.isChecked, this)
+            setWeekDay(day)
+        }
+        recyclerViewBottom.apply {
+            layoutManager = LinearLayoutManager(
+                this@MainActivity,
+                RecyclerView.HORIZONTAL,
+                false
+            )
+            adapter = bottomRecyclerAdapter
+            addItemDecoration(MarginItemDecoration(0))
+            setHasFixedSize(true)
             overScrollMode = View.OVER_SCROLL_NEVER
         }
     }
@@ -188,25 +204,6 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener {
         return arrayForMainRecyclerView
     }
 
-    private fun setBottomRecyclerView(day: Int) {
-        if (!this::bottomRecyclerAdapter.isInitialized) {
-            getParityOfWeek()
-            bottomRecyclerAdapter =
-                BottomRecycleAdapter(initAllWeekDates(), this, day, toggle.isChecked, this)
-            setWeekDay(day)
-        }
-        recyclerViewBottom.apply {
-            layoutManager = LinearLayoutManager(
-                this@MainActivity,
-                RecyclerView.HORIZONTAL,
-                false
-            )
-            adapter = bottomRecyclerAdapter
-            addItemDecoration(MarginItemDecoration(0))
-            setHasFixedSize(true)
-            overScrollMode = View.OVER_SCROLL_NEVER
-        }
-    }
 
     private fun setToggleAction() {
         toggle.setOnCheckedChangeListener(
@@ -265,66 +262,16 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener {
         }
     }
 
-    private fun initAllWeekDates(): ArrayList<Int> {
-        val allWeekDates: ArrayList<Int> = ArrayList(14)
-
-        val cal = Calendar.getInstance()
-        if (cal.get(Calendar.DAY_OF_WEEK) == 1)
-            cal.add(Calendar.DATE, 1)
-        cal.apply {
-            firstDayOfWeek = GregorianCalendar.MONDAY
-            set(Calendar.HOUR_OF_DAY, 0)
-            clear(Calendar.MINUTE)
-            clear(Calendar.SECOND)
-            clear(Calendar.MILLISECOND)
-            set(Calendar.DAY_OF_WEEK, cal.firstDayOfWeek)
-        }
-
-        for (i in 0 until 14) {
-            allWeekDates.add(cal.get(Calendar.DAY_OF_MONTH))
-            cal.add(Calendar.DATE, 1)
-        }
-        return allWeekDates
-    }
-
-
-    private fun getDayName(pos: Int) =
-        when (pos) {
-            0 -> (getString(R.string.monday))
-            1 -> (getString(R.string.tuesday))
-            2 -> (getString(R.string.wednesday))
-            3 -> (getString(R.string.thursday))
-            4 -> (getString(R.string.friday))
-            5 -> (getString(R.string.saturday))
-            else -> (getString(R.string.sunday))
-        }
-
-
-    private fun getNegativeWeek(x: Int) = when (x) {
-        1 -> 0
-        else -> 1
-    }
-
 
     private fun setWeekDay(position: Int) {
-        weekDayText.text = getDayName(position)
-    }
-
-    private fun getCurrentDay(): Int {
-        val day = Calendar.getInstance().get(Calendar.DAY_OF_WEEK) - 2
-        return if (day == -1) 0 else day
+        weekDayText.text = getDayName(this, position)
     }
 
 
-    private fun getParityOfWeek() {
-        val cal = Calendar.getInstance()
-        if (cal.get(Calendar.DAY_OF_WEEK) == 1)
-            cal.add(Calendar.DATE, 1)
-        currentWeek = cal.get(Calendar.WEEK_OF_YEAR) % 2
+    private fun setToggleTitles() {
         if (currentWeek % 2 != 0) {
             toggle.textOn = getString(R.string.current_week)
             toggle.textOff = getString(R.string.next_week)
-            toggle.isChecked = false
         }
     }
 
@@ -389,5 +336,4 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener {
             }
         }
     }
-
 }

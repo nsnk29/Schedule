@@ -6,11 +6,13 @@
 
         <SwitchPreferenceCompat
             app:defaultValue="false"
+            android:icon="@drawable/ic_notifications"
             app:key="@string/notification_status"
             app:title="@string/notification_title"
             app:useSimpleSummaryProvider="true" />
         <Preference
             app:defaultValue="false"
+            android:icon="@drawable/ic_time"
             app:dependency="@string/notification_status"
             app:key="@string/notification_time_picker"
             app:title="@string/notification_time" />
@@ -20,12 +22,14 @@
 
         <SwitchPreferenceCompat
             app:defaultValue="false"
+            android:icon="@drawable/ic_dark_mode"
             app:key="@string/dark_mode"
             app:title="@string/dark_mode_ru" />
 
 
         <ListPreference
             android:defaultValue="2"
+            android:icon="@drawable/ic_format_lines"
             android:entries="@array/CardLayoutLineSize"
             android:entryValues="@array/CardLayoutLineSize"
             android:key="@string/card_layout_preference"
@@ -33,16 +37,23 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/app_name">
         <Preference
+            android:icon="@drawable/ic_edit"
             android:title="@string/change_title_of_schedule"
             app:key="@string/source_of_schedule"
             app:useSimpleSummaryProvider="true" />
 
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/updates">
+
+    <PreferenceCategory android:title="@string/about">
         <Preference
             android:title="@string/check_for_updates"
+            android:icon="@drawable/ic_update"
             app:key="@string/update_app" />
+        <Preference
+            android:title="@string/about"
+            android:icon="@drawable/ic_about"
+            app:key="@string/about_app" />
     </PreferenceCategory>
 
 </androidx.preference.PreferenceScreen>
