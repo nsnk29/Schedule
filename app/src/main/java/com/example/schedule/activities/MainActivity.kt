@@ -31,6 +31,7 @@ import com.google.android.material.snackbar.Snackbar
 import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 class MainActivity : AppCompatActivity(), BottomRecyclerClickListener {
@@ -46,9 +47,10 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener {
 
     object CODES {
         const val CHANNEL_ID = "scheduleNotification"
-        const val COUNT_LINES_REQUEST_CODE = 1
-        const val GROUP_PICK_REQUEST_CODE = 2
-        const val BOTH_REQUEST_CODE = 3
+        const val COUNT_LINES_RESULT_CODE = 1
+        const val GROUP_PICK_RESULT_CODE = 2
+        const val BOTH_RESULT_CODE = 3
+        const val SETTINGS_ACTIVITY_REQUEST_CODE = 4
     }
 
 
@@ -77,15 +79,17 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener {
 
 
     override fun onSaveInstanceState(outState: Bundle) {
-        outState.putParcelableArray("pairsData", mainRecyclerAdapter.pairsData)
-        outState.putIntegerArrayList(
-            "allWeekDates",
-            bottomRecyclerAdapter.allWeekDates as ArrayList<Int>
-        )
-        outState.putInt("currentDay", bottomRecyclerAdapter.currentDay)
-        outState.putInt("selectedDay", bottomRecyclerAdapter.selectedDay)
-        outState.putInt("currentWeek", currentWeek)
-        outState.putBoolean("isChecked", toggle.isChecked)
+        outState.run {
+            putParcelableArray("pairsData", mainRecyclerAdapter.pairsData)
+            putIntegerArrayList(
+                "allWeekDates",
+                bottomRecyclerAdapter.allWeekDates as ArrayList<Int>
+            )
+            putInt("currentDay", bottomRecyclerAdapter.currentDay)
+            putInt("selectedDay", bottomRecyclerAdapter.selectedDay)
+            putInt("currentWeek", currentWeek)
+            putBoolean("isChecked", toggle.isChecked)
+        }
         super.onSaveInstanceState(outState)
     }
 
@@ -113,13 +117,14 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener {
 
     @Suppress("UNCHECKED_CAST")
     private fun restoreData(savedInstanceState: Bundle) {
-        currentWeek = savedInstanceState.getInt("currentWeek")
-        toggle.isChecked = savedInstanceState.getBoolean("isChecked")
+        with(savedInstanceState) {
+            currentWeek = getInt("currentWeek")
+            toggle.isChecked = getBoolean("isChecked")
+        }
         if (currentWeek % 2 != 0) {
             toggle.textOn = getString(R.string.current_week)
             toggle.textOff = getString(R.string.next_week)
         }
-
         val allWeekDates = savedInstanceState.getIntegerArrayList("allWeekDates") as List<Int>
         val currentDay = savedInstanceState.getInt("currentDay")
         val selectedDay = savedInstanceState.getInt("selectedDay")
@@ -139,12 +144,7 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener {
 
     private fun setMainRecyclerView(currentDay: Int) {
         if (!this::mainRecyclerAdapter.isInitialized)
-            mainRecyclerAdapter = MainRecycleAdapter(
-                preparePairsData(
-                    currentDay,
-                    if (toggle.isChecked) currentWeek else getNegativeWeek(currentWeek)
-                ), this
-            )
+            mainRecyclerAdapter = getMainAdapter(currentDay)
         recyclerViewMain.apply {
             layoutManager = LinearLayoutManager(
                 this@MainActivity,
@@ -155,6 +155,13 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener {
             overScrollMode = View.OVER_SCROLL_NEVER
         }
     }
+
+    private fun getMainAdapter(currentDay: Int): MainRecycleAdapter = MainRecycleAdapter(
+        preparePairsData(
+            currentDay,
+            if (toggle.isChecked) currentWeek else getNegativeWeek(currentWeek)
+        ), this
+    )
 
     private fun preparePairsData(currentDay: Int, even: Int): Array<PairClass> {
         val savedValueOfUsersPick =
@@ -213,23 +220,31 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener {
     fun openSettings(view: View) {
         startActivityForResult(
             Intent(view.context, SettingsActivity::class.java),
-            CODES.COUNT_LINES_REQUEST_CODE
+            CODES.SETTINGS_ACTIVITY_REQUEST_CODE
         )
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         settingsButton.startAnimation(rotate)
-        if (resultCode == CODES.GROUP_PICK_REQUEST_CODE)
-            onSourceChange()
-        else if (requestCode == CODES.BOTH_REQUEST_CODE || requestCode == CODES.COUNT_LINES_REQUEST_CODE)
-            setMainRecyclerView(bottomRecyclerAdapter.selectedDay)
+        when (resultCode) {
+            CODES.GROUP_PICK_RESULT_CODE -> onSourceChange()
+            CODES.COUNT_LINES_RESULT_CODE -> {
+                mainRecyclerAdapter = getMainAdapter(bottomRecyclerAdapter.selectedDay)
+                recyclerViewMain.adapter = mainRecyclerAdapter
+            }
+            CODES.BOTH_RESULT_CODE -> {
+                mainRecyclerAdapter = getMainAdapter(bottomRecyclerAdapter.currentDay)
+                recyclerViewMain.adapter = mainRecyclerAdapter
+                onSourceChange()
+            }
+        }
     }
 
     private fun onSourceChange() {
         mainRecyclerAdapter.isGroup =
             mPreference.getBoolean(getString(R.string.isGroupPicked), true)
-        onItemClicked(bottomRecyclerAdapter.selectedDay, true)
+        updateMainRecyclerView(bottomRecyclerAdapter.selectedDay)
     }
 
     private fun createNotificationChannel() {
@@ -348,6 +363,10 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener {
             notifyItemChanged(position)
         }
         setWeekDay(position)
+        updateMainRecyclerView(position)
+    }
+
+    private fun updateMainRecyclerView(position: Int) {
         mainRecyclerAdapter.pairsData =
             preparePairsData(
                 position,

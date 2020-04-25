@@ -1,5 +1,6 @@
 package com.example.schedule.activities
 
+import android.app.Activity
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.app.TimePickerDialog
@@ -23,7 +24,8 @@ import java.util.*
 
 
 class SettingsActivity : AppCompatActivity(), TimePickerDialog.OnTimeSetListener {
-    var countOfResults = 0
+    var isCountOfLinesChanged: Boolean = false
+    private var isGroupChanged: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,8 +39,30 @@ class SettingsActivity : AppCompatActivity(), TimePickerDialog.OnTimeSetListener
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        with(outState) {
+            putBoolean("lines", isCountOfLinesChanged)
+            putBoolean("group", isGroupChanged)
+        }
+        super.onSaveInstanceState(outState)
+    }
 
-    fun updateFragment() {
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        with(savedInstanceState) {
+            isCountOfLinesChanged = getBoolean("lines")
+            isGroupChanged = getBoolean("group")
+        }
+        super.onRestoreInstanceState(savedInstanceState)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK && requestCode == MainActivity.CODES.GROUP_PICK_RESULT_CODE)
+            isGroupChanged = true
+    }
+
+
+    private fun updateFragment() {
         supportFragmentManager
             .beginTransaction()
             .replace(
@@ -109,6 +133,20 @@ class SettingsActivity : AppCompatActivity(), TimePickerDialog.OnTimeSetListener
         return true
     }
 
+    override fun onBackPressed() {
+        setResults()
+        super.onBackPressed()
+    }
+
+    private fun setResults() {
+        if (isGroupChanged && isCountOfLinesChanged)
+            setResult(MainActivity.CODES.BOTH_RESULT_CODE)
+        else if (isGroupChanged)
+            setResult(MainActivity.CODES.GROUP_PICK_RESULT_CODE)
+        else if (isCountOfLinesChanged)
+            setResult(MainActivity.CODES.COUNT_LINES_RESULT_CODE)
+    }
+
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -124,3 +162,4 @@ class SettingsActivity : AppCompatActivity(), TimePickerDialog.OnTimeSetListener
         }
     }
 }
+
