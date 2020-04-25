@@ -9,6 +9,7 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Build
+import android.os.Build.VERSION
 import android.os.Bundle
 import android.view.View
 import android.view.animation.Animation
@@ -69,8 +70,9 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener {
         setToggleAction()
         recyclerViewMain.setOnTouchListener(getMainSwipeListener())
         initRotateForSettings()
-        if (savedInstanceState == null)
+        if (savedInstanceState == null) {
             URLRequests.checkUpdate(this)
+        }
     }
 
 
@@ -127,8 +129,9 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener {
             BottomRecycleAdapter(allWeekDates, this, currentDay, toggle.isChecked, this)
         bottomRecyclerAdapter.selectedDay = selectedDay
 
+        val savedArray = savedInstanceState.getParcelableArray("pairsData")
         mainRecyclerAdapter = MainRecycleAdapter(
-            savedInstanceState.getParcelableArray("pairsData") as Array<PairClass>,
+            Array(savedArray?.size ?: 0) { savedArray?.get(it) as PairClass },
             this
         )
         super.onRestoreInstanceState(savedInstanceState)
@@ -230,7 +233,7 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener {
     }
 
     private fun createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name = getString(R.string.channel_name)
             val descriptionText = getString(R.string.channel_description)
             val importance = NotificationManager.IMPORTANCE_HIGH

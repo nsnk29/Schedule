@@ -43,7 +43,9 @@
     <string name="default_string">default</string>
     <string name="dark_mode">dark_mode</string>
 
-    <string name="URL_JSON"><![CDATA[https://makson-dev.ru/api/getContent.php?v=VERSION&n=Nikita]]></string>
+    <string name="URL_LESSONS_JSON"><![CDATA[https://makson-dev.ru/api/getContent.php?v=VERSION&n=Nikita]]></string>
+    <string name="URL_UPDATE"><![CDATA[https://makson-dev.ru/api/getAndroidVersion.php?n=Nikita]]></string>
+    <string name="URL_PREFIX"><![CDATA[https://makson-dev.ru]]></string>
     <string name="groups_ru_title">Группы</string>
     <string name="lecturer_title_ru">Преподаватели</string>
 

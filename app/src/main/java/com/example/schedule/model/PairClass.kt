@@ -73,6 +73,7 @@ open class PairClass() : RealmObject(), Parcelable {
                 && title.isBlank()
                 && type == 0
 
+
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(studyroom)
         parcel.writeInt(day)

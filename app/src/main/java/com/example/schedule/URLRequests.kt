@@ -35,7 +35,7 @@ object URLRequests {
         val mPreference = PreferenceManager.getDefaultSharedPreferences(context)
         val client = OkHttpClient()
         val url = URL(
-            context.getString(R.string.URL_JSON).replace(
+            context.getString(R.string.URL_LESSONS_JSON).replace(
                 "VERSION",
                 mPreference.getLong(context.getString(R.string.version), 0).toString()
             )
@@ -99,7 +99,7 @@ object URLRequests {
     fun checkUpdate(activity: AppCompatActivity) {
         val client = OkHttpClient()
         val request = Request.Builder()
-            .url(URL("https://api.npoint.io/51b425c3ad56fb04168a"))
+            .url(URL(activity.getString(R.string.URL_UPDATE)))
             .get()
             .build()
         client.newCall(request).enqueue(object : Callback {
@@ -130,11 +130,14 @@ object URLRequests {
                         }
                     return
                 }
-                lastDownloadController = DownloadController(activity, json.link)
+                lastDownloadController = DownloadController(
+                    activity,
+                    activity.getString(R.string.URL_PREFIX) + json.link
+                )
                 Handler(Looper.getMainLooper()).post {
                     AlertDialog.Builder(activity)
                         .setTitle(R.string.update)
-                        .setMessage("${activity.getString(R.string.new_version)}\nРазмер обновления: ${json.size}")
+                        .setMessage("${activity.getString(R.string.new_version)}\nРазмер обновления: ${json.size} Mb.")
                         .setPositiveButton(R.string.need_to_download) { _, _ ->
                             lastDownloadController?.checkStoragePermission()
                         }
