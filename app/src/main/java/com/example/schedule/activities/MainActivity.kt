@@ -26,7 +26,10 @@ import com.example.schedule.adapters.BottomRecycleAdapter
 import com.example.schedule.adapters.MainRecycleAdapter
 import com.example.schedule.database.DatabaseHelper
 import com.example.schedule.interfaces.BottomRecyclerClickListener
-import com.example.schedule.model.*
+import com.example.schedule.model.CalendarHelper
+import com.example.schedule.model.CalendarHelper.getDayName
+import com.example.schedule.model.CalendarHelper.getNegativeWeek
+import com.example.schedule.model.PairClass
 import com.google.android.material.snackbar.Snackbar
 import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_main.*
@@ -38,7 +41,6 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener {
 
     private lateinit var mainRecyclerAdapter: MainRecycleAdapter
     private lateinit var mPreference: SharedPreferences
-    private var currentWeek: Int = 0
     private val arrayForMainRecyclerView: Array<PairClass> = Array(8) { PairClass() }
     private lateinit var rotate: RotateAnimation
 
@@ -63,9 +65,8 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener {
         createNotificationChannel()
         mPreference = PreferenceManager.getDefaultSharedPreferences(this)
 
-        val currentDay = getCurrentDay()
-        setBottomRecyclerView(currentDay)
-        setMainRecyclerView(currentDay)
+        setBottomRecyclerView(CalendarHelper.currentDay)
+        setMainRecyclerView(CalendarHelper.currentDay)
         setToggleAction()
         recyclerViewMain.setOnTouchListener(getMainSwipeListener())
         initRotateForSettings()
@@ -84,7 +85,6 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener {
             )
             putInt("currentDay", bottomRecyclerAdapter.currentDay)
             putInt("selectedDay", bottomRecyclerAdapter.selectedDay)
-            putInt("currentWeek", currentWeek)
             putBoolean("isChecked", toggle.isChecked)
         }
         super.onSaveInstanceState(outState)
@@ -114,10 +114,7 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener {
 
     @Suppress("UNCHECKED_CAST")
     private fun restoreData(savedInstanceState: Bundle) {
-        with(savedInstanceState) {
-            currentWeek = getInt("currentWeek")
-            toggle.isChecked = getBoolean("isChecked")
-        }
+        toggle.isChecked = savedInstanceState.getBoolean("isChecked")
         setToggleTitles()
         val allWeekDates = savedInstanceState.getIntegerArrayList("allWeekDates") as List<Int>
         val currentDay = savedInstanceState.getInt("currentDay")
@@ -153,11 +150,7 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener {
 
     private fun setBottomRecyclerView(day: Int) {
         if (!this::bottomRecyclerAdapter.isInitialized) {
-            currentWeek = getParityOfWeek()
-            setToggleTitles()
-            bottomRecyclerAdapter =
-                BottomRecycleAdapter(initAllWeekDates(), this, day, toggle.isChecked, this)
-            setWeekDay(day)
+            initBottomRecycler(day)
         }
         recyclerViewBottom.apply {
             layoutManager = LinearLayoutManager(
@@ -172,10 +165,23 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener {
         }
     }
 
+    private fun initBottomRecycler(day: Int) {
+        setToggleTitles()
+        bottomRecyclerAdapter =
+            BottomRecycleAdapter(
+                CalendarHelper.initAllWeekDates(),
+                this,
+                day,
+                toggle.isChecked,
+                this
+            )
+        setWeekDay(day)
+    }
+
     private fun getMainAdapter(currentDay: Int): MainRecycleAdapter = MainRecycleAdapter(
         preparePairsData(
             currentDay,
-            if (toggle.isChecked) currentWeek else getNegativeWeek(currentWeek)
+            if (toggle.isChecked) CalendarHelper.parity else getNegativeWeek(CalendarHelper.parity)
         ), this
     )
 
@@ -269,10 +275,14 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener {
 
 
     private fun setToggleTitles() {
-        if (currentWeek % 2 != 0) {
+        if (CalendarHelper.parity % 2 != 0) {
             toggle.textOn = getString(R.string.current_week)
             toggle.textOff = getString(R.string.next_week)
+        } else {
+            toggle.textOn = getString(R.string.next_week)
+            toggle.textOff = getString(R.string.current_week)
         }
+        toggle.text = if (toggle.isChecked) toggle.textOn else toggle.textOff
     }
 
     private fun initRotateForSettings() {
@@ -293,6 +303,12 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener {
         super.onResume()
         DatabaseHelper.init(this)
         URLRequests.getLessonsJSON(this)
+        if (CalendarHelper.updateCurrentInfo()) {
+            initBottomRecycler(CalendarHelper.currentDay)
+            setBottomRecyclerView(CalendarHelper.currentDay)
+            mainRecyclerAdapter = getMainAdapter(CalendarHelper.currentDay)
+            setMainRecyclerView(CalendarHelper.currentDay)
+        }
     }
 
     override fun onDestroy() {
@@ -317,7 +333,7 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener {
         mainRecyclerAdapter.pairsData =
             preparePairsData(
                 position,
-                if (toggle.isChecked) currentWeek else getNegativeWeek(currentWeek)
+                if (toggle.isChecked) CalendarHelper.parity else getNegativeWeek(CalendarHelper.parity)
             )
         mainRecyclerAdapter.notifyDataSetChanged()
     }
