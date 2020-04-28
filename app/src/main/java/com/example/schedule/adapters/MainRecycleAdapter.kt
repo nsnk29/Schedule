@@ -104,11 +104,11 @@ class MainRecycleAdapter(var pairsData: Array<PairClass>, var context: Context) 
             when (lesson.type) {
                 1 -> {
                     typeTextView.text = practiceText
-                    typeTextView.setBackgroundResource(R.drawable.type_of_pair_practice)
+                    typeTextView.setBackgroundResource(R.color.practice_color)
                 }
                 0 -> {
                     typeTextView.text = lectureText
-                    typeTextView.setBackgroundResource(R.drawable.type_of_pair_lecture)
+                    typeTextView.setBackgroundResource(R.color.lecture_color)
                 }
             }
             if (isGroup)

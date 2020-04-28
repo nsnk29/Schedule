@@ -4,7 +4,6 @@
     <color name="colorPrimaryDark">@android:color/transparent</color>
 
 
-    <color name="practice_color">#3399ff</color>
     <color name="empty_pairs">#323232</color>
 
     <color name="text_color_secondary">@color/secondary_text_default_material_dark</color>
@@ -14,9 +13,10 @@
 
 
     <color name="pickerActivitySearchBar">#3C3C3C</color>
-<!--    <color name="pickerActivitySearchBar">#DCDCDC</color>-->
     <color name="pickerActivityTextColor">@color/secondary_text_default_material_dark</color>
     <color name="pickerActivitySelectedTextColor">@color/primary_text_default_material_dark</color>
+    <color name="lecture_color">#EE0033</color>
+    <color name="practice_color">#3399ff</color>
 
     <color name="navigationBarColor">@android:color/transparent</color>
 </resources>

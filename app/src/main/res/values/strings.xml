@@ -90,10 +90,15 @@
     <string name="storage_access_required">Чтобы обновить приложение необходим доступ к хранилищу.</string>
     <string name="storage_permission_denied">Отказано в доступе к хранилищу.</string>
     <string name="last_version_installed">Установлена последняя версия приложения.</string>
-    <string name="new_version">Обнаружена новая версия приложения</string>
+    <string name="new_version">Обнаружена новая версия</string>
     <string name="update">Обновление</string>
     <string name="update_in_process">Обновление скачивается</string>
     <string name="connection_problem">Проблемы c подключенем к сети.</string>
     <string name="try_again">Попробовать снова</string>
     <string name="need_to_download">Загрузить</string>
+    <string name="update_info">Информация об обновлении</string>
+    <string name="update_changelog">Основные изменения</string>
+    <string name="update_empty_changelog">Описание измененией отсутствует</string>
+    <string name="update_warning">Пожалуйста, не закрывайте приложение до окончания загрузки обновления</string>
+
 </resources>

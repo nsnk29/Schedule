@@ -1,6 +1,5 @@
 package com.example.schedule
 
-import android.app.AlertDialog
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
@@ -11,6 +10,7 @@ import com.example.schedule.activities.MainActivity
 import com.example.schedule.activities.PickerActivity
 import com.example.schedule.activities.SettingsActivity
 import com.example.schedule.database.DatabaseHelper
+import com.example.schedule.fragments.UpdateDialogFragment
 import com.example.schedule.model.LessonJSONStructure
 import com.example.schedule.model.UpdateJSONScheme
 import com.google.android.material.snackbar.Snackbar
@@ -19,6 +19,7 @@ import kotlinx.android.synthetic.main.settings_activity.*
 import okhttp3.*
 import java.io.IOException
 import java.net.URL
+import java.text.DateFormat.getDateInstance
 
 
 object URLRequests {
@@ -134,17 +135,17 @@ object URLRequests {
                     activity,
                     activity.getString(R.string.URL_PREFIX) + json.link
                 )
+                val sdf = getDateInstance()
+                val date = java.util.Date(json.upload_time * 1000)
+                val info =
+                    "Версия: ${json.version}\nРазмер обновления: ${json.size}Мб.\nДата обновления: ${sdf.format(
+                        date
+                    )}"
                 Handler(Looper.getMainLooper()).post {
-                    AlertDialog.Builder(activity)
-                        .setTitle(R.string.update)
-                        .setMessage("${activity.getString(R.string.new_version)}\nРазмер обновления: ${json.size} Мб.\nНе закрывайте приложение до конца загрузки обновления")
-                        .setPositiveButton(R.string.need_to_download) { _, _ ->
-                            lastDownloadController?.checkStoragePermission()
-                        }
-                        .setNegativeButton(android.R.string.no) { dialog, _ ->
-                            dialog.dismiss()
-                        }
-                        .show()
+                    UpdateDialogFragment(info, json.description, lastDownloadController!!).show(
+                        activity.supportFragmentManager,
+                        "update_dialog"
+                    )
                 }
             }
         })
