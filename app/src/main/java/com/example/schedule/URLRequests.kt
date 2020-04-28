@@ -137,7 +137,7 @@ object URLRequests {
                 Handler(Looper.getMainLooper()).post {
                     AlertDialog.Builder(activity)
                         .setTitle(R.string.update)
-                        .setMessage("${activity.getString(R.string.new_version)}\nРазмер обновления: ${json.size} Mb.")
+                        .setMessage("${activity.getString(R.string.new_version)}\nРазмер обновления: ${json.size} Мб.\nНе закрывайте приложение до конца загрузки обновления")
                         .setPositiveButton(R.string.need_to_download) { _, _ ->
                             lastDownloadController?.checkStoragePermission()
                         }

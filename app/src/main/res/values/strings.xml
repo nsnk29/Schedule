@@ -92,6 +92,7 @@
     <string name="last_version_installed">Установлена последняя версия приложения.</string>
     <string name="new_version">Обнаружена новая версия приложения</string>
     <string name="update">Обновление</string>
+    <string name="update_in_process">Обновление скачивается</string>
     <string name="connection_problem">Проблемы c подключенем к сети.</string>
     <string name="try_again">Попробовать снова</string>
     <string name="need_to_download">Загрузить</string>

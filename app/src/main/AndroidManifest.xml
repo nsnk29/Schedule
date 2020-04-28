@@ -9,6 +9,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
+        android:name=".CustomApplication"
         android:allowBackup="true"
         android:fullBackupContent="true"
         android:icon="@mipmap/ic_launcher"
@@ -47,6 +48,9 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/path" />
         </provider>
+        <receiver
+            android:name=".DownloadReceiver"
+            android:exported="false" />
     </application>
 
 

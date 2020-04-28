@@ -311,6 +311,7 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener {
         }
     }
 
+
     override fun onDestroy() {
         DatabaseHelper.closeConnection()
         super.onDestroy()

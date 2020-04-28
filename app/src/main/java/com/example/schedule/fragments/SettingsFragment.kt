@@ -11,6 +11,9 @@ import com.example.schedule.URLRequests
 import com.example.schedule.activities.MainActivity
 import com.example.schedule.activities.PickerActivity
 import com.example.schedule.activities.SettingsActivity
+import com.example.schedule.isDownloading
+import com.google.android.material.snackbar.Snackbar
+import kotlinx.android.synthetic.main.settings_activity.*
 import java.util.*
 
 
@@ -49,8 +52,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
                         val slittedText = text?.split(':')?.toTypedArray()
                         val hourOfDay = slittedText?.get(0)?.toInt()
                         val minute = slittedText?.get(1)?.toInt()
-
-
                         val c = Calendar.getInstance()
                         c.set(Calendar.HOUR_OF_DAY, hourOfDay!!)
                         c.set(Calendar.MINUTE, minute!!)
@@ -66,7 +67,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
             findPreference<Preference>(getString(R.string.notification_time_picker))
         notificationTimePicker?.setOnPreferenceClickListener {
             val timePicker = TimePickerFragment()
-
             timePicker.show(childFragmentManager, "Время для уведомления")
             true
         }
@@ -74,12 +74,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
         val darkMode = findPreference<SwitchPreferenceCompat>(getString(R.string.dark_mode))
         darkMode?.onPreferenceChangeListener =
             Preference.OnPreferenceChangeListener { _, newValue ->
-                if (!(newValue as Boolean)) {
+                if (!(newValue as Boolean))
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-
-                } else {
+                else
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-                }
                 true
             }
 
@@ -114,7 +112,15 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         val updatePreference = findPreference<Preference>(getString(R.string.update_app))
         updatePreference?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-            activity?.let { activity -> URLRequests.checkUpdate(activity as AppCompatActivity) }
+            val id = mPreference.getLong("download_id", 0L)
+            if (activity != null && !isDownloading(requireActivity(), id))
+                URLRequests.checkUpdate(activity as AppCompatActivity)
+            else
+                Snackbar.make(
+                    (activity as SettingsActivity).mainLayout,
+                    R.string.update_in_process,
+                    Snackbar.LENGTH_LONG
+                ).show()
             true
         }
 
