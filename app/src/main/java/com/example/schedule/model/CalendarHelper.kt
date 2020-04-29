@@ -22,7 +22,7 @@ object CalendarHelper {
         return false
     }
 
-    private fun getInstanceOfCurrentDay(): Calendar {
+    private fun getInstanceOfCurrentDay(checkSunday: Boolean = true): Calendar {
         val calendar = Calendar.getInstance()
         calendar.apply {
             firstDayOfWeek = GregorianCalendar.MONDAY
@@ -31,16 +31,20 @@ object CalendarHelper {
             clear(Calendar.SECOND)
             clear(Calendar.MILLISECOND)
         }
-        if (calendar.get(Calendar.DAY_OF_WEEK) == 1)
+        if (checkSunday && calendar.get(Calendar.DAY_OF_WEEK) == 1)
             calendar.add(Calendar.DATE, 1)
         return calendar
     }
 
-
-    private fun getDayOfWeek(): Int {
-        val day = getInstanceOfCurrentDay().get(Calendar.DAY_OF_WEEK) - 2
-        return if (day == 0) 0 else day
+    fun setNextDay() {
+        val currentDayCalendar = getInstanceOfCurrentDay(false).apply { add(Calendar.DATE, 1) }
+        currentDay = getDayOfWeek(currentDayCalendar)
+        parity = getParityOfWeek(currentDayCalendar)
     }
+
+    private fun getDayOfWeek(cal: Calendar = getInstanceOfCurrentDay()): Int =
+        cal.get(Calendar.DAY_OF_WEEK) - 2
+
 
     fun initAllWeekDates(): ArrayList<Int> {
         val allWeekDates: ArrayList<Int> = ArrayList(14)
@@ -53,7 +57,8 @@ object CalendarHelper {
     }
 
     // ToDo при переделке бэка сайта нужно будет получать 0/1 значение в JSON и решать что возвращать
-    private fun getParityOfWeek(): Int = getInstanceOfCurrentDay().get(Calendar.WEEK_OF_YEAR) % 2
+    private fun getParityOfWeek(cal: Calendar = getInstanceOfCurrentDay()): Int =
+        cal.get(Calendar.WEEK_OF_YEAR) % 2
 
 
     fun getDayName(context: Context, pos: Int) =

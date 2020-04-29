@@ -59,7 +59,7 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener {
         if (savedInstanceState != null) {
             restoreData(savedInstanceState)
         }
-
+        CalendarHelper.updateCurrentInfo()
         DatabaseHelper.init(this)
         realm = DatabaseHelper.getConnection()
         createNotificationChannel()
@@ -73,6 +73,7 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener {
         if (savedInstanceState == null) {
             URLRequests.checkUpdate(this)
         }
+        setNextDay(intent)
     }
 
 
@@ -191,8 +192,8 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener {
         val isGroup = mPreference.getBoolean(getString(R.string.isGroupPicked), true)
 
         val pairsData =
-            if (isGroup) DatabaseHelper.getPairsOfGroup(savedValueOfUsersPick, currentDay + 1, even)
-            else DatabaseHelper.getPairsOfLecturer(savedValueOfUsersPick, currentDay + 1, even)
+            if (isGroup) DatabaseHelper.getPairsOfGroup(savedValueOfUsersPick, currentDay, even)
+            else DatabaseHelper.getPairsOfLecturer(savedValueOfUsersPick, currentDay, even)
 
         arrayForMainRecyclerView.map { it.clear() }
 
@@ -351,6 +352,23 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener {
                 Snackbar.make(wrapper, R.string.storage_permission_denied, Snackbar.LENGTH_LONG)
                     .show()
             }
+        }
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        // обработка случая если уведомление придёт во время использования приложения
+        if (intent != null) {
+            setNextDay(intent)
+        }
+        super.onNewIntent(intent)
+    }
+
+    private fun setNextDay(intent: Intent) {
+        if (intent.getIntExtra("selected_day", -1) != -1) {
+            DatabaseHelper.init(this)
+            if (intent.getIntExtra("selected_day", -1) != bottomRecyclerAdapter.selectedDay)
+                onItemClicked(intent.getIntExtra("selected_day", -1), true)
+            CalendarHelper.updateCurrentInfo()
         }
     }
 }

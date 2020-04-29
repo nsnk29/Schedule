@@ -1,4 +1,4 @@
-package com.example.schedule
+package com.example.schedule.receivers
 
 import android.app.DownloadManager
 import android.content.BroadcastReceiver
@@ -8,6 +8,8 @@ import android.net.Uri
 import android.os.Build
 import androidx.core.content.FileProvider
 import androidx.preference.PreferenceManager
+import com.example.schedule.BuildConfig
+import com.example.schedule.DownloadController
 import java.io.File
 
 

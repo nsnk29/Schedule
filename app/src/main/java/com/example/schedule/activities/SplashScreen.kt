@@ -24,7 +24,6 @@ class SplashScreen : AppCompatActivity() {
             getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString() + "/" + DownloadController.FILE_NAME
         )
         if (apk.exists()) apk.delete()
-
         isFirstRun()
     }
 

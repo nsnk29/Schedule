@@ -59,7 +59,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
                         (activity as SettingsActivity).startAlarm(c)
                     }
                     true
-
                 }
         }
 

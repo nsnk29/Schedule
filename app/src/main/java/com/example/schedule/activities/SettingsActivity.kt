@@ -13,11 +13,11 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.preference.PreferenceManager
-import com.example.schedule.AlertReceiver
 import com.example.schedule.DownloadController.Companion.PERMISSION_REQUEST_STORAGE
 import com.example.schedule.R
 import com.example.schedule.URLRequests
 import com.example.schedule.fragments.SettingsFragment
+import com.example.schedule.receivers.AlertReceiver
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.settings_activity.*
 import java.util.*
@@ -117,7 +117,6 @@ class SettingsActivity : AppCompatActivity(), TimePickerDialog.OnTimeSetListener
             "Уведомления установлены на $hourString:$minuteString",
             Toast.LENGTH_LONG
         ).show()
-
     }
 
     fun cancelAlarm() {

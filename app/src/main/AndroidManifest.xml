@@ -17,7 +17,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        tools:ignore="GoogleAppIndexingWarning">
+        tools:ignore="GoogleAppIndexingWarning|GoogleAppIndexingWarning,LockedOrientationActivity">
         <activity
             android:name=".activities.PickerActivity"
             android:screenOrientation="portrait" />
@@ -35,9 +35,14 @@
             android:label="@string/settings"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
-        <activity android:name=".activities.MainActivity" />
+        <activity
+            android:name=".activities.MainActivity"
+            android:launchMode="singleTask" />
 
-        <receiver android:name=".AlertReceiver" />
+        <receiver android:name=".receivers.AlertReceiver" />
+        <receiver
+            android:name=".receivers.DownloadReceiver"
+            android:exported="false" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -48,10 +53,5 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/path" />
         </provider>
-        <receiver
-            android:name=".DownloadReceiver"
-            android:exported="false" />
     </application>
-
-
 </manifest>

@@ -9,6 +9,7 @@ import android.database.Cursor
 import android.net.Uri
 import android.os.Environment
 import android.widget.RelativeLayout
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
@@ -49,6 +50,7 @@ class DownloadController(private val activity: AppCompatActivity, private val ur
         }
 
         val id = downloadManager.enqueue(request)
+        Toast.makeText(activity, activity.getString(R.string.downloading), Toast.LENGTH_LONG).show()
         with(PreferenceManager.getDefaultSharedPreferences(activity).edit()) {
             putString("destination", destination)
             putString("uri", uri.toString())
