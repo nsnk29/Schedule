@@ -9,32 +9,67 @@ import android.text.Spanned
 import android.text.style.BulletSpan
 import android.view.View
 import androidx.appcompat.app.AppCompatDialogFragment
-import com.example.schedule.DownloadController
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.schedule.ImprovedBulletSpan
 import com.example.schedule.R
+import com.example.schedule.URLRequests
+import com.example.schedule.adapters.UpdateInfoAdapter
+import com.example.schedule.model.VersionLog
+import com.example.schedule.model.VersionLogSpannable
 import kotlinx.android.synthetic.main.update_dialog.view.*
 
 
-class UpdateDialogFragment(
-    private val info: String,
-    private val changeLog: String,
-    private val downloadController: DownloadController
-) : AppCompatDialogFragment() {
+class UpdateDialogFragment : AppCompatDialogFragment() {
+
+    companion object {
+        @JvmStatic
+        fun newInstance(sizeInfo: Double, changeLog: ArrayList<VersionLog>): UpdateDialogFragment =
+            UpdateDialogFragment().apply {
+                arguments = Bundle().apply {
+                    putDouble("sizeInfo", sizeInfo)
+                    putParcelableArrayList("changeLog", changeLog)
+                }
+            }
+    }
+
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val sizeInfo: Double
+        val changeLog: ArrayList<VersionLog>
+        if (arguments != null) {
+            sizeInfo = requireArguments().getDouble("sizeInfo")
+            changeLog =
+                requireArguments().getParcelableArrayList<VersionLog>("changeLog") as ArrayList<VersionLog>
+        } else {
+            sizeInfo = 0.0
+            changeLog = ArrayList()
+        }
+
         val builder = AlertDialog.Builder(activity)
         val view = View.inflate(context, R.layout.update_dialog, null).apply {
-            update_info_text_view.text = info
-            update_changelog_text_view.text = getChangelog(
-                changeLog.split("\r\n"),
-                activity?.getColor(R.color.practice_color) ?: 0
-            )
+            with(changelog_recycler) {
+                layoutManager = LinearLayoutManager(context)
+                adapter = UpdateInfoAdapter(List(changeLog.size) {
+                    VersionLogSpannable(
+                        changeLog[it].version,
+                        getChangelogFromString(changeLog[it].description.split("\n")),
+                        changeLog[it].upload_time
+                    )
+                })
+                addItemDecoration(DividerItemDecoration(context, RecyclerView.VERTICAL))
+                setHasFixedSize(true)
+            }
+            val size = "Размер обновления: $sizeInfo Мб."
+            update_size_text_view.text = size
         }
         with(builder) {
             setView(view)
             setTitle(R.string.new_version)
             setIcon(R.drawable.ic_update_theme_color)
             setPositiveButton(R.string.need_to_download) { _, _ ->
-                downloadController.checkStoragePermission()
+                URLRequests.lastDownloadController?.checkStoragePermission()
             }
             setNegativeButton(android.R.string.no) { dialog, _ ->
                 dialog.dismiss()
@@ -43,7 +78,8 @@ class UpdateDialogFragment(
         return builder.create()
     }
 
-    private fun getChangelog(changes: List<String>, color: Int): SpannableStringBuilder {
+    private fun getChangelogFromString(changes: List<String>): SpannableStringBuilder {
+        val color = activity?.getColor(R.color.practice_color) ?: 0
         val result = SpannableStringBuilder()
         if (changes.size == 1 && changes[0].isBlank())
             return SpannableStringBuilder(SpannableString(getString(R.string.update_empty_changelog)).apply {
@@ -74,5 +110,4 @@ class UpdateDialogFragment(
         }
         return result
     }
-
 }

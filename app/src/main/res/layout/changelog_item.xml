@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="24dp"
+        android:text="@string/update_info"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+        android:textColor="@color/practice_color"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/update_info_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="24dp"
+        tools:text="Версия: 52\nДата обновления: 30 апреля 2020" />
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="24dp"
+        android:text="@string/update_changelog"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+        android:textColor="@color/practice_color"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/changelog_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="8dp"
+        tools:text="Изменение_1\nИзменение_2\nИзменение_3" />
+</LinearLayout>

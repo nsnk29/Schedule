@@ -17,13 +17,36 @@ import com.example.schedule.interfaces.OnPickerItemClickListener
 import java.util.*
 
 
-class PickerFragment(private val isGroup: Boolean) : Fragment(), OnPickerItemClickListener,
+class PickerFragment : Fragment(), OnPickerItemClickListener,
     SwipeRefreshLayout.OnRefreshListener {
-    var pickerRecycleAdapter: PickerRecycleAdapter
 
-    init {
+    companion object {
+        @JvmStatic
+        fun newInstance(isGroup: Boolean): PickerFragment =
+            PickerFragment().apply {
+                arguments = Bundle().apply {
+                    putBoolean("isGroup", isGroup)
+                }
+                initAdapter()
+            }
+    }
+
+    lateinit var pickerRecycleAdapter: PickerRecycleAdapter
+    private var isGroup: Boolean = false
+
+    fun initAdapter() {
+        isGroup = arguments?.getBoolean("isGroup") ?: false
         pickerRecycleAdapter = PickerRecycleAdapter(getRelevantData(), isGroup, this)
     }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        activity?.let { DatabaseHelper.init(it) }
+        if (!this::pickerRecycleAdapter.isInitialized)
+            initAdapter()
+        (activity as PickerActivity).setListeners(isGroup, pickerRecycleAdapter)
+    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -32,7 +55,6 @@ class PickerFragment(private val isGroup: Boolean) : Fragment(), OnPickerItemCli
     ): View? {
         val view =
             inflater.inflate(R.layout.group_picker_fragment, container, false)
-
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerViewID)
         recyclerView.apply {
             layoutManager = LinearLayoutManager(
@@ -54,6 +76,12 @@ class PickerFragment(private val isGroup: Boolean) : Fragment(), OnPickerItemCli
         return view
     }
 
+    override fun onResume() {
+        super.onResume()
+        (activity as PickerActivity).setSearch(if (isGroup) 0 else 1)
+    }
+
+
     fun getRelevantData(): List<String> {
         val dataArray =
             if (isGroup) DatabaseHelper.getListOfGroupsOrLecturer(R.string.groups)
@@ -68,5 +96,4 @@ class PickerFragment(private val isGroup: Boolean) : Fragment(), OnPickerItemCli
     override fun onRefresh() {
         (activity as PickerActivity).getNewData()
     }
-
 }

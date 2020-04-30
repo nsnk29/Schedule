@@ -19,7 +19,6 @@ import kotlinx.android.synthetic.main.settings_activity.*
 import okhttp3.*
 import java.io.IOException
 import java.net.URL
-import java.text.DateFormat.getDateInstance
 
 
 object URLRequests {
@@ -100,7 +99,7 @@ object URLRequests {
     fun checkUpdate(activity: AppCompatActivity) {
         val client = OkHttpClient()
         val request = Request.Builder()
-            .url(URL(activity.getString(R.string.URL_UPDATE)))
+            .url(URL("https://makson-dev.ru/api/getAndroidVersion.php?n=Nikita&last_version=${BuildConfig.VERSION_CODE}"))
             .get()
             .build()
         client.newCall(request).enqueue(object : Callback {
@@ -120,29 +119,20 @@ object URLRequests {
             override fun onResponse(call: Call, response: Response) {
                 val body = response.body?.string()
                 val json = GsonBuilder().create().fromJson(body, UpdateJSONScheme::class.java)
-                if (json.version <= BuildConfig.VERSION_CODE) {
+                if (!json.status.isNullOrBlank()) {
                     if (activity is SettingsActivity)
                         activity.runOnUiThread {
                             Snackbar.make(
                                 activity.mainLayout,
-                                R.string.last_version_installed,
+                                json.status,
                                 Snackbar.LENGTH_LONG
                             ).show()
                         }
                     return
                 }
-                lastDownloadController = DownloadController(
-                    activity,
-                    activity.getString(R.string.URL_PREFIX) + json.link
-                )
-                val sdf = getDateInstance()
-                val date = java.util.Date(json.upload_time * 1000)
-                val info =
-                    "Версия: ${json.version}\nРазмер обновления: ${json.size}Мб.\nДата обновления: ${sdf.format(
-                        date
-                    )}"
+                lastDownloadController = DownloadController(activity, json.link)
                 Handler(Looper.getMainLooper()).post {
-                    UpdateDialogFragment(info, json.description, lastDownloadController!!).show(
+                    UpdateDialogFragment.newInstance(json.size, json.changelog).show(
                         activity.supportFragmentManager,
                         "update_dialog"
                     )
@@ -151,4 +141,3 @@ object URLRequests {
         })
     }
 }
-

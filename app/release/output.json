@@ -6,7 +6,7 @@
     "apkData": {
       "type": "MAIN",
       "splits": [],
-      "versionCode": 54,
+      "versionCode": 50,
       "versionName": "2.3.6.3",
       "enabled": true,
       "outputFile": "app-release.apk",
