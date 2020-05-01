@@ -10,15 +10,16 @@ object CalendarHelper {
     var parity: Int = 0
 
     init {
-        updateCurrentInfo()
+        updateCurrentInfo(currentDay, parity)
     }
 
-    fun updateCurrentInfo(): Boolean {
+    fun updateCurrentInfo(setDay: Int, setParity: Int): Boolean {
         if (currentDay != getDayOfWeek() || parity != getParityOfWeek()) {
             currentDay = getDayOfWeek()
             parity = getParityOfWeek()
             return true
-        }
+        } else if (currentDay != setDay || setParity != parity)
+            return true
         return false
     }
 

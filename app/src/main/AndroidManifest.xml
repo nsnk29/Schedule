@@ -19,8 +19,7 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning|GoogleAppIndexingWarning,LockedOrientationActivity">
         <activity
-            android:name=".activities.PickerActivity"
-            android:screenOrientation="portrait" />
+            android:name=".activities.PickerActivity"/>
         <activity
             android:name=".activities.SplashScreen"
             android:screenOrientation="portrait"

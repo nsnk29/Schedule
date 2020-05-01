@@ -59,7 +59,6 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener {
         if (savedInstanceState != null) {
             restoreData(savedInstanceState)
         }
-        CalendarHelper.updateCurrentInfo()
         DatabaseHelper.init(this)
         realm = DatabaseHelper.getConnection()
         createNotificationChannel()
@@ -276,7 +275,7 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener {
 
 
     private fun setToggleTitles() {
-        if (CalendarHelper.parity % 2 != 0) {
+        if (CalendarHelper.parity != 0) {
             toggle.textOn = getString(R.string.current_week)
             toggle.textOff = getString(R.string.next_week)
         } else {
@@ -285,6 +284,11 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener {
         }
         toggle.text = if (toggle.isChecked) toggle.textOn else toggle.textOff
     }
+
+    private fun getCurrentParity(): Int =
+        if (toggle.textOn == getString(R.string.current_week) && toggle.textOff == getString(R.string.next_week))
+            1 else 0
+
 
     private fun initRotateForSettings() {
         rotate = RotateAnimation(
@@ -304,7 +308,11 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener {
         super.onResume()
         DatabaseHelper.init(this)
         URLRequests.getLessonsJSON(this)
-        if (CalendarHelper.updateCurrentInfo()) {
+        if (CalendarHelper.updateCurrentInfo(
+                bottomRecyclerAdapter.currentDay,
+                getCurrentParity()
+            )
+        ) {
             initBottomRecycler(CalendarHelper.currentDay)
             setBottomRecyclerView(CalendarHelper.currentDay)
             mainRecyclerAdapter = getMainAdapter(CalendarHelper.currentDay)
@@ -368,7 +376,6 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener {
             DatabaseHelper.init(this)
             if (intent.getIntExtra("selected_day", -1) != bottomRecyclerAdapter.selectedDay)
                 onItemClicked(intent.getIntExtra("selected_day", -1), true)
-            CalendarHelper.updateCurrentInfo()
         }
     }
 }
