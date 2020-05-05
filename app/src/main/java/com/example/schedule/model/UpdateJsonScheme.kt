@@ -4,11 +4,11 @@ import android.os.Parcel
 import android.os.Parcelable
 import android.text.SpannableStringBuilder
 
-data class UpdateJSONScheme(
-    val link: String = "",
-    val size: Double = 0.0,
-    val changelog: ArrayList<VersionLog> = ArrayList(),
-    val status: String? = ""
+data class UpdateJsonScheme(
+    val link: String?,
+    val size: Double?,
+    val changelog: ArrayList<VersionLog>?,
+    val error: String?
 )
 
 data class VersionLog(

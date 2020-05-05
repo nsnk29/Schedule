@@ -1,7 +1,7 @@
 package com.example.schedule.model
 
-data class LessonJSONStructure(
+data class LessonJsonStructure(
     var pairs: List<PairClass>,
-    var version: Long,
+    var version: Long?,
     var error: String?
 )

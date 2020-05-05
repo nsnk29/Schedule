@@ -14,8 +14,8 @@ import com.example.schedule.model.PairClass
 import kotlinx.android.synthetic.main.card_layout_two_lines.view.*
 
 
-class MainRecycleAdapter(var pairsData: Array<PairClass>, var context: Context) :
-    RecyclerView.Adapter<MainRecycleAdapter.PairViewHolder>() {
+class MainRecyclerAdapter(var pairsData: Array<PairClass>, var context: Context) :
+    RecyclerView.Adapter<MainRecyclerAdapter.PairViewHolder>() {
     private val lineCount: String?
     var isGroup: Boolean
     private var primaryColor: Int

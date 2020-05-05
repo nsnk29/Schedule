@@ -23,23 +23,25 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.schedule.*
 import com.example.schedule.adapters.BottomRecycleAdapter
-import com.example.schedule.adapters.MainRecycleAdapter
+import com.example.schedule.adapters.MainRecyclerAdapter
 import com.example.schedule.database.DatabaseHelper
 import com.example.schedule.interfaces.BottomRecyclerClickListener
+import com.example.schedule.interfaces.GetLessonsInterface
 import com.example.schedule.model.CalendarHelper
 import com.example.schedule.model.CalendarHelper.getDayName
 import com.example.schedule.model.CalendarHelper.getNegativeWeek
+import com.example.schedule.model.LessonJsonStructure
 import com.example.schedule.model.PairClass
 import com.google.android.material.snackbar.Snackbar
 import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity(), BottomRecyclerClickListener {
+class MainActivity : AppCompatActivity(), BottomRecyclerClickListener, GetLessonsInterface {
 
     private lateinit var realm: Realm
     lateinit var bottomRecyclerAdapter: BottomRecycleAdapter
 
-    private lateinit var mainRecyclerAdapter: MainRecycleAdapter
+    private lateinit var mainRecyclerAdapter: MainRecyclerAdapter
     private lateinit var mPreference: SharedPreferences
     private val arrayForMainRecyclerView: Array<PairClass> = Array(8) { PairClass() }
     private lateinit var rotate: RotateAnimation
@@ -126,7 +128,7 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener {
         bottomRecyclerAdapter.selectedDay = selectedDay
 
         val savedArray = savedInstanceState.getParcelableArray("pairsData")
-        mainRecyclerAdapter = MainRecycleAdapter(
+        mainRecyclerAdapter = MainRecyclerAdapter(
             Array(savedArray?.size ?: 0) { savedArray?.get(it) as PairClass },
             this
         )
@@ -178,7 +180,7 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener {
         setWeekDay(day)
     }
 
-    private fun getMainAdapter(currentDay: Int): MainRecycleAdapter = MainRecycleAdapter(
+    private fun getMainAdapter(currentDay: Int): MainRecyclerAdapter = MainRecyclerAdapter(
         preparePairsData(
             currentDay,
             if (toggle.isChecked) CalendarHelper.parity else getNegativeWeek(CalendarHelper.parity)
@@ -307,7 +309,7 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener {
     override fun onResume() {
         super.onResume()
         DatabaseHelper.init(this)
-        URLRequests.getLessonsJSON(this)
+        URLRequests.getLessonsJson(this, this)
         if (CalendarHelper.updateCurrentInfo(
                 bottomRecyclerAdapter.currentDay,
                 getCurrentParity()
@@ -377,5 +379,11 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener {
             if (intent.getIntExtra("selected_day", -1) != bottomRecyclerAdapter.selectedDay)
                 onItemClicked(intent.getIntExtra("selected_day", -1), true)
         }
+    }
+
+    override fun onLessonsReady(lessonJsonStructure: LessonJsonStructure) {
+        DatabaseHelper.addInformationToDBFromJSON(lessonJsonStructure)
+        DatabaseHelper.setVersion(lessonJsonStructure.version!!)
+        onItemClicked(bottomRecyclerAdapter.selectedDay, true)
     }
 }

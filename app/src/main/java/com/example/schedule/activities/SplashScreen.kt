@@ -9,9 +9,11 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.PreferenceManager
 import com.example.schedule.DownloadController
 import com.example.schedule.R
+import com.example.schedule.URLRequests
+import com.example.schedule.interfaces.OnRegisterListener
 import java.io.File
 
-class SplashScreen : AppCompatActivity() {
+class SplashScreen : AppCompatActivity(), OnRegisterListener {
     private lateinit var mPreference: SharedPreferences
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,7 +26,11 @@ class SplashScreen : AppCompatActivity() {
             getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString() + "/" + DownloadController.FILE_NAME
         )
         if (apk.exists()) apk.delete()
-        isFirstRun()
+        val rsa = mPreference.getString("RSA", "")
+        if (rsa.isNullOrBlank())
+            URLRequests.getPublicKey(applicationContext, this)
+        else
+            isFirstRun()
     }
 
     private fun isFirstRun() {
@@ -41,5 +47,9 @@ class SplashScreen : AppCompatActivity() {
             else -> startActivity(Intent(this, MainActivity::class.java))
         }
         finish()
+    }
+
+    override fun onRegister() {
+        isFirstRun()
     }
 }

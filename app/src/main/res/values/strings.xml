@@ -45,6 +45,7 @@
     <string name="dark_mode">dark_mode</string>
 
     <string name="URL_LESSONS_JSON"><![CDATA[https://makson-dev.ru/api/getContent.php?v=VERSION&n=Nikita]]></string>
+    <string name="URL_LESSONS_JSON_TOKEN"><![CDATA[https://makson-dev.ru/api/getContent.php]]></string>
     <string name="URL_PREFIX"><![CDATA[https://makson-dev.ru]]></string>
     <string name="groups_ru_title">Группы</string>
     <string name="lecturer_title_ru">Преподаватели</string>
@@ -100,4 +101,8 @@
     <string name="update_empty_changelog">Описание измененией отсутствует</string>
     <string name="update_warning">Пожалуйста, не закрывайте приложение до окончания загрузки обновления</string>
 
+    <!--    errors-->
+    <string name="api_parse_error">Ошибка в структуре ответа JSON</string>
+    <string name="register_api_error">Ошибка при регистрации устрйоства</string>
+    <string name="unknown_api_error">Неизвестная ошибка</string>
 </resources>

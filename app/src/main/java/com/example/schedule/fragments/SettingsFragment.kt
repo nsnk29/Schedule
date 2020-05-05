@@ -3,7 +3,6 @@ package com.example.schedule.fragments
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.*
 import com.example.schedule.R
@@ -113,7 +112,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         updatePreference?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
             val id = mPreference.getLong("download_id", 0L)
             if (activity != null && !isDownloading(requireActivity(), id))
-                URLRequests.checkUpdate(activity as AppCompatActivity)
+                context?.let { activityContext -> URLRequests.checkUpdate(activityContext) }
             else
                 Snackbar.make(
                     (activity as SettingsActivity).mainLayout,

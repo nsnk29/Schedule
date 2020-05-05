@@ -11,12 +11,14 @@ import com.example.schedule.URLRequests
 import com.example.schedule.adapters.PickerRecycleAdapter
 import com.example.schedule.adapters.ViewPageAdapter
 import com.example.schedule.database.DatabaseHelper
+import com.example.schedule.interfaces.GetLessonsInterface
+import com.example.schedule.model.LessonJsonStructure
 import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_picker.*
 import kotlinx.android.synthetic.main.group_picker_fragment.*
 
 
-class PickerActivity : FragmentActivity() {
+class PickerActivity : FragmentActivity(), GetLessonsInterface {
 
     lateinit var realm: Realm
     private lateinit var viewPageAdapter: ViewPageAdapter
@@ -31,7 +33,7 @@ class PickerActivity : FragmentActivity() {
         viewPager.adapter = viewPageAdapter
         tabs.setupWithViewPager(viewPager)
         if (callingActivity == null) {
-            URLRequests.getLessonsJSON(this@PickerActivity)
+            URLRequests.getLessonsJson(this@PickerActivity, this)
         }
     }
 
@@ -109,7 +111,7 @@ class PickerActivity : FragmentActivity() {
     }
 
     fun getNewData() {
-        URLRequests.getLessonsJSON(this, true)
+        URLRequests.getLessonsJson(this, this, true)
     }
 
     fun hideLoading() {
@@ -117,5 +119,11 @@ class PickerActivity : FragmentActivity() {
             viewPageAdapter.getFragment(0)?.refreshLayout?.isRefreshing = false
             viewPageAdapter.getFragment(1)?.refreshLayout?.isRefreshing = false
         }
+    }
+
+    override fun onLessonsReady(lessonJsonStructure: LessonJsonStructure) {
+        DatabaseHelper.addInformationToDBFromJSON(lessonJsonStructure)
+        DatabaseHelper.setVersion(lessonJsonStructure.version!!)
+        setDataVisible()
     }
 }

@@ -1,0 +1,147 @@
+@startuml
+
+title Schedule - Class Diagram
+
+interface BottomRecyclerClickListener {
+    onItemClicked()
+}
+
+interface Parcelable
+
+class AppCompatActivity
+class Realm
+class WeekDayViewHolder{
+    -nameOfDayTextView: TextView
+    -dateTextView: TextView
+    +bind(String, String, BottomRecyclerClickListener)
+    +setBackgroundAndTextColor(int, int)
+}
+
+class BottomRecycleAdapter {
+    + allWeekDates: List<Int>
+    + context: Context
+    + currentDay: Int
+    - isSecondWeek: Boolean
+    - itemClickListener: BottomRecyclerClickListener
+    - initWeekDate()
+    + changeCurrentWeekDate()
+    +getItemCount(): Int
+    +onCreateViewHolder(ViewGroup, int)
+    +onBindViewHolder(WeekDayViewHolder, int)
+}
+WeekDayViewHolder --> BottomRecycleAdapter
+BottomRecycleAdapter --> MainActivity
+
+class RealmObject
+
+class PairClass {
+    + studyroom: String
+    + day: Int
+    + even: Int
+    + group: String
+    + lecturer: String
+    + number: Int
+    + title: String
+    + type: Int
+    +clear()
+    +setFields(PairClass)
+}
+PairClass ..|> Parcelable
+PairClass <|-- RealmObject
+MainRecyclerAdapter o-- PairClass
+BottomRecyclerClickListener --> WeekDayViewHolder
+BottomRecyclerClickListener --> BottomRecycleAdapter
+
+class PairViewHolder {
+    -itemView: View
+    - classTimeTextView: TextView
+    - classTitleTextView: TextView
+    - typeTextView: TextView
+    - lecturerTextView: TextView
+    - studyroomTextView: TextView
+    - wrapper: ConstraintLayout
+    - practiceText: String
+    - lectureText: String
+    + setVisibility(int, int)
+    + bind(PairClass, Boolean)
+    + setClassTime(String)
+}
+
+PairClass -->  PairViewHolder
+PairViewHolder --> MainRecyclerAdapter
+
+class MainRecyclerAdapter {
+    +pairsData: Array<PairClass>
+    +context: Context
+    -getLessonTime(int): String
+    +getItemCount(): Int
+    +onCreateViewHolder(ViewGroup, int)
+    +onBindViewHolder(WeekDayViewHolder, int)
+}
+MainRecyclerAdapter --left> MainActivity
+
+object DatabaseHelper {
+- connection: Realm
+- versionOfSchedule: Long
+- mPreference: SharedPreferences
+- context: Context
++init(Context)
++getConnection(): Realm
++setVersion(Long)
++addInformationToDBFromJSON(LessonJSONStructure)
+-getRealListFromList(List<String>): RealmList<String>
++getListOfGroupsOrLecturer(Int): List<String>
++deleteAllPairsFromBD()
++getPairsOfGroup(String,  Int,  Int): RealmResults<PairClass>
++getPairsOfLecturer( String,  Int,  Int): RealmResults<PairClass>
++closeConnection()
+}
+
+object CalendarHelper {
+    +currentDay: Int
+    +parity: Int
+    +updateCurrentInfo( Int,  Int): Boolean
+    -getInstanceOfCurrentDay( Boolean = true): Calendar
+    +setNextDay()
+    -getDayOfWeek(Calendar = getInstanceOfCurrentDay()): Int
+    +initAllWeekDates(): ArrayList<Int>
+    -getParityOfWeek(Calendar = getInstanceOfCurrentDay()): Int
+    +getDayName(Context, Int): String
+    +getNegativeWeek(Int): Int
+}
+
+object URLRequests {
+    +lastDownloadController: DownloadController?
+    +getLessonsJSON( Context,  Boolean = false)
+    +checkUpdate(AppCompatActivity)
+}
+
+class MainActivity{
+    + bottomRecyclerAdapter: BottomRecycleAdapter
+    - realm: Realm
+    - mainRecyclerAdapter: MainRecyclerAdapter
+    - arrayForMainRecyclerView: Array<PairClass>
+    +onCreate(Bundle?)
+    +onSaveInstanceState(Bundle)
+    -restoreData(Bundle)
+    -setMainRecyclerView(Int)
+    -setBottomRecyclerView(Int)
+    -initBottomRecycler(Int)
+    -getMainAdapter(Int): MainRecyclerAdapter
+    -preparePairsData(Int, Int): Array<PairClass>
+    +onActivityResult(Int, Int, Intent?)
+    -onSourceChange()
+    +onResume()
+    +onItemClicked()
+    -updateMainRecyclerView(Int)
+}
+
+MainActivity <|-- AppCompatActivity
+MainActivity ..right|> BottomRecyclerClickListener
+Realm --right> MainActivity
+MainActivity o-- PairClass
+CalendarHelper --> MainActivity
+DatabaseHelper --> MainActivity
+URLRequests --> MainActivity
+
+@enduml
