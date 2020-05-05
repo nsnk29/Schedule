@@ -5,7 +5,6 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Base64
 import android.util.Log
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceManager
 import androidx.security.crypto.EncryptedSharedPreferences
@@ -35,28 +34,37 @@ object URLRequests {
     private const val ALREADY_REGISTERED_ERROR = "Ваше устройство уже зарегистрировано"
     private const val PUBLIC_KEY_ERROR = "Ошибка открытого ключа"
     private const val NEW_VERSION_STATUS = "Установлена последняя версия приложения"
+    private const val REQUEST_TIMEOUT_ERROR = "Ошибка времени жизни запроса"
     private const val TAG = "URLRequests"
+    private val mDispatcher = Dispatcher().apply { maxRequests = 1 }
+    private val client = OkHttpClient.Builder().dispatcher(mDispatcher).build()
+    private var isInRegisterProcess: Boolean = false
+    private var lastOnRegisterListener: OnRegisterListener? = null
 
     var lastDownloadController: DownloadController? = null
 
     fun getLessonsJson(
         context: Context,
         getLessonsInterface: GetLessonsInterface,
-        isUpdate: Boolean = false
+        isUpdate: Boolean = false, counter: Int = 0
     ) {
         fun hideLoading(context: Context) {
             if (isUpdate && context is PickerActivity) {
                 context.hideLoading()
             }
         }
-        showToast(context, "getLessonsJSON")
+        showLog("getLessonsJSON $counter")
+        if (counter > 2) {
+            showLog("Проблемы с обращением к серверу, попробуйте позже")
+            return
+        }
         val mEncryptedSharedPreferences = getEncryptedPreferences(context)
         val version = PreferenceManager.getDefaultSharedPreferences(context)
             .getLong(context.getString(R.string.version), 0).toString()
         val token = mEncryptedSharedPreferences.getString("token", "") ?: ""
         val deviceId = mEncryptedSharedPreferences.getString("deviceId", "") ?: ""
         if (token.isBlank() || deviceId.isBlank()) {
-            showToast(context, context.getString(R.string.register_api_error))
+            showLog(context.getString(R.string.register_api_error))
             getPublicKey(
                 context,
                 getLessonOnRegisterListener(context, getLessonsInterface, isUpdate)
@@ -75,12 +83,11 @@ object URLRequests {
             .url(URL(context.getString(R.string.URL_LESSONS_JSON_TOKEN)))
             .post(postBody)
             .build()
-
-        OkHttpClient().newCall(request).enqueue(
+        client.newCall(request).enqueue(
             object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
                     hideLoading(context)
-                    showToast(context, context.getString(R.string.connection_problem))
+                    showLog(context.getString(R.string.connection_problem))
                 }
 
                 override fun onResponse(call: Call, response: Response) {
@@ -89,21 +96,36 @@ object URLRequests {
                         lessonJsonStructure = GsonBuilder().create()
                             .fromJson(response.body?.string(), LessonJsonStructure::class.java)
                     } catch (error: JsonSyntaxException) {
-                        showToast(context, context.getString(R.string.api_parse_error))
+                        showLog(context.getString(R.string.api_parse_error))
                         hideLoading(context)
                         return
                     }
                     if (lessonJsonStructure.error != null) {
-                        showToast(context, lessonJsonStructure.error!!)
+                        showLog("ошибка: ${lessonJsonStructure.error!!}")
                         hideLoading(context)
                         when (lessonJsonStructure.error) {
-                            PUBLIC_KEY_ERROR, REGISTRATION_DEVICE_ERROR, ALREADY_REGISTERED_ERROR -> getPublicKey(
-                                context,
-                                getLessonOnRegisterListener(context, getLessonsInterface, isUpdate)
+                            PUBLIC_KEY_ERROR, REGISTRATION_DEVICE_ERROR, ALREADY_REGISTERED_ERROR ->
+                                getPublicKey(
+                                    context,
+                                    getLessonOnRegisterListener(
+                                        context,
+                                        getLessonsInterface,
+                                        isUpdate
+                                    )
+                                )
+                            REQUEST_TIMEOUT_ERROR -> Handler(Looper.getMainLooper()).postDelayed(
+                                {
+                                    getLessonsJson(
+                                        context,
+                                        getLessonsInterface,
+                                        isUpdate,
+                                        counter + 1
+                                    )
+                                },
+                                2000
                             )
-                            else -> showToast(
-                                context,
-                                context.getString(R.string.unknown_api_error)
+                            else -> showLog(
+                                "${context.getString(R.string.unknown_api_error)} ${lessonJsonStructure.error}"
                             )
                         }
                         return
@@ -117,12 +139,12 @@ object URLRequests {
     }
 
     fun checkUpdate(context: Context) {
-        showToast(context, "checkUpdate")
+        showLog("checkUpdate")
         val mEncryptedSharedPreferences = getEncryptedPreferences(context)
         val token = mEncryptedSharedPreferences.getString("token", "") ?: ""
         val deviceId = mEncryptedSharedPreferences.getString("deviceId", "") ?: ""
         if (token.isBlank() || deviceId.isBlank()) {
-            showToast(context, context.getString(R.string.register_api_error))
+            showLog(context.getString(R.string.register_api_error))
             getPublicKey(context, checkUpdateRegisterListener(context))
             return
         }
@@ -143,7 +165,7 @@ object URLRequests {
             .url(URL("https://makson-dev.ru/api/getAndroidVersion.php"))
             .post(postBody)
             .build()
-        OkHttpClient().newCall(request).enqueue(object : Callback {
+        client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 if (context is SettingsActivity)
                     context.runOnUiThread {
@@ -163,13 +185,13 @@ object URLRequests {
                     updateJsonScheme = GsonBuilder().create()
                         .fromJson(response.body?.string(), UpdateJsonScheme::class.java)
                 } catch (error: JsonSyntaxException) {
-                    showToast(context, context.getString(R.string.api_parse_error))
+                    showLog(context.getString(R.string.api_parse_error))
                     return
                 }
                 with(updateJsonScheme) {
                     if (error != null || link == null || size == null || changelog == null) {
                         if (error == null) {
-                            showToast(context, context.getString(R.string.api_parse_error))
+                            showLog(context.getString(R.string.api_parse_error))
                             return
                         }
                         when (error) {
@@ -188,8 +210,7 @@ object URLRequests {
                                 checkUpdateRegisterListener(context)
                             )
                             else -> {
-                                showToast(
-                                    context,
+                                showLog(
                                     context.getString(R.string.unknown_api_error)
                                 )
                             }
@@ -215,8 +236,8 @@ object URLRequests {
     }
 
     private fun register(context: Context, listener: OnRegisterListener?, counter: Int) {
-        showToast(context, "register $counter")
-        if (counter > 4)
+        showLog("register $counter")
+        if (counter > 2)
             return
         val mEncryptedSharedPreferences = getEncryptedPreferences(context)
         val aesKey = generateAesKey()
@@ -237,9 +258,11 @@ object URLRequests {
             .url(URL("https://makson-dev.ru/api/deviceRegistration.php"))
             .post(postBody)
             .build()
-        OkHttpClient().newCall(request).enqueue(object : Callback {
+        client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                showToast(context, context.getString(R.string.connection_problem))
+                showLog(context.getString(R.string.connection_problem))
+                isInRegisterProcess = false
+                lastOnRegisterListener?.onRegister()
             }
 
             override fun onResponse(call: Call, response: Response) {
@@ -249,11 +272,12 @@ object URLRequests {
                         GsonBuilder().create()
                             .fromJson(response.body?.string(), TokenClass::class.java)
                 } catch (error: JsonSyntaxException) {
-                    showToast(context, context.getString(R.string.api_parse_error))
+                    showLog(context.getString(R.string.api_parse_error))
+                    isInRegisterProcess = false
                     return
                 }
                 if (tokenClass.error != null) {
-                    showToast(context, tokenClass.error)
+                    showLog(tokenClass.error)
                     when (tokenClass.error) {
                         REGISTRATION_DEVICE_ERROR, ALREADY_REGISTERED_ERROR -> Handler().postDelayed(
                             {
@@ -262,8 +286,7 @@ object URLRequests {
                             2000
                         )
                         PUBLIC_KEY_ERROR -> getPublicKey(context, listener)
-                        else -> showToast(
-                            context,
+                        else -> showLog(
                             context.getString(R.string.unknown_api_error)
                         )
                     }
@@ -279,20 +302,28 @@ object URLRequests {
                         String(aesDecrypt.doFinal(Base64.decode(tokenClass.token, Base64.DEFAULT)))
                     )
                     .apply()
+                isInRegisterProcess = false
                 listener?.onRegister()
+                lastOnRegisterListener?.onRegister()
             }
         })
     }
 
     fun getPublicKey(context: Context, listener: OnRegisterListener?) {
-        showToast(context, "getPublicKey")
+        if (isInRegisterProcess) {
+            lastOnRegisterListener = listener
+            return
+        }
+        isInRegisterProcess = true
+        showLog("getPublicKey")
         val request = Request.Builder()
             .url(URL("https://makson-dev.ru/api/getAPIOpenKey.php"))
             .get()
             .build()
-        OkHttpClient().newCall(request).enqueue(object : Callback {
+        client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                showToast(context, context.getString(R.string.connection_problem))
+                showLog(context.getString(R.string.connection_problem))
+                isInRegisterProcess = false
             }
 
             override fun onResponse(call: Call, response: Response) {
@@ -301,7 +332,7 @@ object URLRequests {
                     publicKeyModel = GsonBuilder().create()
                         .fromJson(response.body?.string(), PublicKeyModel::class.java)
                 } catch (error: JsonSyntaxException) {
-                    showToast(context, context.getString(R.string.api_parse_error))
+                    showLog(context.getString(R.string.api_parse_error))
                     return
                 }
                 val key = publicKeyModel.publicKey.replace("\n", "")
@@ -317,15 +348,8 @@ object URLRequests {
         })
     }
 
-    private fun showToast(context: Context, message: String) {
+    private fun showLog(message: String) {
         Log.d(TAG, message)
-        Handler(Looper.getMainLooper()).post {
-            Toast.makeText(
-                context,
-                message,
-                Toast.LENGTH_SHORT
-            ).show()
-        }
     }
 
     private fun getEncryptedPreferences(context: Context): EncryptedSharedPreferences =

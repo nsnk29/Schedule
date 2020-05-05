@@ -32,14 +32,14 @@ class PickerActivity : FragmentActivity(), GetLessonsInterface {
             ViewPageAdapter(supportFragmentManager)
         viewPager.adapter = viewPageAdapter
         tabs.setupWithViewPager(viewPager)
-        if (callingActivity == null) {
-            URLRequests.getLessonsJson(this@PickerActivity, this)
-        }
     }
 
     override fun onResume() {
         super.onResume()
         DatabaseHelper.init(this@PickerActivity)
+        if (callingActivity == null) {
+            URLRequests.getLessonsJson(this@PickerActivity, this)
+        }
     }
 
     override fun onDestroy() {
@@ -122,8 +122,10 @@ class PickerActivity : FragmentActivity(), GetLessonsInterface {
     }
 
     override fun onLessonsReady(lessonJsonStructure: LessonJsonStructure) {
-        DatabaseHelper.addInformationToDBFromJSON(lessonJsonStructure)
-        DatabaseHelper.setVersion(lessonJsonStructure.version!!)
-        setDataVisible()
+        runOnUiThread {
+            DatabaseHelper.addInformationToDBFromJSON(lessonJsonStructure)
+            DatabaseHelper.setVersion(lessonJsonStructure.version!!)
+            setDataVisible()
+        }
     }
 }

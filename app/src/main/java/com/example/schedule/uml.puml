@@ -111,9 +111,18 @@ object CalendarHelper {
 }
 
 object URLRequests {
+    - REGISTRATION_DEVICE_ERROR
+    - ALREADY_REGISTERED_ERROR
+    - PUBLIC_KEY_ERROR
+    - NEW_VERSION_STATUS
     +lastDownloadController: DownloadController?
-    +getLessonsJSON( Context,  Boolean = false)
-    +checkUpdate(AppCompatActivity)
+    +getLessonsJSON(Context,GetLessonsInterface,  Boolean = false)
+    +checkUpdate(Context)
+    -register( Context,  OnRegisterListener?,  Int)
+    +getPublicKey(Context, OnRegisterListener?)
+    -showToast(Context, String)
+    -getEncryptedPreferences(Context): EncryptedSharedPreferences
+    -getLessonOnRegisterListener(Context, ): EncryptedSharedPreferences
 }
 
 class MainActivity{

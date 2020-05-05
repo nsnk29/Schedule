@@ -15,7 +15,6 @@ import io.realm.kotlin.createObject
 
 object DatabaseHelper {
     private lateinit var connection: Realm
-    private var versionOfSchedule = 0.toLong()
     private lateinit var mPreference: SharedPreferences
     private lateinit var context: Context
 
@@ -39,10 +38,10 @@ object DatabaseHelper {
 
 
     fun setVersion(newVersion: Long) {
-        val editor = mPreference.edit()
-        editor.putLong("version", newVersion)
-        editor.apply()
-        versionOfSchedule = newVersion
+        mPreference.edit().apply {
+            putLong("version", newVersion)
+            apply()
+        }
     }
 
     fun addInformationToDBFromJSON(lessonJsonStructure: LessonJsonStructure) {
@@ -63,13 +62,12 @@ object DatabaseHelper {
             val lecturerToDB = connection.createObject<ListOfStringClass>()
             lecturerToDB.data = getRealListFromList(lecturerList.distinct())
             lecturerToDB.type = context.getString(R.string.lecturers)
-
         }
     }
 
     private fun getRealListFromList(data: List<String>): RealmList<String> {
         val result: RealmList<String> = RealmList()
-        for (str in data) if (str != "") result.add(str)
+        for (str in data) if (str.isNotBlank()) result.add(str)
         return result
     }
 

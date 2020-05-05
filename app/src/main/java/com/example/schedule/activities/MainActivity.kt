@@ -382,8 +382,10 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener, GetLesson
     }
 
     override fun onLessonsReady(lessonJsonStructure: LessonJsonStructure) {
-        DatabaseHelper.addInformationToDBFromJSON(lessonJsonStructure)
-        DatabaseHelper.setVersion(lessonJsonStructure.version!!)
-        onItemClicked(bottomRecyclerAdapter.selectedDay, true)
+        runOnUiThread {
+            DatabaseHelper.addInformationToDBFromJSON(lessonJsonStructure)
+            DatabaseHelper.setVersion(lessonJsonStructure.version!!)
+            onItemClicked(bottomRecyclerAdapter.selectedDay, true)
+        }
     }
 }

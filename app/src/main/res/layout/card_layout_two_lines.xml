@@ -68,6 +68,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:textColor="@color/text_color_primary"
+            app:layout_constraintBottom_toBottomOf="@+id/type"
             app:layout_constraintEnd_toStartOf="@+id/aud"
             app:layout_constraintStart_toEndOf="@+id/type"
             app:layout_constraintTop_toTopOf="@+id/type"

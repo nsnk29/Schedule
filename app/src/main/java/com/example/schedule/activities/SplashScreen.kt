@@ -50,6 +50,8 @@ class SplashScreen : AppCompatActivity(), OnRegisterListener {
     }
 
     override fun onRegister() {
-        isFirstRun()
+        runOnUiThread {
+            isFirstRun()
+        }
     }
 }

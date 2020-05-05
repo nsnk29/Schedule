@@ -105,4 +105,5 @@
     <string name="api_parse_error">Ошибка в структуре ответа JSON</string>
     <string name="register_api_error">Ошибка при регистрации устрйоства</string>
     <string name="unknown_api_error">Неизвестная ошибка</string>
+    <string name="timestamp_api">Проблемы с обращением к серверу, попробуйте позже</string>
 </resources>
