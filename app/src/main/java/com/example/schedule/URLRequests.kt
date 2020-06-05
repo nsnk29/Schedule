@@ -80,7 +80,7 @@ object URLRequests {
             .add("data", encryptRsa(message, getRsaKey(context)))
             .build()
         val request = Request.Builder()
-            .url(URL(context.getString(R.string.URL_LESSONS_JSON_TOKEN)))
+            .url(URL("https://makson-dev.ru/api/timetable/getContent.php"))
             .post(postBody)
             .build()
         client.newCall(request).enqueue(
@@ -162,7 +162,7 @@ object URLRequests {
             .add("data", encryptRsa(message, getRsaKey(context)))
             .build()
         val request = Request.Builder()
-            .url(URL("https://makson-dev.ru/api/getAndroidVersion.php"))
+            .url(URL("https://makson-dev.ru/api/timetable/getAndroidVersion.php"))
             .post(postBody)
             .build()
         client.newCall(request).enqueue(object : Callback {
@@ -219,8 +219,12 @@ object URLRequests {
                     }
                 }
                 val activity: AppCompatActivity =
-                    (if (context is MainActivity) context else if (context is SettingsActivity) context else null)
-                        ?: return
+                    when (context) {
+                        is MainActivity -> context
+                        is SettingsActivity -> context
+                        else -> null
+                            ?: return
+                    }
                 lastDownloadController = DownloadController(activity, updateJsonScheme.link!!)
                 Handler(Looper.getMainLooper()).post {
                     UpdateDialogFragment.newInstance(
@@ -255,7 +259,7 @@ object URLRequests {
             .add("data", encryptRsa(message, getRsaKey(context)))
             .build()
         val request = Request.Builder()
-            .url(URL("https://makson-dev.ru/api/deviceRegistration.php"))
+            .url(URL("https://makson-dev.ru/api/timetable/deviceRegistration.php"))
             .post(postBody)
             .build()
         client.newCall(request).enqueue(object : Callback {
@@ -317,7 +321,7 @@ object URLRequests {
         isInRegisterProcess = true
         showLog("getPublicKey")
         val request = Request.Builder()
-            .url(URL("https://makson-dev.ru/api/getAPIOpenKey.php"))
+            .url(URL("https://makson-dev.ru/api/timetable/getAPIOpenKey.php"))
             .get()
             .build()
         client.newCall(request).enqueue(object : Callback {

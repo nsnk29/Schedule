@@ -23,7 +23,7 @@
 
     <!-- Examples for views -->
     <string name="example_of_pair_time">11:30\n13:00</string>
-    <string name="example_of_subject">Конструирование алгоритмов и структур данных и ещё каких то структур данных два</string>
+    <string name="example_of_subject">Конструирование алгоритмов и структур данных</string>
     <string name="example_of_aud">А301б</string>
     <string name="example_of_date">31</string>
     <string name="example_of_weekday">ПТ</string>
@@ -44,9 +44,6 @@
     <string name="default_string">default</string>
     <string name="dark_mode">dark_mode</string>
 
-    <string name="URL_LESSONS_JSON"><![CDATA[https://makson-dev.ru/api/getContent.php?v=VERSION&n=Nikita]]></string>
-    <string name="URL_LESSONS_JSON_TOKEN"><![CDATA[https://makson-dev.ru/api/getContent.php]]></string>
-    <string name="URL_PREFIX"><![CDATA[https://makson-dev.ru]]></string>
     <string name="groups_ru_title">Группы</string>
     <string name="lecturer_title_ru">Преподаватели</string>
 

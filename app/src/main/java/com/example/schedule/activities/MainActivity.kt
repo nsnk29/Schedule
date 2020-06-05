@@ -65,7 +65,6 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener, GetLesson
         realm = DatabaseHelper.getConnection()
         createNotificationChannel()
         mPreference = PreferenceManager.getDefaultSharedPreferences(this)
-
         setBottomRecyclerView(CalendarHelper.currentDay)
         setMainRecyclerView(CalendarHelper.currentDay)
         setToggleAction()

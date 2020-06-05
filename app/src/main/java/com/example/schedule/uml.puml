@@ -8,13 +8,23 @@ interface BottomRecyclerClickListener {
 
 interface Parcelable
 
+interface GetLessonsInterface {
+    +onLessonsReady(LessonJsonStructure)
+}
+
+interface OnRegisterListener {
+    +onRegister()
+}
+
+
+
 class AppCompatActivity
 class Realm
 class WeekDayViewHolder{
     -nameOfDayTextView: TextView
     -dateTextView: TextView
     +bind(String, String, BottomRecyclerClickListener)
-    +setBackgroundAndTextColor(int, int)
+    +setBackgroundAndTextColor(Int, Int)
 }
 
 class BottomRecycleAdapter {
@@ -26,8 +36,8 @@ class BottomRecycleAdapter {
     - initWeekDate()
     + changeCurrentWeekDate()
     +getItemCount(): Int
-    +onCreateViewHolder(ViewGroup, int)
-    +onBindViewHolder(WeekDayViewHolder, int)
+    +onCreateViewHolder(ViewGroup, Int)
+    +onBindViewHolder(WeekDayViewHolder, Int)
 }
 WeekDayViewHolder --> BottomRecycleAdapter
 BottomRecycleAdapter --> MainActivity
@@ -45,6 +55,7 @@ class PairClass {
     + type: Int
     +clear()
     +setFields(PairClass)
+    +isEmpty(): Boolean
 }
 PairClass ..|> Parcelable
 PairClass <|-- RealmObject
@@ -62,7 +73,7 @@ class PairViewHolder {
     - wrapper: ConstraintLayout
     - practiceText: String
     - lectureText: String
-    + setVisibility(int, int)
+    + setVisibility(Int, Int)
     + bind(PairClass, Boolean)
     + setClassTime(String)
 }
@@ -88,7 +99,7 @@ object DatabaseHelper {
 +init(Context)
 +getConnection(): Realm
 +setVersion(Long)
-+addInformationToDBFromJSON(LessonJSONStructure)
++addInformationToDBFromJSON(LessonJsonStructure)
 -getRealListFromList(List<String>): RealmList<String>
 +getListOfGroupsOrLecturer(Int): List<String>
 +deleteAllPairsFromBD()
@@ -110,20 +121,38 @@ object CalendarHelper {
     +getNegativeWeek(Int): Int
 }
 
+class DownloadController {
+    +DownloadController(AppCompatActivity, String)
+    +enqueueDownload()
+    +checkStoragePermission()
+    -requestStoragePermission()
+    -getStatus(Context, Long)
+    +isDownloading(Context, Long)
+}
+
 object URLRequests {
-    - REGISTRATION_DEVICE_ERROR
-    - ALREADY_REGISTERED_ERROR
-    - PUBLIC_KEY_ERROR
-    - NEW_VERSION_STATUS
+    - REGISTRATION_DEVICE_ERROR: String
+    - ALREADY_REGISTERED_ERROR: String
+    - PUBLIC_KEY_ERROR: String
+    - NEW_VERSION_STATUS: String
+    - REQUEST_TIMEOUT_ERROR: String
+    -mDispatcher: Dispatcher
+    -client: OkHttp
+    -isInRegisterProcess: Boolean
+    -lastOnRegisterListener: OnRegisterListener?
     +lastDownloadController: DownloadController?
     +getLessonsJSON(Context,GetLessonsInterface,  Boolean = false)
     +checkUpdate(Context)
     -register( Context,  OnRegisterListener?,  Int)
     +getPublicKey(Context, OnRegisterListener?)
-    -showToast(Context, String)
     -getEncryptedPreferences(Context): EncryptedSharedPreferences
-    -getLessonOnRegisterListener(Context, ): EncryptedSharedPreferences
+    -getLessonOnRegisterListener(Context, GetLessonsInterface, Boolean): OnRegisterListener
+    -checkUpdateRegisterListener(Context): OnRegisterListener
 }
+OnRegisterListener-->URLRequests
+GetLessonsInterface-->URLRequests
+DownloadController-->URLRequests
+
 
 class MainActivity{
     + bottomRecyclerAdapter: BottomRecycleAdapter
@@ -147,10 +176,11 @@ class MainActivity{
 
 MainActivity <|-- AppCompatActivity
 MainActivity ..right|> BottomRecyclerClickListener
-Realm --right> MainActivity
+MainActivity ..|> GetLessonsInterface
+Realm --> MainActivity
 MainActivity o-- PairClass
-CalendarHelper --> MainActivity
-DatabaseHelper --> MainActivity
-URLRequests --> MainActivity
+CalendarHelper --right> MainActivity
+DatabaseHelper --right> MainActivity
+URLRequests --left> MainActivity
 
 @enduml
