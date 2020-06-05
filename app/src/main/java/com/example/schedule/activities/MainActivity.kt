@@ -33,26 +33,24 @@ import com.example.schedule.model.CalendarHelper.getNegativeWeek
 import com.example.schedule.model.LessonJsonStructure
 import com.example.schedule.model.PairClass
 import com.google.android.material.snackbar.Snackbar
-import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(), BottomRecyclerClickListener, GetLessonsInterface {
-
-    private lateinit var realm: Realm
-    lateinit var bottomRecyclerAdapter: BottomRecycleAdapter
-
-    private lateinit var mainRecyclerAdapter: MainRecyclerAdapter
-    private lateinit var mPreference: SharedPreferences
-    private val arrayForMainRecyclerView: Array<PairClass> = Array(8) { PairClass() }
-    private lateinit var rotate: RotateAnimation
-
-    object CODES {
+    companion object CODES {
         const val CHANNEL_ID = "scheduleNotification"
         const val COUNT_LINES_RESULT_CODE = 1
         const val GROUP_PICK_RESULT_CODE = 2
         const val BOTH_RESULT_CODE = 3
         const val SETTINGS_ACTIVITY_REQUEST_CODE = 4
     }
+
+    private lateinit var realm: DatabaseHelper
+    lateinit var bottomRecyclerAdapter: BottomRecycleAdapter
+
+    private lateinit var mainRecyclerAdapter: MainRecyclerAdapter
+    private lateinit var mPreference: SharedPreferences
+    private val arrayForMainRecyclerView: Array<PairClass> = Array(8) { PairClass() }
+    private lateinit var rotate: RotateAnimation
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,8 +59,7 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener, GetLesson
         if (savedInstanceState != null) {
             restoreData(savedInstanceState)
         }
-        DatabaseHelper.init(this)
-        realm = DatabaseHelper.getConnection()
+        realm = (applicationContext as CustomApplication).getDatabaseInstance()
         createNotificationChannel()
         mPreference = PreferenceManager.getDefaultSharedPreferences(this)
         setBottomRecyclerView(CalendarHelper.currentDay)
@@ -192,8 +189,8 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener, GetLesson
         val isGroup = mPreference.getBoolean(getString(R.string.isGroupPicked), true)
 
         val pairsData =
-            if (isGroup) DatabaseHelper.getPairsOfGroup(savedValueOfUsersPick, currentDay, even)
-            else DatabaseHelper.getPairsOfLecturer(savedValueOfUsersPick, currentDay, even)
+            if (isGroup) realm.getPairsOfGroup(savedValueOfUsersPick, currentDay, even)
+            else realm.getPairsOfLecturer(savedValueOfUsersPick, currentDay, even)
 
         arrayForMainRecyclerView.map { it.clear() }
 
@@ -307,7 +304,6 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener, GetLesson
 
     override fun onResume() {
         super.onResume()
-        DatabaseHelper.init(this)
         URLRequests.getLessonsJson(this, this)
         if (CalendarHelper.updateCurrentInfo(
                 bottomRecyclerAdapter.currentDay,
@@ -319,12 +315,6 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener, GetLesson
             mainRecyclerAdapter = getMainAdapter(CalendarHelper.currentDay)
             setMainRecyclerView(CalendarHelper.currentDay)
         }
-    }
-
-
-    override fun onDestroy() {
-        DatabaseHelper.closeConnection()
-        super.onDestroy()
     }
 
     override fun onItemClicked(position: Int, needToUpdate: Boolean) {
@@ -374,7 +364,8 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener, GetLesson
 
     private fun setNextDay(intent: Intent) {
         if (intent.getIntExtra("selected_day", -1) != -1) {
-            DatabaseHelper.init(this)
+            if (!this::realm.isInitialized)
+                realm = DatabaseHelper(this)
             if (intent.getIntExtra("selected_day", -1) != bottomRecyclerAdapter.selectedDay)
                 onItemClicked(intent.getIntExtra("selected_day", -1), true)
         }
@@ -382,8 +373,8 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener, GetLesson
 
     override fun onLessonsReady(lessonJsonStructure: LessonJsonStructure) {
         runOnUiThread {
-            DatabaseHelper.addInformationToDBFromJSON(lessonJsonStructure)
-            DatabaseHelper.setVersion(lessonJsonStructure.version!!)
+            realm.addInformationToDBFromJSON(lessonJsonStructure)
+            realm.setVersion(lessonJsonStructure.version!!)
             onItemClicked(bottomRecyclerAdapter.selectedDay, true)
         }
     }

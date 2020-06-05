@@ -1,7 +1,6 @@
 package com.example.schedule.database
 
 import android.content.Context
-import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
 import com.example.schedule.R
 import com.example.schedule.model.LessonJsonStructure
@@ -13,32 +12,20 @@ import io.realm.RealmList
 import io.realm.RealmResults
 import io.realm.kotlin.createObject
 
-object DatabaseHelper {
-    private lateinit var connection: Realm
-    private lateinit var mPreference: SharedPreferences
-    private lateinit var context: Context
+class DatabaseHelper(val context: Context) {
+    private var connection: Realm
 
-    fun init(context: Context) {
-        this.context = context
-        mPreference = PreferenceManager.getDefaultSharedPreferences(context)
-        getConnection()
-    }
-
-    fun getConnection(): Realm {
-        if (::connection.isInitialized) {
-            closeConnection()
-        }
+    init {
         Realm.init(context)
         val configuration =
             RealmConfiguration.Builder().name("schedule.realm").schemaVersion(1).build()
         Realm.setDefaultConfiguration(configuration)
         connection = Realm.getInstance(configuration)
-        return connection
     }
 
 
     fun setVersion(newVersion: Long) {
-        mPreference.edit().apply {
+        PreferenceManager.getDefaultSharedPreferences(context).edit().apply {
             putLong("version", newVersion)
             apply()
         }

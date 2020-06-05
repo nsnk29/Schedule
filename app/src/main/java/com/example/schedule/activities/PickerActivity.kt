@@ -6,6 +6,7 @@ import android.os.Bundle
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.FragmentActivity
 import androidx.preference.PreferenceManager
+import com.example.schedule.CustomApplication
 import com.example.schedule.R
 import com.example.schedule.URLRequests
 import com.example.schedule.adapters.PickerRecycleAdapter
@@ -13,14 +14,13 @@ import com.example.schedule.adapters.ViewPageAdapter
 import com.example.schedule.database.DatabaseHelper
 import com.example.schedule.interfaces.GetLessonsInterface
 import com.example.schedule.model.LessonJsonStructure
-import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_picker.*
 import kotlinx.android.synthetic.main.group_picker_fragment.*
 
 
 class PickerActivity : FragmentActivity(), GetLessonsInterface {
 
-    lateinit var realm: Realm
+    lateinit var realm: DatabaseHelper
     private lateinit var viewPageAdapter: ViewPageAdapter
     private lateinit var onQueryTextListenerGroup: SearchView.OnQueryTextListener
     private lateinit var onQueryTextListenerLecturers: SearchView.OnQueryTextListener
@@ -28,24 +28,20 @@ class PickerActivity : FragmentActivity(), GetLessonsInterface {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_picker)
+        realm = (applicationContext as CustomApplication).getDatabaseInstance()
         viewPageAdapter =
-            ViewPageAdapter(supportFragmentManager)
+            ViewPageAdapter(supportFragmentManager, realm)
         viewPager.adapter = viewPageAdapter
         tabs.setupWithViewPager(viewPager)
     }
 
     override fun onResume() {
         super.onResume()
-        DatabaseHelper.init(this@PickerActivity)
         if (callingActivity == null) {
             URLRequests.getLessonsJson(this@PickerActivity, this)
         }
     }
 
-    override fun onDestroy() {
-        DatabaseHelper.closeConnection()
-        super.onDestroy()
-    }
 
     fun setListeners(isGroup: Boolean, adapter: PickerRecycleAdapter) {
         if (isGroup)
@@ -95,12 +91,12 @@ class PickerActivity : FragmentActivity(), GetLessonsInterface {
 
     fun setDataVisible() {
         viewPageAdapter.getFragment(0)?.pickerRecycleAdapter?.apply {
-            dataList = viewPageAdapter.getFragment(0)?.getRelevantData() ?: emptyList()
+            dataList = viewPageAdapter.getFragment(0)?.getRelevantData(realm) ?: emptyList()
             notifyDataSetChanged()
             filter.filter(main_search_view.query)
         }
         viewPageAdapter.getFragment(1)?.pickerRecycleAdapter?.apply {
-            dataList = viewPageAdapter.getFragment(1)?.getRelevantData() ?: emptyList()
+            dataList = viewPageAdapter.getFragment(1)?.getRelevantData(realm) ?: emptyList()
             notifyDataSetChanged()
             filter.filter(main_search_view.query)
         }
@@ -123,8 +119,8 @@ class PickerActivity : FragmentActivity(), GetLessonsInterface {
 
     override fun onLessonsReady(lessonJsonStructure: LessonJsonStructure) {
         runOnUiThread {
-            DatabaseHelper.addInformationToDBFromJSON(lessonJsonStructure)
-            DatabaseHelper.setVersion(lessonJsonStructure.version!!)
+            realm.addInformationToDBFromJSON(lessonJsonStructure)
+            realm.setVersion(lessonJsonStructure.version!!)
             setDataVisible()
         }
     }

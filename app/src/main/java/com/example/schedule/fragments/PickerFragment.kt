@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.example.schedule.CustomApplication
 import com.example.schedule.R
 import com.example.schedule.activities.PickerActivity
 import com.example.schedule.adapters.PickerRecycleAdapter
@@ -22,28 +23,29 @@ class PickerFragment : Fragment(), OnPickerItemClickListener,
 
     companion object {
         @JvmStatic
-        fun newInstance(isGroup: Boolean): PickerFragment =
+        fun newInstance(isGroup: Boolean, realm: DatabaseHelper): PickerFragment =
             PickerFragment().apply {
                 arguments = Bundle().apply {
                     putBoolean("isGroup", isGroup)
                 }
-                initAdapter()
+                initAdapter(realm)
             }
     }
 
     lateinit var pickerRecycleAdapter: PickerRecycleAdapter
     private var isGroup: Boolean = false
+    private lateinit var realm: DatabaseHelper
 
-    fun initAdapter() {
+    fun initAdapter(realm: DatabaseHelper) {
+        this.realm = realm
         isGroup = arguments?.getBoolean("isGroup") ?: false
-        pickerRecycleAdapter = PickerRecycleAdapter(getRelevantData(), isGroup, this)
+        pickerRecycleAdapter = PickerRecycleAdapter(getRelevantData(this.realm), isGroup, this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        activity?.let { DatabaseHelper.init(it) }
         if (!this::pickerRecycleAdapter.isInitialized)
-            initAdapter()
+            initAdapter(((activity as PickerActivity).applicationContext as CustomApplication).getDatabaseInstance())
         (activity as PickerActivity).setListeners(isGroup, pickerRecycleAdapter)
     }
 
@@ -82,10 +84,10 @@ class PickerFragment : Fragment(), OnPickerItemClickListener,
     }
 
 
-    fun getRelevantData(): List<String> {
+    fun getRelevantData(realm: DatabaseHelper): List<String> {
         val dataArray =
-            if (isGroup) DatabaseHelper.getListOfGroupsOrLecturer(R.string.groups)
-            else DatabaseHelper.getListOfGroupsOrLecturer(R.string.lecturers)
+            if (isGroup) realm.getListOfGroupsOrLecturer(R.string.groups)
+            else realm.getListOfGroupsOrLecturer(R.string.lecturers)
         return dataArray.sortedBy { it.toLowerCase(Locale("ru", "Russia")) }
     }
 

@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.*
+import com.example.schedule.BuildConfig
 import com.example.schedule.R
 import com.example.schedule.URLRequests
 import com.example.schedule.activities.MainActivity
@@ -124,7 +125,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         val aboutPreference = findPreference<Preference>(getString(R.string.about_app))
         aboutPreference?.setOnPreferenceClickListener {
-            Toast.makeText(context, "Soon", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Version ${BuildConfig.VERSION_CODE}", Toast.LENGTH_SHORT).show()
             true
         }
     }

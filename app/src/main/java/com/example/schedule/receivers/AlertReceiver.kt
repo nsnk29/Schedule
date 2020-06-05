@@ -18,20 +18,19 @@ import com.example.schedule.model.PairClass
 
 class AlertReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
-        DatabaseHelper.init(context)
-        val realm = DatabaseHelper.getConnection()
+        val realm = DatabaseHelper(context)
         val mPreference = PreferenceManager.getDefaultSharedPreferences(context)
         val savedValueOfUsersPick =
             mPreference.getString(context.getString(R.string.savedValueOfUsersPick), "") ?: ""
         val isGroup = mPreference.getBoolean(context.getString(R.string.isGroupPicked), true)
         CalendarHelper.setNextDay()
         val pairs =
-            if (isGroup) DatabaseHelper.getPairsOfGroup(
+            if (isGroup) realm.getPairsOfGroup(
                 savedValueOfUsersPick,
                 CalendarHelper.currentDay,
                 getNegativeWeek(CalendarHelper.parity)
             )
-            else DatabaseHelper.getPairsOfLecturer(
+            else realm.getPairsOfLecturer(
                 savedValueOfUsersPick,
                 CalendarHelper.currentDay,
                 getNegativeWeek(CalendarHelper.parity)
@@ -75,7 +74,7 @@ class AlertReceiver : BroadcastReceiver() {
         with(NotificationManagerCompat.from(context)) {
             notify(NOTIFICATION_ID, notification)
         }
-        realm.close()
+        realm.closeConnection()
     }
 
 

@@ -4,9 +4,10 @@ import android.util.SparseArray
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
+import com.example.schedule.database.DatabaseHelper
 import com.example.schedule.fragments.PickerFragment
 
-class ViewPageAdapter(fm: FragmentManager) :
+class ViewPageAdapter(fm: FragmentManager, val realm: DatabaseHelper) :
     FragmentPagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
     companion object {
         private const val NUMBER_OF_FRAGMENTS = 2
@@ -16,7 +17,10 @@ class ViewPageAdapter(fm: FragmentManager) :
     override fun getCount(): Int = NUMBER_OF_FRAGMENTS
 
     override fun getItem(position: Int): PickerFragment =
-        if (position == 0) PickerFragment.newInstance(true) else PickerFragment.newInstance(false)
+        if (position == 0) PickerFragment.newInstance(true, realm) else PickerFragment.newInstance(
+            false,
+            realm
+        )
 
 
     override fun instantiateItem(container: ViewGroup, position: Int): Any {

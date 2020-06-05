@@ -57,8 +57,10 @@ class SettingsActivity : AppCompatActivity(), TimePickerDialog.OnTimeSetListener
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK && requestCode == MainActivity.CODES.GROUP_PICK_RESULT_CODE)
+        if (resultCode == Activity.RESULT_OK && requestCode == MainActivity.GROUP_PICK_RESULT_CODE) {
             isGroupChanged = true
+            updateFragment()
+        }
     }
 
 
