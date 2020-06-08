@@ -80,7 +80,7 @@ object URLRequests {
             .add("data", encryptRsa(message, getRsaKey(context)))
             .build()
         val request = Request.Builder()
-            .url(URL("https://makson-dev.ru/api/timetable/getContent.php"))
+            .url(URL("https://tt.fktpm.kubsu.ru/api/timetable/getContent.php"))
             .post(postBody)
             .build()
         client.newCall(request).enqueue(
@@ -162,7 +162,7 @@ object URLRequests {
             .add("data", encryptRsa(message, getRsaKey(context)))
             .build()
         val request = Request.Builder()
-            .url(URL("https://makson-dev.ru/api/timetable/getAndroidVersion.php"))
+            .url(URL("https://tt.fktpm.kubsu.ru/api/timetable/getAndroidVersion.php"))
             .post(postBody)
             .build()
         client.newCall(request).enqueue(object : Callback {
@@ -259,7 +259,7 @@ object URLRequests {
             .add("data", encryptRsa(message, getRsaKey(context)))
             .build()
         val request = Request.Builder()
-            .url(URL("https://makson-dev.ru/api/timetable/deviceRegistration.php"))
+            .url(URL("https://tt.fktpm.kubsu.ru/api/timetable/deviceRegistration.php"))
             .post(postBody)
             .build()
         client.newCall(request).enqueue(object : Callback {
@@ -321,7 +321,7 @@ object URLRequests {
         isInRegisterProcess = true
         showLog("getPublicKey")
         val request = Request.Builder()
-            .url(URL("https://makson-dev.ru/api/timetable/getAPIOpenKey.php"))
+            .url(URL("https://tt.fktpm.kubsu.ru/api/timetable/getAPIOpenKey.php"))
             .get()
             .build()
         client.newCall(request).enqueue(object : Callback {

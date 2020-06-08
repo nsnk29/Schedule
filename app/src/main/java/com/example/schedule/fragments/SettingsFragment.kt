@@ -125,7 +125,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         val aboutPreference = findPreference<Preference>(getString(R.string.about_app))
         aboutPreference?.setOnPreferenceClickListener {
-            Toast.makeText(context, "Version ${BuildConfig.VERSION_CODE}", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "AppVersion ${BuildConfig.VERSION_CODE}", Toast.LENGTH_SHORT).show()
             true
         }
     }

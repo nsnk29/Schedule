@@ -50,6 +50,7 @@ class PickerActivity : FragmentActivity(), GetLessonsInterface {
             onQueryTextListenerLecturers = getOnQueryTextListener(adapter)
     }
 
+
     fun setSearch(pos: Int) {
         main_search_view.setOnQueryTextListener(if (pos == 0) onQueryTextListenerGroup else onQueryTextListenerLecturers)
         viewPageAdapter.getFragment(pos)?.pickerRecycleAdapter?.filter?.filter(
