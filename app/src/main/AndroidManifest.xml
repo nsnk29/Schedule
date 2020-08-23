@@ -1,27 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.schedule">
+    package="com.nsnk.schedule_fpm">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
-        android:name=".CustomApplication"
-        android:allowBackup="true"
+        android:name="com.nsnk.schedule_fpm.CustomApplication"
+        android:allowBackup="false"
         android:extractNativeLibs="true"
-        android:fullBackupContent="true"
+        android:fullBackupContent="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        tools:ignore="GoogleAppIndexingWarning|GoogleAppIndexingWarning,LockedOrientationActivity">
-        <activity android:name=".activities.PickerActivity" />
+        android:theme="@style/AppTheme">
+        <activity android:name="com.nsnk.schedule_fpm.activities.PickerActivity" />
         <activity
-            android:name=".activities.SplashScreen"
+            android:name="com.nsnk.schedule_fpm.activities.SplashScreen"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Launcher">
             <intent-filter>
@@ -30,27 +26,14 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activities.SettingsActivity"
+            android:name="com.nsnk.schedule_fpm.activities.SettingsActivity"
             android:label="@string/settings"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".activities.MainActivity"
+            android:name="com.nsnk.schedule_fpm.activities.MainActivity"
             android:launchMode="singleTask" />
 
-        <receiver android:name=".receivers.AlertReceiver" />
-        <receiver
-            android:name=".receivers.DownloadReceiver"
-            android:exported="false" />
-
-        <provider
-            android:name="androidx.core.content.FileProvider"
-            android:authorities="${applicationId}.provider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/path" />
-        </provider>
+        <receiver android:name="com.nsnk.schedule_fpm.receivers.AlertReceiver" />
     </application>
 </manifest>

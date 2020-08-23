@@ -42,17 +42,9 @@
             app:key="@string/source_of_schedule"
             app:useSimpleSummaryProvider="true" />
 
-    </PreferenceCategory>
-
-
-    <PreferenceCategory android:title="@string/about">
         <Preference
-            android:title="@string/check_for_updates"
-            android:icon="@drawable/ic_update"
-            app:key="@string/update_app" />
-        <Preference
-            android:title="@string/about"
             android:icon="@drawable/ic_about"
+            android:title="@string/about"
             app:key="@string/about_app" />
     </PreferenceCategory>
 

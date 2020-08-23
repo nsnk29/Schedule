@@ -81,7 +81,7 @@
 
     <string name="version">version</string>
 
-<!--    Upload system-->
+    <!--    Upload system-->
     <string name="downloading">Загрузка…</string>
     <string name="title_file_download">Скачивание файла</string>
     <string name="storage_access_required">Чтобы обновить приложение необходим доступ к хранилищу.</string>
@@ -103,4 +103,9 @@
     <string name="register_api_error">Ошибка при регистрации устрйоства</string>
     <string name="unknown_api_error">Неизвестная ошибка</string>
     <string name="timestamp_api">Проблемы с обращением к серверу, попробуйте позже</string>
+
+
+    <!--    about-->
+    <string name="about_string">Приложение находится альфа версии</string>
+
 </resources>
