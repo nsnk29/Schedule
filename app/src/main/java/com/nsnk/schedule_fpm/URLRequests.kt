@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.util.Base64
-import android.util.Log
 import androidx.preference.PreferenceManager
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
@@ -46,9 +45,9 @@ object URLRequests {
                 context.hideLoading()
             }
         }
-        showLog("getLessonsJSON $counter")
+        showLog("getLessonsJSON $counter", context)
         if (counter > 2) {
-            showLog("Проблемы с обращением к серверу, попробуйте позже")
+            showLog("Проблемы с обращением к серверу, попробуйте позже", context)
             return
         }
         val mEncryptedSharedPreferences = getEncryptedPreferences(context)
@@ -57,7 +56,7 @@ object URLRequests {
         val token = mEncryptedSharedPreferences.getString("token", "") ?: ""
         val deviceId = mEncryptedSharedPreferences.getString("deviceId", "") ?: ""
         if (token.isBlank() || deviceId.isBlank()) {
-            showLog(context.getString(R.string.register_api_error))
+            showLog(context.getString(R.string.register_api_error), context)
             getPublicKey(
                 context,
                 getLessonOnRegisterListener(context, getLessonsInterface, isUpdate)
@@ -80,7 +79,7 @@ object URLRequests {
             object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
                     hideLoading(context)
-                    showLog(context.getString(R.string.connection_problem))
+                    showLog(context.getString(R.string.connection_problem) + e.message, context)
                 }
 
                 override fun onResponse(call: Call, response: Response) {
@@ -89,12 +88,12 @@ object URLRequests {
                         lessonJsonStructure = GsonBuilder().create()
                             .fromJson(response.body?.string(), LessonJsonStructure::class.java)
                     } catch (error: JsonSyntaxException) {
-                        showLog(context.getString(R.string.api_parse_error))
+                        showLog(context.getString(R.string.api_parse_error), context)
                         hideLoading(context)
                         return
                     }
                     if (lessonJsonStructure.error != null) {
-                        showLog("ошибка: ${lessonJsonStructure.error!!}")
+                        showLog("ошибка: ${lessonJsonStructure.error!!}", context)
                         hideLoading(context)
                         when (lessonJsonStructure.error) {
                             PUBLIC_KEY_ERROR, REGISTRATION_DEVICE_ERROR, ALREADY_REGISTERED_ERROR ->
@@ -118,7 +117,8 @@ object URLRequests {
                                 2000
                             )
                             else -> showLog(
-                                "${context.getString(R.string.unknown_api_error)} ${lessonJsonStructure.error}"
+                                "${context.getString(R.string.unknown_api_error)} ${lessonJsonStructure.error}",
+                                context
                             )
                         }
                         return
@@ -132,7 +132,7 @@ object URLRequests {
     }
 
     private fun register(context: Context, listener: OnRegisterListener?, counter: Int) {
-        showLog("register $counter")
+        showLog("register $counter", context)
         if (counter > 2)
             return
         val mEncryptedSharedPreferences = getEncryptedPreferences(context)
@@ -156,7 +156,7 @@ object URLRequests {
             .build()
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                showLog(context.getString(R.string.connection_problem))
+                showLog(context.getString(R.string.connection_problem) + e.message, context)
                 isInRegisterProcess = false
                 lastOnRegisterListener?.onRegister()
             }
@@ -168,12 +168,12 @@ object URLRequests {
                         GsonBuilder().create()
                             .fromJson(response.body?.string(), TokenClass::class.java)
                 } catch (error: JsonSyntaxException) {
-                    showLog(context.getString(R.string.api_parse_error))
+                    showLog(context.getString(R.string.api_parse_error), context)
                     isInRegisterProcess = false
                     return
                 }
                 if (tokenClass.error != null) {
-                    showLog(tokenClass.error)
+                    showLog(tokenClass.error, context)
                     when (tokenClass.error) {
                         REGISTRATION_DEVICE_ERROR, ALREADY_REGISTERED_ERROR -> Handler().postDelayed(
                             {
@@ -183,7 +183,8 @@ object URLRequests {
                         )
                         PUBLIC_KEY_ERROR -> getPublicKey(context, listener)
                         else -> showLog(
-                            context.getString(R.string.unknown_api_error)
+                            context.getString(R.string.unknown_api_error),
+                            context
                         )
                     }
                     return
@@ -211,14 +212,14 @@ object URLRequests {
             return
         }
         isInRegisterProcess = true
-        showLog("getPublicKey")
+        showLog("getPublicKey", context)
         val request = Request.Builder()
             .url(URL("https://tt.fktpm.kubsu.ru/api/timetable/getAPIOpenKey.php"))
             .get()
             .build()
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                showLog(context.getString(R.string.connection_problem))
+                showLog(context.getString(R.string.connection_problem), context)
                 isInRegisterProcess = false
             }
 
@@ -228,7 +229,7 @@ object URLRequests {
                     publicKeyModel = GsonBuilder().create()
                         .fromJson(response.body?.string(), PublicKeyModel::class.java)
                 } catch (error: JsonSyntaxException) {
-                    showLog(context.getString(R.string.api_parse_error))
+                    showLog(context.getString(R.string.api_parse_error), context)
                     return
                 }
                 val key = publicKeyModel.publicKey.replace("\n", "")
@@ -244,8 +245,11 @@ object URLRequests {
         })
     }
 
-    private fun showLog(message: String) {
-        Log.d(TAG, message)
+    private fun showLog(message: String, context: Context) {
+//        Log.d(TAG, message)
+//        Handler(Looper.getMainLooper()).post {
+//            Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+//        }
     }
 
     private fun getEncryptedPreferences(context: Context): EncryptedSharedPreferences =

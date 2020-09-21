@@ -28,13 +28,13 @@ android {
         applicationId "com.nsnk.schedule_fpm"
         minSdkVersion 23
         targetSdkVersion 29
-        versionCode 58
-        versionName "2.3.7"
+        versionCode 59
+        versionName "2.3.7.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
-            debuggable = true
+            debuggable = false
             signingConfig signingConfigs.release
         }
     }

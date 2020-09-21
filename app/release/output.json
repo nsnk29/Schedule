@@ -4,15 +4,15 @@
     "type": "APK",
     "kind": "Directory"
   },
-  "applicationId": "com.example.schedule",
+  "applicationId": "com.nsnk.schedule_fpm",
   "variantName": "release",
   "elements": [
     {
       "type": "SINGLE",
       "filters": [],
       "properties": [],
-      "versionCode": 58,
-      "versionName": "58",
+      "versionCode": 59,
+      "versionName": "59",
       "enabled": true,
       "outputFile": "app-release.apk"
     }
