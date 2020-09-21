@@ -11,8 +11,8 @@
       "type": "SINGLE",
       "filters": [],
       "properties": [],
-      "versionCode": 59,
-      "versionName": "59",
+      "versionCode": 60,
+      "versionName": "2.3.7.2",
       "enabled": true,
       "outputFile": "app-release.apk"
     }

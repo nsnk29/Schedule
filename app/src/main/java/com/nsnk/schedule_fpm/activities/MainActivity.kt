@@ -216,7 +216,7 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener, GetLesson
     fun openSettings(view: View) {
         startActivityForResult(
             Intent(view.context, SettingsActivity::class.java),
-            CODES.SETTINGS_ACTIVITY_REQUEST_CODE
+            SETTINGS_ACTIVITY_REQUEST_CODE
         )
     }
 
@@ -224,12 +224,12 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener, GetLesson
         super.onActivityResult(requestCode, resultCode, data)
         settingsButton.startAnimation(rotate)
         when (resultCode) {
-            CODES.GROUP_PICK_RESULT_CODE -> onSourceChange()
-            CODES.COUNT_LINES_RESULT_CODE -> {
+            GROUP_PICK_RESULT_CODE -> onSourceChange()
+            COUNT_LINES_RESULT_CODE -> {
                 mainRecyclerAdapter = getMainAdapter(bottomRecyclerAdapter.selectedDay)
                 recyclerViewMain.adapter = mainRecyclerAdapter
             }
-            CODES.BOTH_RESULT_CODE -> {
+            BOTH_RESULT_CODE -> {
                 mainRecyclerAdapter = getMainAdapter(bottomRecyclerAdapter.currentDay)
                 recyclerViewMain.adapter = mainRecyclerAdapter
                 onSourceChange()
@@ -248,7 +248,7 @@ class MainActivity : AppCompatActivity(), BottomRecyclerClickListener, GetLesson
             val name = getString(R.string.channel_name)
             val descriptionText = getString(R.string.channel_description)
             val importance = NotificationManager.IMPORTANCE_HIGH
-            val channel = NotificationChannel(CODES.CHANNEL_ID, name, importance).apply {
+            val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
                 description = descriptionText
             }
             channel.enableLights(true)

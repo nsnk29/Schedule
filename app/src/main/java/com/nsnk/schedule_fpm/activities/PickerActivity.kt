@@ -90,7 +90,7 @@ class PickerActivity : FragmentActivity(), GetLessonsInterface {
     }
 
 
-    fun setDataVisible() {
+    private fun setDataVisible() {
         viewPageAdapter.getFragment(0)?.pickerRecycleAdapter?.apply {
             dataList = viewPageAdapter.getFragment(0)?.getRelevantData(realm) ?: emptyList()
             notifyDataSetChanged()

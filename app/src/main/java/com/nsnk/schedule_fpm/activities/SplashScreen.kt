@@ -7,27 +7,20 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.PreferenceManager
 import com.nsnk.schedule_fpm.R
-import com.nsnk.schedule_fpm.URLRequests
-import com.nsnk.schedule_fpm.interfaces.OnRegisterListener
 
-class SplashScreen : AppCompatActivity(), OnRegisterListener {
-    private lateinit var mPreference: SharedPreferences
+class SplashScreen : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         PreferenceManager.setDefaultValues(this, R.xml.root_preferences, false)
-        mPreference = PreferenceManager.getDefaultSharedPreferences(this)
-        val darkMode = mPreference.getBoolean(getString(R.string.dark_mode), false)
-        if (darkMode)
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-        val rsa = mPreference.getString("RSA", "")
-        if (rsa.isNullOrBlank())
-            URLRequests.getPublicKey(applicationContext, this)
-        else
-            isFirstRun()
+        with(PreferenceManager.getDefaultSharedPreferences(this)) {
+            if (this.getBoolean(getString(R.string.dark_mode), false))
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            isFirstRun(this)
+        }
     }
 
-    private fun isFirstRun() {
-        when (mPreference.getString(
+    private fun isFirstRun(sp: SharedPreferences) {
+        when (sp.getString(
             getString(R.string.savedValueOfUsersPick),
             getString(R.string.default_string)
         )) {
@@ -40,11 +33,5 @@ class SplashScreen : AppCompatActivity(), OnRegisterListener {
             else -> startActivity(Intent(this, MainActivity::class.java))
         }
         finish()
-    }
-
-    override fun onRegister() {
-        runOnUiThread {
-            isFirstRun()
-        }
     }
 }

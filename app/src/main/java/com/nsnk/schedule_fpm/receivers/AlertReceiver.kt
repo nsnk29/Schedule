@@ -93,8 +93,8 @@ class AlertReceiver : BroadcastReceiver() {
             2, 3, 4 -> "$countOfLessons занятия"
             else -> "$countOfLessons занятий"
         }
-        val firstLessonTime = getStartTime(lessons.minBy { it.number }?.number)
-        val lastLessonTime = getEndTime(lessons.maxBy { it.number }?.number)
+        val firstLessonTime = getStartTime(lessons.minByOrNull { it.number }?.number)
+        val lastLessonTime = getEndTime(lessons.maxByOrNull { it.number }?.number)
         return Pair(
             "$stringCount с $firstLessonTime до $lastLessonTime",
             resultString.substring(0, resultString.length - 1)
